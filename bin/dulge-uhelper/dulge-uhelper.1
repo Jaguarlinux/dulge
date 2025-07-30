@@ -1,0 +1,289 @@
+.Dd Feb 11, 2023
+.Dt DULGE-UHELPER 1
+.Os
+.Sh NAME
+.Nm dulge-uhelper
+.Nd DULGE helper utilities
+.Sh SYNOPSIS
+.Nm
+.Op OPTIONS
+.Ar ACTION
+.Op ARGUMENTS
+.Sh DESCRIPTION
+The
+.Nm
+utility provides various utilities for interacting with DULGE and DULGE packages.
+.Sh ARGUMENT TYPES
+.Ss BINPKG
+A
+.Ar binpkg
+argument is a string of the format
+.Em <pkgname>-<version>_<revision>.<arch>.dulge ,
+like the filename of a binary package.
+.Ss PKGVER
+A
+.Ar pkgver
+argument is a string of the format
+.Em <pkgname>-<version>_<revision> ,
+like the
+.Em pkgver
+property.
+.Ss PKGPATTERN
+A
+.Ar pkgpattern
+argument is package expression specifying a package name and version separated
+by any of the following version comparators:
+.Pp
+.Bl -tag -width xx -compact
+.It Sy <
+less than
+.It Sy >
+greater than
+.It Sy <=
+less or equal than
+.It Sy >=
+greater or equal than
+.Pp
+.El
+Example:
+.Dq Sy foo>=2.0 .
+.Sh OPTIONS
+.Bl -tag -width -x
+.It Fl C, Fl -config Ar dir
+Specifies a path to the DULGE configuration directory.
+If the first character is not '/' then it's a relative path of
+.Ar rootdir .
+.It Fl d, Fl -debug
+Enables extra debugging shown to stderr.
+.It Fl h, Fl -help
+Show the help message.
+.It Fl r, Fl -rootdir Ar dir
+Specifies a full path for the target root directory.
+.It Fl v, Fl -verbose
+Enables verbose messages.
+.It Fl V, Fl -version
+Show the version information.
+.El
+.Sh ACTIONS
+.Bl -tag -width xx
+.It Cm arch
+Prints the DULGE native arch.
+.It Cm binpkgarch Ar binpkg ...
+Prints the arch of
+.Ar binpkg
+strings.
+.It Cm binpkgver Ar binpkg ...
+Prints the pkgver of
+.Ar binpkg
+strings.
+.It Cm cmpver Ar instver Ar reqver
+Compare two
+.Ar pkgver
+strings,
+.Ar instver
+(installed) vs
+.Ar reqver
+(required).
+See
+.Sx EXIT STATUS
+for more information.
+If
+.Fl -verbose
+is specified, also prints
+.Qo
+.Ar instver
+<|=|>
+.Ar reqver
+.Qc .
+.It Cm getname Ar string ...
+Prints the pkgname of
+.Ar pkgpatterns
+and/or
+.Ar pkgvers .
+This is a combination of
+.Cm getpkgdepname
+and
+.Cm getpkgname .
+.It Cm getversion Ar string ...
+Prints the version of
+.Ar pkgpatterns
+and/or
+.Ar pkgvers .
+This is a combination of
+.Cm getpkgdepversion
+and
+.Cm getpkgversion .
+.It Cm getpkgdepname Ar pkgpattern ...
+Prints the pkgname of package dependency patterns.
+.It Cm getpkgdepversion Ar pkgpattern
+Prints the version of package dependency patterns.
+.It Cm getpkgname Ar pkgver ...
+Prints the name of package strings.
+.It Cm getpkgrevision Ar pkgver ...
+Prints the revision of package strings.
+.It Cm getpkgversion Ar pkgver ...
+Prints the version of package strings.
+.It Cm getsystemdir
+Prints the dulge system directory
+.Po
+.Pa <sharedir>/dulge.d
+.Pc .
+.It Cm pkgmatch Ar pkgver Ar pkgpattern
+Matches a
+.Ar pkgver
+with a
+.Ar pkgpattern .
+See
+.Sx EXIT STATUS
+for more information.
+If
+.Fl -verbose
+is specified, also prints
+.Qo
+.Ar pkgver
+matches|does not match
+.Ar pkgpattern
+.Qc ,
+or an error.
+.It Cm real-version Ar pkgname ...
+Prints the version of installed real packages.
+.It Cm version Ar pkgname ...
+Prints the version of installed packages.
+.El
+.Sh EXIT STATUS
+.Ex
+A descriptive error message will be printed to stderr.
+Exceptions to this are:
+.Bl -tag -width xx
+.It Cm cmpver Ar instver Ar reqver
+.Bl -tag -width xxx -compact
+.It 1
+if
+.Ar instver
+is greater than
+.Ar reqver .
+.It 0
+if
+.Ar instver
+is equal to
+.Ar reqver .
+.It 255
+if
+.Ar instver
+is less than
+.Ar reqver .
+.El
+.It Cm pkgmatch Ar pkgver Ar pkgpattern
+.Bl -tag -width xxx -compact
+.It 1
+.Ar pkgver
+matches
+.Ar pkgpattern .
+.It 0
+.Ar pkgver
+does not match
+.Ar pkgpattern .
+.It 255
+An error occurred.
+.El
+.El
+.Sh EXAMPLES
+Compare package versions:
+.Pp
+.Dl $ dulge-uhelper cmpver 'foo-1.0_1' 'foo-2.1_1'
+.Dl $ dulge-uhelper cmpver 1.0 2.1
+.Pp
+Get the package name for dependency pattern
+.Dq foo>=0 :
+.Pp
+.Dl $ dulge-uhelper getpkgdepname 'foo>=0'
+.Pp
+Get the version expression for the dependency pattern
+.Dq foo>=0 :
+.Pp
+.Dl $ dulge-uhelper getpkgdepversion 'foo>=0'
+.Pp
+Get the package name for pkgver
+.Dq foo-2.0_1 :
+.Pp
+.Dl $ dulge-uhelper getpkgname foo-2.0_1
+.Pp
+Get the revision for pkgver
+.Dq foo-2.0_1 :
+.Pp
+.Dl $ dulge-uhelper getpkgrevision foo-2.0_1
+.Pp
+Get the version for pkgver
+.Dq foo-2.0_1 :
+.Pp
+.Dl $ dulge-uhelper getpkgversion foo-2.0_1
+.Pp
+Check if the pkgver
+.Dq foo-1.0_1
+matches the dependency pattern
+.Dq foo>=1.0 :
+.Pp
+.Dl $ dulge-uhelper pkgmatch foo-1.0_1 'foo>=1.0'
+.Pp
+Get the version for the installed package
+.Dq foo :
+.Pp
+.Dl $ dulge-uhelper version foo
+.Pp
+Get the names of packages from a list of pkgvers:
+.Pp
+.Dl $ dulge-query -Rp pkgver -s foo | cut -d: -f1 | xargs dulge-uhelper getpkgname
+.Pp
+Get the names of dependencies for a package:
+.Pp
+.Dl $ dulge-query -Rp run_depends xf86-video-amdgpu | xargs dulge-uhelper getname
+.Sh ENVIRONMENT
+.Bl -tag -width DULGE_TARGET_ARCH
+.It Sy DULGE_ARCH
+Overrides
+.Xr uname 2
+machine result with this value.
+Useful to install packages with a fake
+architecture.
+.It Sy DULGE_TARGET_ARCH
+Sets the target architecture to this value.
+This variable differs from
+.Sy DULGE_ARCH
+in that it allows you to install packages partially, because
+configuration phase is skipped (the target binaries might not be compatible with
+the native architecture).
+.El
+.Sh FILES
+.Bl -tag -width /var/db/dulge/.<pkgname>-files.plist
+.It Ar /etc/dulge.d
+Default configuration directory.
+.It Ar /usr/share/dulge.d
+Default system configuration directory.
+.It Ar /var/db/dulge/.<pkgname>-files.plist
+Package files metadata.
+.It Ar /var/db/dulge/pkgdb-0.38.plist
+Default package database (0.38 format). Keeps track of installed packages and properties.
+.It Ar /var/cache/dulge
+Default cache directory to store downloaded binary packages.
+.El
+.Sh SEE ALSO
+.Xr dulge-checkvers 1 ,
+.Xr dulge-create 1 ,
+.Xr dulge-dgraph 1 ,
+.Xr dulge-digest 1 ,
+.Xr dulge-fbulk 1 ,
+.Xr dulge-fetch 1 ,
+.Xr dulge-install 1 ,
+.Xr dulge-pkgdb 1 ,
+.Xr dulge-query 1 ,
+.Xr dulge-reconfigure 1 ,
+.Xr dulge-remove 1 ,
+.Xr dulge-rindex 1 ,
+.Xr dulge-uchroot 1 ,
+.Xr dulge-uunshare 1 ,
+.Xr dulge.d 5
+.Sh AUTHORS
+.An TigerClips1 spongebob1966@proton.me
+.Sh BUGS
+Report bugs at
+.Lk https://github.com/Jaguarlinux/dulge/issues

@@ -1,0 +1,130 @@
+.Dd April 20, 2020
+.Dt DULGE-FBULK 1
+.Os
+.Sh NAME
+.Nm dulge-fbulk
+.Nd DULGE utility to perform a fast bulk build of jaguar-packages
+.Sh SYNOPSIS
+.Nm
+.Op OPTIONS
+.Ar /path/to/jaguar-packages
+.Op pkgN pkg+N ...
+.Sh DESCRIPTION
+The
+.Nm
+utility iterates all srcpkg directories in the
+.Xr jaguar-packages
+repository or processes the
+.Xr pkgN
+arguments, and then runs
+.Ar 'dulge-src show-build-deps'
+to build a dependency tree on the fly.
+.Pp
+As the dependency tree is built, terminal dependencies are built
+and packaged on the fly.
+.Pp
+As these builds complete, additional dependencies may be satisfied and be
+added to the build order. Ultimately the entire tree is built.
+.Pp
+Only one attempt is made to build any given package, no matter how many
+other packages depend on it.
+.Pp
+When using
+.Ar system mode
+only installed packages that are in manual mode (see
+.Xr dulge-pkgdb 1)
+will be processed.
+This is useful to keep up a running system up-to-date.
+.Sh OPTIONS
+.Bl -tag -width -x
+.It Fl j, Fl -jobs Ar X
+Set number of parallel builds running at the same time. By default set to 1.
+.It Fl l, Fl -logdir  Ar logdir
+Set the log directory. By default set to `fbulk-log.<pid>`.
+.It Fl d, Fl -debug
+Enables extra debugging shown to stderr.
+.It Fl s, Fl -system
+System build mode. If set, only packages that were installed manually
+in your system will be processed.
+.It Fl h, Fl -help
+Show the help message.
+.It Fl v, Fl -verbose
+Enables verbose messages.
+.It Fl V, Fl -version
+Show the version information.
+.El
+.Sh FILES
+.Bl -tag -width logdir/skipped
+.It Ar logdir/run
+Packages that are being built.
+.It Ar logdir/good
+Packages that were built successfully.
+.It Ar logdir/bad
+Packages that failed to build.
+.It Ar logdir/skipped
+Packages that were not built because they had to be skipped (unsupported architecture, broken or restricted).
+.It Ar logdir/deps
+Packages that were not built due to failed or missing dependencies.
+.El
+.Sh EXIT STATUS
+.Ex
+A descriptive error message will be printed to stderr.
+.Sh NOTES
+The
+.Ar masterdir
+in the
+.Ar jaguar-packages
+repository must be fully populated for chroot operations, and some options
+need to be set in
+.Ar etc/conf
+to make
+.Nm
+work correctly:
+.Bl -tag -width DULGE_CHROOT_CMD=uchroot
+.It Ar DULGE_CHROOT_CMD=uchroot
+The
+.Xr dulge-uchroot 1
+utility is required because
+.Nm
+builds packages in temporary masterdirs that are mounted with
+.Ar overlayfs .
+.El
+.Pp
+Make sure the user running
+.Nm
+has rights to execute
+.Xr dulge-uchroot 1
+and the kernel supports the overlay filesystem, introduced in 4.0.
+.Pp
+.Sh SEE ALSO
+.Xr dulge-alternatives 1 ,
+.Xr dulge-checkvers 1 ,
+.Xr dulge-create 1 ,
+.Xr dulge-dgraph 1 ,
+.Xr dulge-digest 1 ,
+.Xr dulge-fetch 1 ,
+.Xr dulge-install 1 ,
+.Xr dulge-pkgdb 1 ,
+.Xr dulge-query 1 ,
+.Xr dulge-reconfigure 1 ,
+.Xr dulge-remove 1 ,
+.Xr dulge-rindex 1 ,
+.Xr dulge-uchroot 1 ,
+.Xr dulge-uunshare 1 ,
+.Xr dulge.d 5
+.Sh AUTHORS
+The
+.Nm
+utility was originally written by
+.An Matthew Dillon Aq Mt dillon@backplane.com
+for the
+.Ar DragonFlyBSD project.
+.Pp
+.An TigerClips1 spongebob1966@proton.me
+adapted it for dulge and added some new features.
+.Sh BUGS
+Probably, but I try to make this not happen. Use it under your own
+responsibility and enjoy your life.
+.Pp
+Report bugs at
+.Lk https://github.com/Jaguarlinux/dulge/issues

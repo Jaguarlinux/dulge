@@ -1,0 +1,24 @@
+libdulge:
+ - transaction: avoid fetching the whole pkg when updating and only fetch
+   modified files from target pkg.
+ - transaction: check for free space in all affected top-level dirs.
+ - transaction: check all pkg top-level dirs to see if they are writable.
+ - cache: download cached packages and signatures into a per repository
+   directory like repodata files in /var/db/dulge
+
+dulge-*:
+ - Document exit codes.
+
+dulge-create:
+ - Move all configuration files to <prefix>/share/<pkgname>/conf/<cffile>.
+ - Add -i --installed option to create binpkg from an installed version.
+
+dulge-fetch:
+ - stdout support
+ - configurable libfetch timeout
+ - configurable number of connection retries
+
+dulge-digest:
+ - blake2b support
+
+Issues listed at https://github.com/Jaguarlinux/dulge/issues

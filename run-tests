@@ -1,0 +1,17 @@
+#!/bin/sh
+
+for f in bin/*; do
+	export PATH=$PWD/$f:$PATH
+done
+export PATH=$PATH:/usr/local/bin
+
+NPROCS=1
+if [ -r /proc/cpuinfo ]; then
+	NPROCS=$(grep ^proc /proc/cpuinfo|wc -l)
+fi
+export DULGE_SYSLOG=false
+LIBRARY_PATH=$PWD/lib LD_LIBRARY_PATH=$PWD/lib ATF_SHELL=/bin/sh kyua --variable parallelism=$NPROCS test -r result.db -k tests/dulge/Kyuafile
+rv=$?
+kyua report --verbose -r result.db
+rm -f result.db
+exit $rv

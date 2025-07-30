@@ -1,0 +1,4 @@
+syntax("kyuafile", 1)
+
+test_suite("dulge-alternatives")
+atf_test_program{name="main_test"}

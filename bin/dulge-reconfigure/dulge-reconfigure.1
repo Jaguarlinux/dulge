@@ -1,0 +1,131 @@
+.Dd Feb 9, 2023
+.Dt DULGE-RECONFIGURE 1
+.Os
+.Sh NAME
+.Nm dulge-reconfigure
+.Nd DULGE utility to configure installed packages
+.Sh SYNOPSIS
+.Nm
+.Op OPTIONS
+.Op PKGNAME...
+.Sh DESCRIPTION
+The
+.Nm
+utility configures or reconfigures packages in target root directory. Configuration
+involves two steps:
+.Pp
+.Sy *
+Executes the
+.Sy post
+ACTION on its
+.Sy INSTALL
+script (which can be shown by running
+.Sy `dulge-query --property=install-script pkg'
+).
+.Pp
+.Sy *
+Changes package state to
+.Sy DULGE_PKG_STATE_INSTALLED
+if previous step ran successfully.
+.Pp
+Only packages that weren't configured previously will be processed,
+unless the
+.Ar -f
+option is specified.
+.Sh OPTIONS
+.Bl -tag -width -x
+.It Fl a, Fl -all
+Configures all packages.
+.It Fl C, Fl -config Ar dir
+Specifies a path to the DULGE configuration directory.
+If the first character is not '/' then it's a relative path of
+.Ar rootdir .
+.It Fl d, Fl -debug
+Enables extra debugging shown to stderr.
+.It Fl f, Fl -force
+Forcefully reconfigure package even if it was configured previously.
+.It Fl h, Fl -help
+Show the help message.
+.It Fl i, Fl -ignore Ar PKG
+Ignore
+.Ar PKG
+when configuring all packages with
+.Fl a, Fl -all .
+The
+.Ar PKG
+argument can be a package name or a package name with version.
+This option can be specified multiple times.
+.It Fl r, Fl -rootdir Ar dir
+Specifies a path for the target root directory.
+.It Fl x, Fl -deps
+Configure 
+.Ar PKGNAME...
+and its direct dependencies.
+.It Fl -fulldeptree
+Configure the full dependency tree of
+.Ar PKGNAME...
+when used with
+.Fl x, Fl -deps .
+.
+.It Fl v, Fl -verbose
+Enables verbose messages.
+.It Fl V, Fl -version
+Show the version information.
+.El
+.Sh ENVIRONMENT
+.Bl -tag -width DULGE_TARGET_ARCH
+.It Sy DULGE_ARCH
+Overrides
+.Xr uname 2
+machine result with this value.
+Useful to install packages with a fake architecture
+.It Sy DULGE_TARGET_ARCH
+Sets the target architecture to this value.
+This variable differs from
+.Sy DULGE_ARCH
+in that it allows you to install packages partially, because
+configuration phase is skipped (the target binaries might not be compatible with
+the native architecture).
+.It Sy DULGE_SYSLOG
+Overrides the
+.Xr dulge.d 5
+.Sy syslog=true|false
+configuration option.
+.El
+.Sh FILES
+.Bl -tag -width /var/db/dulge/.<pkgname>-files.plist
+.It Ar /etc/dulge.d
+Default configuration directory.
+.It Ar /usr/share/dulge.d
+Default system configuration directory.
+.It Ar /var/db/dulge/.<pkgname>.plist
+Package files metadata.
+.It Ar /var/db/dulge/pkgdb-0.38.plist
+Default package database (0.38 format). Keeps track of installed packages and properties.
+.It Ar /var/cache/dulge
+Default cache directory to store downloaded binary packages.
+.El
+.Sh SEE ALSO
+.Xr dulge-alternatives 1 ,
+.Xr dulge-checkvers 1 ,
+.Xr dulge-create 1 ,
+.Xr dulge-dgraph 1 ,
+.Xr dulge-digest 1 ,
+.Xr dulge-fbulk 1 ,
+.Xr dulge-fetch 1 ,
+.Xr dulge-install 1 ,
+.Xr dulge-pkgdb 1 ,
+.Xr dulge-query 1 ,
+.Xr dulge-remove 1 ,
+.Xr dulge-rindex 1 ,
+.Xr dulge-uchroot 1 ,
+.Xr dulge-uunshare 1 ,
+.Xr dulge.d 5
+.Sh AUTHORS
+.An TigerClips1 spongebob1966@proton.me
+.Sh BUGS
+Probably, but I try to make this not happen. Use it under your own
+responsibility and enjoy your life.
+.Pp
+Report bugs at
+.Lk https://github.com/Jaguarlinux/dulge/issues

@@ -1,0 +1,10 @@
+prefix=@@PREFIX@@
+exec_prefix=@@EPREFIX@@
+libdir=${exec_prefix}/lib
+includedir=${exec_prefix}/include
+
+Name: DULGE API Library
+Description: The dulge Binary Package Manager library 
+Version: @@VERSION@@
+Libs: -ldulge -L${libdir}
+Cflags: -I${includedir}

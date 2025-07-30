@@ -1,0 +1,166 @@
+.Dd May 20, 2025
+.Dt DULGE 7
+.Os
+.Sh NAME
+.Nm dulge
+.Nd Introduction and concepts
+.Sh DESCRIPTION
+The X Binary Package System (DULGE) is a binary package system designed and implemented from scratch.
+Its goal is to be fast, easy to use, bug-free, featureful and portable as much as possible.
+
+The primary interface of DUGLE is its suite of tools, including
+.Xr dulge-install 1
+for installing packages,
+.Xr dulge-remove 1
+for removing packages, and
+.Xr dulge-query 1
+for searching repositories and querying package properties.
+A C library is also available, called
+.Em libdulge .
+.Sh PACKAGES
+An DUGLE package is a compressed archive of the package's files and metadata.
+
+Packages can also include scripts that run during installation and removal, during the
+.Dq configuration
+phase.
+These scripts can be re-run with
+.Nm dulge-reconfigure Fl f .
+
+Packages can be checked for issues with
+.Xr dulge-pkgdb 1 .
+If a package reports errors, it should be reinstalled with
+.Nm dulge-install Fl f .
+
+Packages can mark files as
+.Em conf_files ,
+which will prevent them from being replaced upon package update if modified.
+.Sh PACKAGE EXPRESSIONS
+Packages can be referred to in several ways.
+A package expression is a form to match a pattern; currently dulge
+supports 3 ways to specify them:
+.Bl -dash
+.It
+by package name, i.e:
+.Dq Sy foo .
+.It
+by exact package name and version, i.e:
+.Dq Sy foo-1.0_1 .
+.It
+by specifying a package name and version separated by any of the following version comparators:
+.Pp
+.Bl -item -compact
+.It
+.Sy <
+less than
+.It
+.Sy >
+greater than
+.It
+.Sy <=
+less or equal than
+.It
+.Sy >=
+greater or equal than
+.Pp
+Example:
+.Dq Sy foo>=2.0 .
+.El
+.El
+.Pp
+The first repository matching the package expression wins.
+.Sh PACKAGE MODES
+An installed package can have some specific modes of operation.
+Package modes can be changed with
+.Xr dulge-pkgdb 1 .
+Currently the following modes are available:
+.Bl -tag -width -x
+.It Sy hold
+The package is on hold mode.
+Packages in this mode won't be updated unless
+it's explicitely declared to be updated.
+The only way to update packages in this mode is by using the
+.Fl f , Fl -force
+option.
+To list packages in this mode use
+.Nm dulge-query Fl H .
+.It Sy manual
+The package is in manual mode of installation and won't be considered for
+removal when running
+.Nm dulge-remove Fl o .
+To list packages in this mode use
+.Nm dulge-query Fl m .
+.It Sy repolock
+A package in repolock mode will only accept updates that are available in the
+same repository that was used for installing.
+To list packages in this mode use
+.Nm dulge-query Fl -list-repolock-pkgs .
+.El
+.Sh REPOSITORIES
+An DUGLE repository is a directory containing DUGLE packages and an
+.Em <arch>-repodata
+repository index file.
+If the repository is remote (served via a web server), packages must be RSA-signed.
+
+In DUGLE configuration and command-line flags, repositories are specified by a complete url or absolute path to the directory where the
+.Em <arch>-repodata
+resides.
+To synchronize configured remote repositories locally, use
+.Nm dulge-install Fl S .
+
+Repositories are created and managed with
+.Xr dulge-rindex 1 .
+.Sh FILES
+.Bl -tag -width /var/db/dulge/.<pkgname>-files.plist
+.It Ar /etc/dulge.d
+Default configuration directory.
+See also
+.Xr dulge.d 5 .
+.It Ar /usr/share/dulge.d
+Default system configuration directory.
+See also
+.Xr dulge.d 5 .
+.It Ar /var/db/dulge/.<pkgname>-files.plist
+Package files metadata.
+.It Ar /var/db/dulge/pkgdb-0.38.plist
+Default package database (0.38 format).
+Keeps track of installed packages and properties.
+.It Ar /var/cache/dulge
+Default cache directory to store downloaded binary packages.
+.El
+.Sh ENVIRONMENT
+.Bl -tag -width DUGLE_TARGET_ARCH
+.It Sy DUGLE_ARCH
+Overrides
+.Xr uname 2
+machine result with this value.
+.It Sy DUGLE_TARGET_ARCH
+Sets the target architecture to this value.
+.It Sy DUGLE_SYSLOG
+Overrides the
+.Xr dulge.d 5
+.Sy syslog=true|false
+configuration option.
+.El
+.Sh SEE ALSO
+.Xr dulge-alternatives 1 ,
+.Xr dulge-create 1 ,
+.Xr dulge-dgraph 1 ,
+.Xr dulge-fbulk 1 ,
+.Xr dulge-fetch 1 ,
+.Xr dulge-install 1 ,
+.Xr dulge-pkgdb 1 ,
+.Xr dulge-query 1 ,
+.Xr dulge-reconfigure 1 ,
+.Xr dulge-remove 1 ,
+.Xr dulge-rindex 1 ,
+.Xr dulge.d 5 ,
+.Lk https://github.com/Jaguarlinux/dulge ,
+.Lk https://github.com/Jaguarlinux/dulge/doc
+.Sh AUTHORS
+.An TigerClips1 spongebob1966@proton.me
+.Sh BUGS
+Probably, but I try to make this not happen. Use it under your own
+responsibility and enjoy your life.
+.Pp
+Report bugs at
+.Lk https://github.com/Jaguarlinux/dulge/issues

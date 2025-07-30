@@ -1,0 +1,15 @@
+syntax("kyuafile", 1)
+
+test_suite("dulge")
+
+include('libdulge/Kyuafile')
+include('dulge-alternatives/Kyuafile')
+include('dulge-checkvers/Kyuafile')
+include('dulge-create/Kyuafile')
+include('dulge-fetch/Kyuafile')
+include('dulge-install/Kyuafile')
+include('dulge-query/Kyuafile')
+include('dulge-rindex/Kyuafile')
+include('dulge-uhelper/Kyuafile')
+include('dulge-remove/Kyuafile')
+include('dulge-digest/Kyuafile')

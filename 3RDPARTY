@@ -1,0 +1,24 @@
+DULGE includes the following software from third parties for
+internal use in the code:
+
+- queue.h from NetBSD: include/queue.h.
+
+- relational dewey version matching code from NetBSD:
+  lib/external/dewey.c
+
+- strlcat and strlcpy functions from OpenBSD:
+  lib/compat/strlc{at,cpy}.c
+
+- humanize_number(3) from NetBSD: lib/external/humanize_number.c
+
+- mkpath from NetBSD's mkdir(1): lib/external/mkpath.c
+
+- fexec from NetBSD's pkg_install: lib/external/fexec.c
+
+- libfetch-2.34 from NetBSD (pkgsrc/net/libfetch): lib/fetch
+
+- portableproplib-0.6.8 (lib/portableproplib) from
+  https://github.com/xtraeme/portableproplib
+
+- uthash-2.1.0 (include/uthash.h) from
+  http://troydhanson.github.com/uthash/

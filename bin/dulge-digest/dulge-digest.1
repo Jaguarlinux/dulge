@@ -1,0 +1,58 @@
+.Dd Feb 9, 2023
+.Dt DULGE-DIGEST 1
+.Os
+.Sh NAME
+.Nm dulge-digest
+.Nd DULGE utility to generate message digests
+.Sh SYNOPSIS
+.Nm
+.Op OPTIONS
+.Op FILE
+.Op FILE+N
+.Sh DESCRIPTION
+The
+.Nm
+utility generates message digests for specified
+.Ar FILE
+or
+.Ar stdin
+if unset.
+.Sh OPTIONS
+.Bl -tag -width -x
+.It Fl m, Fl -mode Ar mode
+Sets the message digest mode. Supported:
+.Ar sha256 .
+If unset, defaults to
+.Ar sha256 .
+.It Fl h, Fl -help
+Show the help message.
+.It Fl V, Fl -version
+Show the version information.
+.El
+.Sh EXIT STATUS
+.Ex
+A descriptive error message will be printed to stderr.
+.Sh SEE ALSO
+.Xr dulge-alternatives 1 ,
+.Xr dulge-checkvers 1 ,
+.Xr dulge-create 1 ,
+.Xr dulge-dgraph 1 ,
+.Xr dulge-fbulk 1 ,
+.Xr dulge-fetch 1 ,
+.Xr dulge-install 1 ,
+.Xr dulge-pkgdb 1 ,
+.Xr dulge-query 1 ,
+.Xr dulge-reconfigure 1 ,
+.Xr dulge-remove 1 ,
+.Xr dulge-rindex 1 ,
+.Xr dulge-uchroot 1 ,
+.Xr dulge-uunshare 1 ,
+.Xr dulge.d 5
+.Sh AUTHORS
+.An TigerClips1 spongebob1966@proton.me
+.Sh BUGS
+Probably, but I try to make this not happen. Use it under your own
+responsibility and enjoy your life.
+.Pp
+Report bugs at
+.Lk https://github.com/Jaguarlinux/dulge/issues
