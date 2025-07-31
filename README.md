@@ -70,7 +70,7 @@ and optionally:
 ### Building and testing for dummies
 
 ```
-$ git clone https://github.com/Jaguarlinux/JaguarLinux_Package_Manger
+$ git clone https://github.com/Jaguarlinux/dulge.git
 $ cd dulge
 $ ./configure --enable-rpath --prefix=/usr --sysconfdir=/etc
 $ make -j$(nproc)
