@@ -44,7 +44,7 @@ ATF_TC_BODY(pkgdb_get_pkg_test, tc)
 	memset(&xh, 0, sizeof(xh));
 	dulge_strlcpy(xh.rootdir, tcsdir, sizeof(xh.rootdir));
 	dulge_strlcpy(xh.metadir, tcsdir, sizeof(xh.metadir));
-	xh.flags = dulge_FLAG_DEBUG;
+	xh.flags = DULGE_FLAG_DEBUG;
 	ATF_REQUIRE_EQ(dulge_init(&xh), 0);
 
 	pkgd = dulge_pkgdb_get_pkg(&xh, "mixed");

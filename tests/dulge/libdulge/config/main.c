@@ -162,7 +162,7 @@ ATF_TC_BODY(config_include_absolute, tc)
 	free(buf);
 	free(buf2);
 
-	xh.flags = dulge_FLAG_DEBUG;
+	xh.flags = DULGE_FLAG_DEBUG;
 	ATF_REQUIRE_EQ(dulge_init(&xh), 0);
 	/* should contain one repository defined in 1.include.conf */
 	ATF_REQUIRE_EQ(dulge_array_count(xh.repositories), 1);
@@ -216,7 +216,7 @@ ATF_TC_BODY(config_include_absolute_glob, tc)
 	free(buf);
 	free(buf2);
 
-	xh.flags = dulge_FLAG_DEBUG;
+	xh.flags = DULGE_FLAG_DEBUG;
 	ATF_REQUIRE_EQ(dulge_init(&xh), 0);
 	/* should contain both repositories defined in [12].include.conf */
 	ATF_REQUIRE_EQ(dulge_array_count(xh.repositories), 2);
@@ -313,7 +313,7 @@ ATF_TC_BODY(config_trim_values, tc)
 	free(buf);
 	free(buf2);
 
-	xh.flags = dulge_FLAG_DEBUG;
+	xh.flags = DULGE_FLAG_DEBUG;
 	ATF_REQUIRE_EQ(dulge_init(&xh), 0);
 
 	/* should contain one repository */
@@ -366,7 +366,7 @@ ATF_TC_BODY(config_no_trailing_newline, tc)
 	free(buf);
 	free(buf2);
 
-	xh.flags = dulge_FLAG_DEBUG;
+	xh.flags = DULGE_FLAG_DEBUG;
 	ATF_REQUIRE_EQ(dulge_init(&xh), 0);
 
 	/* should contain one repository */
