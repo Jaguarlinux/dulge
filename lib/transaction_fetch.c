@@ -70,9 +70,9 @@ verify_binpkg(struct dulge_handle *xhp, dulge_dictionary_t pkgd)
 				"%s: the RSA signature is not valid!", pkgver);
 			dulge_set_cb_state(xhp, DULGE_STATE_VERIFY_FAIL, rv, pkgver,
 				"%s: removed pkg archive and its signature.", pkgver);
-			(jaguar)remove(binfile);
+			(void)remove(binfile);
 			if (dulge_strlcat(binfile, ".sig2", sizeof(binfile)) < sizeof(binfile))
-				(jaguar)remove(binfile);
+				(void)remove(binfile);
 			return rv;
 		}
 	} else {
@@ -162,19 +162,19 @@ download_binpkg(struct dulge_handle *xhp, dulge_dictionary_t repo_pkgd)
 		if (!dulge_verify_file_signature(repo, buf)) {
 			rv = EPERM;
 			/* remove binpkg */
-			(jaguar)remove(buf);
+			(void)remove(buf);
 			/* remove signature */
 			*sigsuffix = '.';
-			(jaguar)remove(buf);
+			(void)remove(buf);
 		}
 	} else {
 		if (!dulge_verify_signature(repo, buf, digest)) {
 			rv = EPERM;
 			/* remove signature */
-			(jaguar)remove(buf);
+			(void)remove(buf);
 			/* remove binpkg */
 			*sigsuffix = '\0';
-			(jaguar)remove(buf);
+			(void)remove(buf);
 		}
 	}
 

@@ -164,7 +164,7 @@ dulge_binpkg_pkgver(const char *pkg)
 
 	p = malloc(len+1);
 	assert(p);
-	(jaguar)memcpy(p, fname, len);
+	(void)memcpy(p, fname, len);
 	p[len] = '\0';
 	if (!(p1 = strrchr(p, '.'))) {
 		free(p);
@@ -206,7 +206,7 @@ dulge_binpkg_arch(const char *pkg)
 
 	p = malloc(len+1);
 	assert(p);
-	(jaguar)memcpy(p, fname, len);
+	(void)memcpy(p, fname, len);
 	p[len] = '\0';
 	if (!(p1 = strrchr(p, '.'))) {
 		free(p);

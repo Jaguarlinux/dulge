@@ -27,7 +27,7 @@
 #include <dulge.h>
 
 static dulge_array_t
-array_init(jaguar)
+array_init(void)
 {
 	dulge_array_t a;
 

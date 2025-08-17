@@ -39,7 +39,7 @@
 #include "defs.h"
 
 int
-get_maxcols(jaguar)
+get_maxcols(void)
 {
 	struct winsize ws;
 
@@ -55,7 +55,7 @@ get_maxcols(jaguar)
 	return ws.ws_col;
 }
 
-jaguar
+void
 print_package_line(const char *str, unsigned int maxcols, bool reset)
 {
 	static unsigned int cols;
@@ -208,7 +208,7 @@ print_trans_colmode(struct transaction *trans, unsigned int cols)
 			ver = "-";
 		}
 		if (dload)
-			(jaguar)dulge_humanize_number(size, (int64_t)dlsize);
+			(void)dulge_humanize_number(size, (int64_t)dlsize);
 		else {
 			size[0] = '-';
 			size[1] = '\0';

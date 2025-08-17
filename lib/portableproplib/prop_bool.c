@@ -44,10 +44,10 @@ static _prop_object_free_rv_t
 		_prop_bool_free(prop_stack_t, prop_object_t *);
 static bool	_prop_bool_externalize(
 				struct _prop_object_externalize_context *,
-				jaguar *);
+				void *);
 static _prop_object_equals_rv_t
 		_prop_bool_equals(prop_object_t, prop_object_t,
-				  jaguar **, jaguar **,
+				  void **, void **,
 				  prop_object_t *, prop_object_t *);
 
 static const struct _prop_object_type _prop_object_type_bool = {
@@ -75,7 +75,7 @@ _prop_bool_free(prop_stack_t stack, prop_object_t *obj)
 
 static bool
 _prop_bool_externalize(struct _prop_object_externalize_context *ctx,
-		       jaguar *v)
+		       void *v)
 {
 	prop_bool_t pb = v;
 
@@ -86,7 +86,7 @@ _prop_bool_externalize(struct _prop_object_externalize_context *ctx,
 /* ARGSUSED */
 static _prop_object_equals_rv_t
 _prop_bool_equals(prop_object_t v1, prop_object_t v2,
-    jaguar **stored_pointer1, jaguar **stored_pointer2,
+    void **stored_pointer1, void **stored_pointer2,
     prop_object_t *next_obj1, prop_object_t *next_obj2)
 {
 	prop_bool_t b1 = v1;
@@ -109,7 +109,7 @@ _prop_bool_equals(prop_object_t v1, prop_object_t v2,
 _PROP_ONCE_DECL(_prop_bool_init_once)
 
 static int
-_prop_bool_init(jaguar)
+_prop_bool_init(void)
 {
 
 	_prop_object_init(&_prop_bool_true.pb_obj,

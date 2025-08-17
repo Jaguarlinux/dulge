@@ -84,7 +84,7 @@ addItem(dulge_array_t rdeps, const char *pkgn, const char *pkgver)
 	return item;
 }
 
-static jaguar
+static void
 addDepn(struct item *item, struct item *xitem)
 {
 	struct depn *depn = calloc(1, sizeof(*depn));
@@ -98,7 +98,7 @@ addDepn(struct item *item, struct item *xitem)
 	xitem->dbase = depn;
 }
 
-static jaguar
+static void
 add_deps_recursive(struct item *item, bool first)
 {
 	struct depn *dep;
@@ -119,8 +119,8 @@ add_deps_recursive(struct item *item, bool first)
 	dulge_object_release(str);
 }
 
-static jaguar
-cleanup(jaguar)
+static void
+cleanup(void)
 {
 	struct item *item, *itmp;
 

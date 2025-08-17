@@ -43,7 +43,7 @@ int
 list_pkgs_in_dict(struct dulge_handle *xhp UNUSED,
 		  dulge_object_t obj,
 		  const char *key UNUSED,
-		  jaguar *arg,
+		  void *arg,
 		  bool *loop_done UNUSED)
 {
 	struct list_pkgver_cb *lpc = arg;
@@ -94,7 +94,7 @@ int
 list_manual_pkgs(struct dulge_handle *xhp UNUSED,
 		 dulge_object_t obj,
 		 const char *key UNUSED,
-		 jaguar *arg UNUSED,
+		 void *arg UNUSED,
 		 bool *loop_done UNUSED)
 {
 	const char *pkgver = NULL;
@@ -113,7 +113,7 @@ int
 list_hold_pkgs(struct dulge_handle *xhp UNUSED,
 		dulge_object_t obj,
 		const char *key UNUSED,
-		jaguar *arg UNUSED,
+		void *arg UNUSED,
 		bool *loop_done UNUSED)
 {
 	const char *pkgver = NULL;
@@ -130,7 +130,7 @@ int
 list_repolock_pkgs(struct dulge_handle *xhp UNUSED,
 		dulge_object_t obj,
 		const char *key UNUSED,
-		jaguar *arg UNUSED,
+		void *arg UNUSED,
 		bool *loop_done UNUSED)
 {
 	const char *pkgver = NULL;
@@ -179,7 +179,7 @@ list_pkgs_pkgdb(struct dulge_handle *xhp)
 	return dulge_pkgdb_foreach_cb(xhp, list_pkgs_in_dict, &lpc);
 }
 
-static jaguar
+static void
 repo_list_uri(struct dulge_repo *repo)
 {
 	const char *signedby = NULL;
@@ -209,7 +209,7 @@ repo_list_uri(struct dulge_repo *repo)
 	}
 }
 
-static jaguar
+static void
 repo_list_uri_err(const char *repouri)
 {
 	printf("%5zd %s (RSA maybe-signed)\n", (ssize_t) -1, repouri);
@@ -242,7 +242,7 @@ static int
 _find_longest_pkgver_cb(struct dulge_handle *xhp UNUSED,
 			dulge_object_t obj,
 			const char *key UNUSED,
-			jaguar *arg,
+			void *arg,
 			bool *loop_done UNUSED)
 {
 	struct fflongest *ffl = arg;
@@ -269,11 +269,11 @@ find_longest_pkgver(struct dulge_handle *xhp, dulge_object_t o)
 		dulge_array_t array;
 
 		array = dulge_dictionary_all_keys(o);
-		(jaguar)dulge_array_foreach_cb_multi(xhp, array, o,
+		(void)dulge_array_foreach_cb_multi(xhp, array, o,
 		    _find_longest_pkgver_cb, &ffl);
 		dulge_object_release(array);
 	} else {
-		(jaguar)dulge_pkgdb_foreach_cb_multi(xhp,
+		(void)dulge_pkgdb_foreach_cb_multi(xhp,
 		    _find_longest_pkgver_cb, &ffl);
 	}
 

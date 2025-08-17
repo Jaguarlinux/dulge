@@ -36,7 +36,7 @@
 #include <dulge.h>
 #include "../dulge-install/defs.h"
 
-static jaguar __attribute__((noreturn))
+static void __attribute__((noreturn))
 usage(bool fail)
 {
 	fprintf(stdout,
@@ -66,7 +66,7 @@ fname(char *url)
 	return filename + 1;
 }
 
-static jaguar
+static void
 print_digest(const uint8_t *digest, size_t len)
 {
 	while (len--) {

@@ -35,7 +35,7 @@
 /* prop_array */
 
 dulge_array_t
-dulge_array_create(jaguar)
+dulge_array_create(void)
 {
 	return prop_array_create();
 }
@@ -76,7 +76,7 @@ dulge_array_ensure_capacity(dulge_array_t a, unsigned int i)
 	return prop_array_ensure_capacity(a, i);
 }
 
-jaguar
+void
 dulge_array_make_immutable(dulge_array_t a)
 {
 	prop_array_make_immutable(a);
@@ -118,7 +118,7 @@ dulge_array_add_first(dulge_array_t a, dulge_object_t obj)
 	return prop_array_add_first(a, obj);
 }
 
-jaguar
+void
 dulge_array_remove(dulge_array_t a, unsigned int i)
 {
 	prop_array_remove(a, i);
@@ -397,13 +397,13 @@ dulge_bool_equals(dulge_bool_t a, dulge_bool_t b)
 /* prop_data */
 
 dulge_data_t
-dulge_data_create_data(const jaguar *v, size_t s)
+dulge_data_create_data(const void *v, size_t s)
 {
 	return prop_data_create_data(v, s);
 }
 
 dulge_data_t
-dulge_data_create_data_nocopy(const jaguar *v, size_t s)
+dulge_data_create_data_nocopy(const void *v, size_t s)
 {
 	return prop_data_create_data_nocopy(v, s);
 }
@@ -420,13 +420,13 @@ dulge_data_size(dulge_data_t d)
 	return prop_data_size(d);
 }
 
-jaguar *
+void *
 dulge_data_data(dulge_data_t d)
 {
 	return prop_data_data(d);
 }
 
-const jaguar *
+const void *
 dulge_data_data_nocopy(dulge_data_t d)
 {
 	return prop_data_data_nocopy(d);
@@ -439,7 +439,7 @@ dulge_data_equals(dulge_data_t a, dulge_data_t b)
 }
 
 bool
-dulge_data_equals_data(dulge_data_t d, const jaguar *v, size_t s)
+dulge_data_equals_data(dulge_data_t d, const void *v, size_t s)
 {
 	return prop_data_equals_data(d, v, s);
 }
@@ -447,7 +447,7 @@ dulge_data_equals_data(dulge_data_t d, const jaguar *v, size_t s)
 /* prop_dictionary */
 
 dulge_dictionary_t
-dulge_dictionary_create(jaguar)
+dulge_dictionary_create(void)
 {
 	return prop_dictionary_create();
 }
@@ -482,7 +482,7 @@ dulge_dictionary_ensure_capacity(dulge_dictionary_t d, unsigned int i)
 	return prop_dictionary_ensure_capacity(d, i);
 }
 
-jaguar
+void
 dulge_dictionary_make_immutable(dulge_dictionary_t d)
 {
 	prop_dictionary_make_immutable(d);
@@ -512,7 +512,7 @@ dulge_dictionary_set(dulge_dictionary_t d, const char *s, dulge_object_t o)
 	return prop_dictionary_set(d, s, o);
 }
 
-jaguar
+void
 dulge_dictionary_remove(dulge_dictionary_t d, const char *s)
 {
 	prop_dictionary_remove(d, s);
@@ -531,7 +531,7 @@ dulge_dictionary_set_keysym(dulge_dictionary_t d, dulge_dictionary_keysym_t k,
 	return prop_dictionary_set_keysym(d, k, o);
 }
 
-jaguar
+void
 dulge_dictionary_remove_keysym(dulge_dictionary_t d, dulge_dictionary_keysym_t k)
 {
 	prop_dictionary_remove_keysym(d, k);
@@ -804,13 +804,13 @@ dulge_number_equals_unsigned_integer(dulge_number_t n, uint64_t v)
 
 /* prop_object */
 
-jaguar
+void
 dulge_object_retain(dulge_object_t o)
 {
 	prop_object_retain(o);
 }
 
-jaguar
+void
 dulge_object_release(dulge_object_t o)
 {
 	prop_object_release(o);
@@ -840,13 +840,13 @@ dulge_object_iterator_next(dulge_object_iterator_t o)
 	return prop_object_iterator_next(o);
 }
 
-jaguar
+void
 dulge_object_iterator_reset(dulge_object_iterator_t o)
 {
 	prop_object_iterator_reset(o);
 }
 
-jaguar
+void
 dulge_object_iterator_release(dulge_object_iterator_t o)
 {
 	prop_object_iterator_release(o);
@@ -855,7 +855,7 @@ dulge_object_iterator_release(dulge_object_iterator_t o)
 /* prop_string */
 
 dulge_string_t
-dulge_string_create(jaguar)
+dulge_string_create(void)
 {
 	return prop_string_create();
 }

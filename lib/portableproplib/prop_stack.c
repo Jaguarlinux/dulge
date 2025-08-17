@@ -32,7 +32,7 @@
 #include "prop_stack.h"
 #include "prop_object_impl.h"
 
-jaguar
+void
 _prop_stack_init(prop_stack_t stack)
 {
 	stack->used_intern_elems = 0;
@@ -40,8 +40,8 @@ _prop_stack_init(prop_stack_t stack)
 }
 
 bool
-_prop_stack_push(prop_stack_t stack, prop_object_t obj, jaguar *data1,
-    jaguar *data2, jaguar *data3)
+_prop_stack_push(prop_stack_t stack, prop_object_t obj, void *data1,
+    void *data2, void *data3)
 {
 	struct _prop_stack_extern_elem *eelem;
 	struct _prop_stack_intern_elem *ielem;
@@ -77,8 +77,8 @@ _prop_stack_push(prop_stack_t stack, prop_object_t obj, jaguar *data1,
 }
 
 bool
-_prop_stack_pop(prop_stack_t stack, prop_object_t *obj, jaguar **data1,
-    jaguar **data2, jaguar **data3)
+_prop_stack_pop(prop_stack_t stack, prop_object_t *obj, void **data1,
+    void **data2, void **data3)
 {
 	struct _prop_stack_extern_elem *eelem;
 	struct _prop_stack_intern_elem *ielem;

@@ -45,8 +45,8 @@
 #include <rbtree.h>
 #endif
 
-static jaguar rb_tree_insert_rebalance(struct rb_tree *, struct rb_node *);
-static jaguar rb_tree_removal_rebalance(struct rb_tree *, struct rb_node *,
+static void rb_tree_insert_rebalance(struct rb_tree *, struct rb_node *);
+static void rb_tree_removal_rebalance(struct rb_tree *, struct rb_node *,
 	unsigned int);
 #ifdef RBDEBUG
 static const struct rb_node *rb_tree_iterate_const(const struct rb_tree *,
@@ -58,13 +58,13 @@ static bool rb_tree_check_node(const struct rb_tree *, const struct rb_node *,
 #endif
 
 #define	RB_NODETOITEM(rbto, rbn)	\
-    ((jaguar *)((uintptr_t)(rbn) - (rbto)->rbto_node_offset))
+    ((void *)((uintptr_t)(rbn) - (rbto)->rbto_node_offset))
 #define	RB_ITEMTONODE(rbto, rbn)	\
     ((rb_node_t *)((uintptr_t)(rbn) + (rbto)->rbto_node_offset))
 
 #define	RB_SENTINEL_NODE	NULL
 
-jaguar
+void
 rb_tree_init(struct rb_tree *rbt, const rb_tree_ops_t *ops)
 {
 
@@ -86,15 +86,15 @@ rb_tree_init(struct rb_tree *rbt, const rb_tree_ops_t *ops)
 #endif
 }
 
-jaguar *
-rb_tree_find_node(struct rb_tree *rbt, const jaguar *key)
+void *
+rb_tree_find_node(struct rb_tree *rbt, const void *key)
 {
 	const rb_tree_ops_t *rbto = rbt->rbt_ops;
 	rbto_compare_key_fn compare_key = rbto->rbto_compare_key;
 	struct rb_node *parent = rbt->rbt_root;
 
 	while (!RB_SENTINEL_P(parent)) {
-		jaguar *pobj = RB_NODETOITEM(rbto, parent);
+		void *pobj = RB_NODETOITEM(rbto, parent);
 		const signed int diff = (*compare_key)(rbto->rbto_context,
 		    pobj, key);
 		if (diff == 0)
@@ -105,15 +105,15 @@ rb_tree_find_node(struct rb_tree *rbt, const jaguar *key)
 	return NULL;
 }
 
-jaguar *
-rb_tree_find_node_geq(struct rb_tree *rbt, const jaguar *key)
+void *
+rb_tree_find_node_geq(struct rb_tree *rbt, const void *key)
 {
 	const rb_tree_ops_t *rbto = rbt->rbt_ops;
 	rbto_compare_key_fn compare_key = rbto->rbto_compare_key;
 	struct rb_node *parent = rbt->rbt_root, *last = NULL;
 
 	while (!RB_SENTINEL_P(parent)) {
-		jaguar *pobj = RB_NODETOITEM(rbto, parent);
+		void *pobj = RB_NODETOITEM(rbto, parent);
 		const signed int diff = (*compare_key)(rbto->rbto_context,
 		    pobj, key);
 		if (diff == 0)
@@ -126,15 +126,15 @@ rb_tree_find_node_geq(struct rb_tree *rbt, const jaguar *key)
 	return last == NULL ? NULL : RB_NODETOITEM(rbto, last);
 }
 
-jaguar *
-rb_tree_find_node_leq(struct rb_tree *rbt, const jaguar *key)
+void *
+rb_tree_find_node_leq(struct rb_tree *rbt, const void *key)
 {
 	const rb_tree_ops_t *rbto = rbt->rbt_ops;
 	rbto_compare_key_fn compare_key = rbto->rbto_compare_key;
 	struct rb_node *parent = rbt->rbt_root, *last = NULL;
 
 	while (!RB_SENTINEL_P(parent)) {
-		jaguar *pobj = RB_NODETOITEM(rbto, parent);
+		void *pobj = RB_NODETOITEM(rbto, parent);
 		const signed int diff = (*compare_key)(rbto->rbto_context,
 		    pobj, key);
 		if (diff == 0)
@@ -147,8 +147,8 @@ rb_tree_find_node_leq(struct rb_tree *rbt, const jaguar *key)
 	return last == NULL ? NULL : RB_NODETOITEM(rbto, last);
 }
 
-jaguar *
-rb_tree_insert_node(struct rb_tree *rbt, jaguar *object)
+void *
+rb_tree_insert_node(struct rb_tree *rbt, void *object)
 {
 	const rb_tree_ops_t *rbto = rbt->rbt_ops;
 	rbto_compare_nodes_fn compare_nodes = rbto->rbto_compare_nodes;
@@ -162,18 +162,18 @@ rb_tree_insert_node(struct rb_tree *rbt, jaguar *object)
 	/*
 	 * This is a hack.  Because rbt->rbt_root is just a struct rb_node *,
 	 * just like rb_node->rb_nodes[RB_DIR_LEFT], we can use this fact to
-	 * ajaguar a lot of tests for root and know that even at root,
+	 * avoid a lot of tests for root and know that even at root,
 	 * updating RB_FATHER(rb_node)->rb_nodes[RB_POSITION(rb_node)] will
 	 * update rbt->rbt_root.
 	 */
-	parent = (struct rb_node *)(jaguar *)&rbt->rbt_root;
+	parent = (struct rb_node *)(void *)&rbt->rbt_root;
 	position = RB_DIR_LEFT;
 
 	/*
 	 * Find out where to place this new leaf.
 	 */
 	while (!RB_SENTINEL_P(tmp)) {
-		jaguar *tobj = RB_NODETOITEM(rbto, tmp);
+		void *tobj = RB_NODETOITEM(rbto, tmp);
 		const signed int diff = (*compare_nodes)(rbto->rbto_context,
 		    tobj, object);
 		if (__predict_false(diff == 0)) {
@@ -219,7 +219,7 @@ rb_tree_insert_node(struct rb_tree *rbt, jaguar *object)
 	 */
 	RB_SET_FATHER(self, parent);
 	RB_SET_POSITION(self, position);
-	if (__predict_false(parent == (struct rb_node *)(jaguar *)&rbt->rbt_root)) {
+	if (__predict_false(parent == (struct rb_node *)(void *)&rbt->rbt_root)) {
 		RB_MARK_BLACK(self);		/* root is always black */
 #ifndef RBSMALL
 		rbt->rbt_minmax[RB_DIR_LEFT] = self;
@@ -292,7 +292,7 @@ rb_tree_insert_node(struct rb_tree *rbt, jaguar *object)
  * as a separate step.
  */
 /*ARGSUSED*/
-static jaguar
+static void
 rb_tree_reparent_nodes(struct rb_tree *rbt, struct rb_node *old_father,
 	const unsigned int which)
 {
@@ -356,7 +356,7 @@ rb_tree_reparent_nodes(struct rb_tree *rbt, struct rb_node *old_father,
 	    rb_tree_check_node(rbt, grandpa, NULL, false));
 }
 
-static jaguar
+static void
 rb_tree_insert_rebalance(struct rb_tree *rbt, struct rb_node *self)
 {
 	struct rb_node * father = RB_FATHER(self);
@@ -462,7 +462,7 @@ rb_tree_insert_rebalance(struct rb_tree *rbt, struct rb_node *self)
 	RB_MARK_BLACK(rbt->rbt_root);
 }
 
-static jaguar
+static void
 rb_tree_prune_node(struct rb_tree *rbt, struct rb_node *self, bool rebalance)
 {
 	const unsigned int which = RB_POSITION(self);
@@ -514,7 +514,7 @@ rb_tree_prune_node(struct rb_tree *rbt, struct rb_node *self, bool rebalance)
 /*
  * When deleting an interior node
  */
-static jaguar
+static void
 rb_tree_swap_prune_and_rebalance(struct rb_tree *rbt, struct rb_node *self,
 	struct rb_node *standin)
 {
@@ -667,7 +667,7 @@ rb_tree_swap_prune_and_rebalance(struct rb_tree *rbt, struct rb_node *self,
  *
  * But it's more efficient to just evalate and recolor the child.
  */
-static jaguar
+static void
 rb_tree_prune_blackred_branch(struct rb_tree *rbt, struct rb_node *self,
 	unsigned int which)
 {
@@ -712,8 +712,8 @@ rb_tree_prune_blackred_branch(struct rb_tree *rbt, struct rb_node *self,
 	KASSERT(rb_tree_check_node(rbt, son, NULL, true));
 }
 
-jaguar
-rb_tree_remove_node(struct rb_tree *rbt, jaguar *object)
+void
+rb_tree_remove_node(struct rb_tree *rbt, void *object)
 {
 	const rb_tree_ops_t *rbto = rbt->rbt_ops;
 	struct rb_node *standin, *self = RB_ITEMTONODE(rbto, object);
@@ -777,7 +777,7 @@ rb_tree_remove_node(struct rb_tree *rbt, jaguar *object)
 	rb_tree_swap_prune_and_rebalance(rbt, self, standin);
 }
 
-static jaguar
+static void
 rb_tree_removal_rebalance(struct rb_tree *rbt, struct rb_node *parent,
 	unsigned int which)
 {
@@ -843,7 +843,7 @@ rb_tree_removal_rebalance(struct rb_tree *rbt, struct rb_node *parent,
 			}
 		}
 		/*
-		 * Ajaguar an else here so that case 2a above can hit either
+		 * Avoid an else here so that case 2a above can hit either
 		 * case 2b, 3, or 4.
 		 */
 		if (RB_RED_P(parent)
@@ -928,8 +928,8 @@ rb_tree_removal_rebalance(struct rb_tree *rbt, struct rb_node *parent,
 	KASSERT(rb_tree_check_node(rbt, parent, NULL, true));
 }
 
-jaguar *
-rb_tree_iterate(struct rb_tree *rbt, jaguar *object, const unsigned int direction)
+void *
+rb_tree_iterate(struct rb_tree *rbt, void *object, const unsigned int direction)
 {
 	const rb_tree_ops_t *rbto = rbt->rbt_ops;
 	const unsigned int other = direction ^ RB_DIR_OTHER;
@@ -1095,7 +1095,7 @@ rb_tree_check_node(const struct rb_tree *rbt, const struct rb_node *self,
 	 */
 	if (red_check) {
 		KASSERT(!RB_ROOT_P(rbt, self) || RB_BLACK_P(self));
-		(jaguar) rb_tree_count_black(self);
+		(void) rb_tree_count_black(self);
 		if (RB_RED_P(self)) {
 			const struct rb_node *brother;
 			KASSERT(!RB_ROOT_P(rbt, self));
@@ -1242,7 +1242,7 @@ rb_tree_check_node(const struct rb_tree *rbt, const struct rb_node *self,
 	return true;
 }
 
-jaguar
+void
 rb_tree_check(const struct rb_tree *rbt, bool red_check)
 {
 	const struct rb_node *self;
@@ -1286,7 +1286,7 @@ rb_tree_check(const struct rb_tree *rbt, bool red_check)
 #endif /* RBDEBUG */
 
 #ifdef RBSTATS
-static jaguar
+static void
 rb_tree_mark_depth(const struct rb_tree *rbt, const struct rb_node *self,
 	size_t *depths, size_t depth)
 {
@@ -1307,7 +1307,7 @@ rb_tree_mark_depth(const struct rb_tree *rbt, const struct rb_node *self,
 	}
 }
 
-jaguar
+void
 rb_tree_depths(const struct rb_tree *rbt, size_t *depths)
 {
 	rb_tree_mark_depth(rbt, rbt->rbt_root, depths, 1);

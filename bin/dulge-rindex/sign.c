@@ -135,8 +135,8 @@ load_rsa_key(const char *privkey)
 	return rsa;
 }
 
-static jaguar
-ssl_init(jaguar)
+static void
+ssl_init(void)
 {
 	SSL_load_error_strings();
 	SSL_library_init();

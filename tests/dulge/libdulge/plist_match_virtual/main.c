@@ -27,7 +27,7 @@
 #include <dulge.h>
 
 static dulge_array_t
-rundeps_init(jaguar)
+rundeps_init(void)
 {
 	dulge_array_t a;
 
@@ -41,7 +41,7 @@ rundeps_init(jaguar)
 }
 
 static dulge_array_t
-provides_init(jaguar)
+provides_init(void)
 {
 	dulge_array_t a;
 
@@ -55,7 +55,7 @@ provides_init(jaguar)
 }
 
 static dulge_dictionary_t
-pkgdict_init(jaguar)
+pkgdict_init(void)
 {
 	dulge_array_t a;
 	dulge_dictionary_t d;

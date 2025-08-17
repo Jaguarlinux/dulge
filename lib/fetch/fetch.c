@@ -569,7 +569,7 @@ ouch:
 /*
  * Free a URL
  */
-jaguar
+void
 fetchFreeURL(struct url *u)
 {
 	if (!u) {

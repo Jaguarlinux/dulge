@@ -111,7 +111,7 @@ dulge_archive_get_dictionary(struct archive *ar, struct archive_entry *entry)
 }
 
 int
-dulge_archive_append_buf(struct archive *ar, const jaguar *buf, const size_t buflen,
+dulge_archive_append_buf(struct archive *ar, const void *buf, const size_t buflen,
 	const char *fname, const mode_t mode, const char *uname, const char *gname)
 {
 	struct archive_entry *entry;
@@ -157,7 +157,7 @@ struct fetch_archive {
 };
 
 static int
-fetch_archive_open(struct archive *a, jaguar *client_data)
+fetch_archive_open(struct archive *a, void *client_data)
 {
 	struct fetch_archive *f = client_data;
 
@@ -181,7 +181,7 @@ fetch_archive_open(struct archive *a, jaguar *client_data)
 }
 
 static ssize_t
-fetch_archive_read(struct archive *a UNUSED, jaguar *client_data, const jaguar **buf)
+fetch_archive_read(struct archive *a UNUSED, void *client_data, const void **buf)
 {
 	struct fetch_archive *f = client_data;
 	ssize_t rd;
@@ -197,7 +197,7 @@ fetch_archive_read(struct archive *a UNUSED, jaguar *client_data, const jaguar *
 }
 
 static int
-fetch_archive_close(struct archive *a UNUSED, jaguar *client_data)
+fetch_archive_close(struct archive *a UNUSED, void *client_data)
 {
 	struct fetch_archive *f = client_data;
 
@@ -210,7 +210,7 @@ fetch_archive_close(struct archive *a UNUSED, jaguar *client_data)
 }
 
 struct archive HIDDEN *
-dulge_archive_read_new(jaguar)
+dulge_archive_read_new(void)
 {
 	struct archive *ar = archive_read_new();
 	if (!ar)

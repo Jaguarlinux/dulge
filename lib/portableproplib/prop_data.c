@@ -39,8 +39,8 @@
 struct _prop_data {
 	struct _prop_object	pd_obj;
 	union {
-		jaguar *		pdu_mutable;
-		const jaguar *	pdu_immutable;
+		void *		pdu_mutable;
+		const void *	pdu_immutable;
 	} pd_un;
 #define	pd_mutable		pd_un.pdu_mutable
 #define	pd_immutable		pd_un.pdu_immutable
@@ -56,10 +56,10 @@ static _prop_object_free_rv_t
 		_prop_data_free(prop_stack_t, prop_object_t *);
 static bool	_prop_data_externalize(
 				struct _prop_object_externalize_context *,
-				jaguar *);
+				void *);
 static _prop_object_equals_rv_t
 		_prop_data_equals(prop_object_t, prop_object_t,
-				  jaguar **, jaguar **,
+				  void **, void **,
 				  prop_object_t *, prop_object_t *);
 
 static const struct _prop_object_type _prop_object_type_data = {
@@ -90,7 +90,7 @@ static const char _prop_data_base64[] =
 static const char _prop_data_pad64 = '=';
 
 static bool
-_prop_data_externalize(struct _prop_object_externalize_context *ctx, jaguar *v)
+_prop_data_externalize(struct _prop_object_externalize_context *ctx, void *v)
 {
 	prop_data_t pd = v;
 	size_t i, srclen;
@@ -167,7 +167,7 @@ _prop_data_externalize(struct _prop_object_externalize_context *ctx, jaguar *v)
 /* ARGSUSED */
 static _prop_object_equals_rv_t
 _prop_data_equals(prop_object_t v1, prop_object_t v2,
-    jaguar **stored_pointer1, jaguar **stored_pointer2,
+    void **stored_pointer1, void **stored_pointer2,
     prop_object_t *next_obj1, prop_object_t *next_obj2)
 {
 	prop_data_t pd1 = v1;
@@ -189,7 +189,7 @@ _prop_data_equals(prop_object_t v1, prop_object_t v2,
 }
 
 static prop_data_t
-_prop_data_alloc(jaguar)
+_prop_data_alloc(void)
 {
 	prop_data_t pd;
 
@@ -210,10 +210,10 @@ _prop_data_alloc(jaguar)
  *	Create a data container that contains a copy of the data.
  */
 prop_data_t
-prop_data_create_data(const jaguar *v, size_t size)
+prop_data_create_data(const void *v, size_t size)
 {
 	prop_data_t pd;
-	jaguar *nv;
+	void *nv;
 
 	pd = _prop_data_alloc();
 	if (pd != NULL && size != 0) {
@@ -235,7 +235,7 @@ prop_data_create_data(const jaguar *v, size_t size)
  *	provided external data.
  */
 prop_data_t
-prop_data_create_data_nocopy(const jaguar *v, size_t size)
+prop_data_create_data_nocopy(const void *v, size_t size)
 {
 	prop_data_t pd;
 	
@@ -268,7 +268,7 @@ prop_data_copy(prop_data_t opd)
 		if (opd->pd_flags & PD_F_NOCOPY)
 			pd->pd_immutable = opd->pd_immutable;
 		else if (opd->pd_size != 0) {
-			jaguar *nv = _PROP_MALLOC(pd->pd_size, M_PROP_DATA);
+			void *nv = _PROP_MALLOC(pd->pd_size, M_PROP_DATA);
 			if (nv == NULL) {
 				prop_object_release(pd);
 				return (NULL);
@@ -300,10 +300,10 @@ prop_data_size(prop_data_t pd)
  *	The data is allocated with the M_TEMP malloc type.
  *	If the data container is empty, NULL is returned.
  */
-jaguar *
+void *
 prop_data_data(prop_data_t pd)
 {
-	jaguar *v;
+	void *v;
 
 	if (! prop_object_is_data(pd))
 		return (NULL);
@@ -327,7 +327,7 @@ prop_data_data(prop_data_t pd)
  *	Return an immutable reference to the contents of the data
  *	container.
  */
-const jaguar *
+const void *
 prop_data_data_nocopy(prop_data_t pd)
 {
 
@@ -359,7 +359,7 @@ prop_data_equals(prop_data_t pd1, prop_data_t pd2)
  *	external data.
  */
 bool
-prop_data_equals_data(prop_data_t pd, const jaguar *v, size_t size)
+prop_data_equals_data(prop_data_t pd, const void *v, size_t size)
 {
 
 	if (! prop_object_is_data(pd))

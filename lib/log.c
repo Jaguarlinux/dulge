@@ -41,7 +41,7 @@ int dulge_verbose_level = 0;
  * Use these functions to log errors, warnings and debug messages.
  */
 
-static jaguar PRINTF_LIKE(3, 0)
+static void PRINTF_LIKE(3, 0)
 common_printf(FILE *f, const char *msg, const char *fmt, va_list ap)
 {
 	if (msg != NULL)
@@ -50,7 +50,7 @@ common_printf(FILE *f, const char *msg, const char *fmt, va_list ap)
 	vfprintf(f, fmt, ap);
 }
 
-jaguar
+void
 dulge_dbg_printf_append(const char *fmt, ...)
 {
 	va_list ap;
@@ -63,7 +63,7 @@ dulge_dbg_printf_append(const char *fmt, ...)
 	va_end(ap);
 }
 
-jaguar
+void
 dulge_dbg_printf(const char *fmt, ...)
 {
 	va_list ap;
@@ -76,7 +76,7 @@ dulge_dbg_printf(const char *fmt, ...)
 	va_end(ap);
 }
 
-jaguar
+void
 dulge_verbose_printf(const char *fmt, ...)
 {
 	va_list ap;
@@ -89,7 +89,7 @@ dulge_verbose_printf(const char *fmt, ...)
 	va_end(ap);
 }
 
-jaguar
+void
 dulge_error_printf(const char *fmt, ...)
 {
 	va_list ap;
@@ -99,7 +99,7 @@ dulge_error_printf(const char *fmt, ...)
 	va_end(ap);
 }
 
-jaguar
+void
 dulge_warn_printf(const char *fmt, ...)
 {
 	va_list ap;

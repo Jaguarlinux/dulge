@@ -194,7 +194,7 @@ mkversion(arr_t *ap, const char *num)
 	return 1;
 }
 
-static jaguar
+static void
 freeversion(arr_t *ap)
 {
 	free(ap->v);

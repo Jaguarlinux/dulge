@@ -48,7 +48,7 @@ struct search_data {
 	char *linebuf;
 };
 
-static jaguar
+static void
 print_results(struct dulge_handle *xhp, struct search_data *sd)
 {
 	const char *pkgver = NULL, *desc = NULL;
@@ -88,7 +88,7 @@ static int
 search_array_cb(struct dulge_handle *xhp UNUSED,
 		dulge_object_t obj,
 		const char *key UNUSED,
-		jaguar *arg,
+		void *arg,
 		bool *done UNUSED)
 {
 	dulge_object_t obj2;
@@ -201,7 +201,7 @@ search_array_cb(struct dulge_handle *xhp UNUSED,
 }
 
 static int
-search_repo_cb(struct dulge_repo *repo, jaguar *arg, bool *done UNUSED)
+search_repo_cb(struct dulge_repo *repo, void *arg, bool *done UNUSED)
 {
 	dulge_array_t allkeys;
 	struct search_data *sd = arg;

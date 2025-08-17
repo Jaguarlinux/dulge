@@ -32,7 +32,7 @@
 #include "defs.h"
 
 int
-state_cb(const struct dulge_state_cb_data *xscd, jaguar *cbdata UNUSED)
+state_cb(const struct dulge_state_cb_data *xscd, void *cbdata UNUSED)
 {
 	dulge_dictionary_t pkgd;
 	const char *instver, *newver;

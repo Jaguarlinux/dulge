@@ -33,7 +33,7 @@
 
 #include <dulge.h>
 
-static jaguar __attribute__((noreturn))
+static void __attribute__((noreturn))
 usage(bool fail)
 {
 	fprintf(stdout,

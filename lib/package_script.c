@@ -37,7 +37,7 @@
 
 int
 dulge_pkg_exec_buffer(struct dulge_handle *xhp,
-		     const jaguar *blob,
+		     const void *blob,
 		     const size_t blobsiz,
 		     const char *pkgver,
 		     const char *action,
@@ -148,7 +148,7 @@ dulge_pkg_exec_script(struct dulge_handle *xhp,
 		     bool update)
 {
 	dulge_data_t data;
-	const jaguar *buf;
+	const void *buf;
 	size_t buflen;
 	const char *pkgver = NULL;
 	int rv;

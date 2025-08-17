@@ -82,8 +82,8 @@ show_usage(const char *prog, bool fail)
 "OPTIONS:\n"
 " -h, --help              Show usage\n"
 " -C, --config <dir>      Set path to dulge.d\n"
-" -D, --distdir <dir>     Set (or override) the path to jaguar-packages\n"
-"                         (defaults to ~/jaguar-packages)\n"
+" -D, --distdir <dir>     Set (or override) the path to void-packages\n"
+"                         (defaults to ~/void-packages)\n"
 " -d, --debug             Enable debug output to stderr\n"
 " -e, --removed           List packages present in repos, but not in distdir\n"
 " -f, --format <fmt>      Output format\n"
@@ -100,7 +100,7 @@ show_usage(const char *prog, bool fail)
 	return fail ? EXIT_FAILURE: EXIT_SUCCESS;
 }
 
-static jaguar
+static void
 rcv_init(rcv_t *rcv, const char *prog)
 {
 	rcv->prog = prog;
@@ -123,7 +123,7 @@ rcv_init(rcv_t *rcv, const char *prog)
 	rcv->templates = dulge_dictionary_create();
 }
 
-static jaguar
+static void
 rcv_end(rcv_t *rcv)
 {
 	dulge_dictionary_externalize_to_file(rcv->cache, rcv->cachefile);
@@ -195,7 +195,7 @@ rcv_load_file(rcv_t *rcv, const char *fname)
 		}
 	}
 
-	(jaguar)!fread(rcv->buf, sizeof(char), rcv->len, file);
+	(void)!fread(rcv->buf, sizeof(char), rcv->len, file);
 	rcv->buf[rcv->len] = '\0';
 	fclose(file);
 	rcv->ptr = rcv->buf;
@@ -305,7 +305,7 @@ err2:
 	exit(EXIT_FAILURE);
 }
 
-static jaguar
+static void
 rcv_get_pkgver(rcv_t *rcv)
 {
 	size_t klen, vlen;
@@ -495,7 +495,7 @@ check_reverts(const char *repover, const char *reverts)
 	return false;
 }
 
-static jaguar
+static void
 rcv_printf(rcv_t *rcv, FILE *fp, const char *pkgname, const char *repover,
     const char *srcver, const char *repourl)
 {
@@ -657,7 +657,7 @@ static int
 template_removed_cb(struct dulge_handle *xhp UNUSED,
 		dulge_object_t obj UNUSED,
 		const char *key,
-		jaguar *arg,
+		void *arg,
 		bool *done UNUSED)
 {
 	char *pkgname;
@@ -689,7 +689,7 @@ template_removed_cb(struct dulge_handle *xhp UNUSED,
 }
 
 static int
-repo_templates_removed_cb(struct dulge_repo *repo, jaguar *arg, bool *done UNUSED)
+repo_templates_removed_cb(struct dulge_repo *repo, void *arg, bool *done UNUSED)
 {
 	dulge_array_t allkeys;
 
@@ -776,10 +776,10 @@ main(int argc, char **argv)
 		}
 	}
 	/*
-	 * If --distdir not set default to ~/jaguar-packages.
+	 * If --distdir not set default to ~/void-packages.
 	 */
 	if (rcv.distdir == NULL)
-		rcv.distdir = dulge_xasprintf("%s/jaguar-packages", getenv("HOME"));
+		rcv.distdir = dulge_xasprintf("%s/void-packages", getenv("HOME"));
 
 	{
 		char *tmp = rcv.distdir;

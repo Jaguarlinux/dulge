@@ -58,7 +58,7 @@ static int errval = 0;
 static SIMPLEQ_HEAD(bindmnt_head, bindmnt) bindmnt_queue =
     SIMPLEQ_HEAD_INITIALIZER(bindmnt_queue);
 
-static jaguar __attribute__((noreturn))
+static void __attribute__((noreturn))
 die(const char *fmt, ...)
 {
 	va_list ap;
@@ -72,7 +72,7 @@ die(const char *fmt, ...)
 	exit(errval != 0 ? errval : EXIT_FAILURE);
 }
 
-static jaguar __attribute__((noreturn))
+static void __attribute__((noreturn))
 usage(const char *p, bool fail)
 {
 	printf("Usage: %s [OPTIONS] [--] <dir> <cmd> [<cmdargs>]\n\n"
@@ -83,7 +83,7 @@ usage(const char *p, bool fail)
 	exit(fail ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
-static jaguar
+static void
 add_bindmount(char *bm)
 {
 	struct bindmnt *bmnt;
@@ -110,7 +110,7 @@ add_bindmount(char *bm)
 	SIMPLEQ_INSERT_TAIL(&bindmnt_queue, bmnt, entries);
 }
 
-static jaguar
+static void
 bindmount(const char *chrootdir, const char *dir, const char *dest)
 {
 	char mountdir[PATH_MAX-1];

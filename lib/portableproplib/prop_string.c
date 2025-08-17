@@ -53,10 +53,10 @@ static _prop_object_free_rv_t
 		_prop_string_free(prop_stack_t, prop_object_t *);
 static bool	_prop_string_externalize(
 				struct _prop_object_externalize_context *,
-				jaguar *);
+				void *);
 static _prop_object_equals_rv_t
 		_prop_string_equals(prop_object_t, prop_object_t,
-				    jaguar **, jaguar **,
+				    void **, void **,
 				    prop_object_t *, prop_object_t *);
 
 static const struct _prop_object_type _prop_object_type_string = {
@@ -85,7 +85,7 @@ _prop_string_free(prop_stack_t stack, prop_object_t *obj)
 
 static bool
 _prop_string_externalize(struct _prop_object_externalize_context *ctx,
-			 jaguar *v)
+			 void *v)
 {
 	prop_string_t ps = v;
 
@@ -104,7 +104,7 @@ _prop_string_externalize(struct _prop_object_externalize_context *ctx,
 /* ARGSUSED */
 static _prop_object_equals_rv_t
 _prop_string_equals(prop_object_t v1, prop_object_t v2,
-    jaguar **stored_pointer1, jaguar **stored_pointer2,
+    void **stored_pointer1, void **stored_pointer2,
     prop_object_t *next_obj1, prop_object_t *next_obj2)
 {
 	prop_string_t str1 = v1;
@@ -121,7 +121,7 @@ _prop_string_equals(prop_object_t v1, prop_object_t v2,
 }
 
 static prop_string_t
-_prop_string_alloc(jaguar)
+_prop_string_alloc(void)
 {
 	prop_string_t ps;
 
@@ -142,7 +142,7 @@ _prop_string_alloc(jaguar)
  *	Create an empty mutable string.
  */
 prop_string_t
-prop_string_create(jaguar)
+prop_string_create(void)
 {
 
 	return (_prop_string_alloc());

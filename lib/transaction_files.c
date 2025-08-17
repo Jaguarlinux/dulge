@@ -754,15 +754,15 @@ out:
 }
 
 static int
-pathcmp(const jaguar *l1, const jaguar *l2)
+pathcmp(const void *l1, const void *l2)
 {
 	const struct item *a = *(const struct item * const*)l1;
 	const struct item *b = *(const struct item * const*)l2;
 	return (a->len < b->len) - (b->len < a->len);
 }
 
-static jaguar
-cleanup(jaguar)
+static void
+cleanup(void)
 {
 	struct item *item, *itmp;
 
@@ -789,9 +789,9 @@ cleanup(jaguar)
  *     a symlink becomes a directory or a directory becomes a regular file
  *     or symlink.
  *   - directories replaced with other file types are checked to be empty
- *     to ajaguar ENOTEMPTY while unpacking packages.
+ *     to avoid ENOTEMPTY while unpacking packages.
  *   - the last package removing a file out of a directory
- *     will try to remove that directory to ajaguar ENOTEMPTY
+ *     will try to remove that directory to avoid ENOTEMPTY
  *   - the removal of obsolete files and directory is sorted by
  *     path length so that directory content is removed before
  *     removing the directory.

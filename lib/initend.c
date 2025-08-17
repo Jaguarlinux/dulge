@@ -187,7 +187,7 @@ dulge_init(struct dulge_handle *xhp)
 	return 0;
 }
 
-jaguar
+void
 dulge_end(struct dulge_handle *xhp)
 {
 	assert(xhp);

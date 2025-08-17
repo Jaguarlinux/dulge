@@ -26,6 +26,7 @@ bin/dulge-fetch/dulge-fetch
 *.png
 *.pc
 api/
+*.py
 doc/dulge_api_doxyfile
 ftperr.h
 httperr.h

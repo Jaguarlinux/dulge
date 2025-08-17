@@ -65,7 +65,7 @@ run_post_remove_scripts(struct dulge_handle *xhp, dulge_array_t remove_scripts)
 		dulge_dictionary_t dict;
 		dulge_data_t script = NULL;
 		const char *pkgver = NULL;
-		const jaguar *buf;
+		const void *buf;
 		size_t buflen;
 
 		dict = dulge_array_get(remove_scripts, i);
@@ -160,7 +160,7 @@ dulge_transaction_commit(struct dulge_handle *xhp)
 
 	/*
 	 * After all downloads are finished, clear the connection cache
-	 * to ajaguar file descriptor leaks (see #303)
+	 * to avoid file descriptor leaks (see #303)
 	 */
 	dulge_fetch_unset_cache_connection();
 

@@ -124,7 +124,7 @@ store_virtualpkg(struct dulge_handle *xhp, const char *path, size_t line, char *
 	return 0;
 }
 
-static jaguar
+static void
 store_preserved_file(struct dulge_handle *xhp, const char *file)
 {
 	glob_t globbuf;
@@ -175,7 +175,7 @@ store_repo(struct dulge_handle *xhp, const char *repo)
 	return dulge_repo_store(xhp, repo);
 }
 
-static jaguar
+static void
 store_ignored_pkg(struct dulge_handle *xhp, const char *pkgname)
 {
 	if (xhp->ignored_pkgs == NULL) {
@@ -186,7 +186,7 @@ store_ignored_pkg(struct dulge_handle *xhp, const char *pkgname)
 	dulge_dbg_printf("Added ignored package: %s\n", pkgname);
 }
 
-static jaguar
+static void
 store_noextract(struct dulge_handle *xhp, const char *value)
 {
 	if (*value == '\0')
@@ -237,7 +237,7 @@ static const struct key {
 };
 
 static int
-cmpkey(const jaguar *a, const jaguar *b)
+cmpkey(const void *a, const void *b)
 {
 	const struct key *ka = a;
 	const struct key *kb = b;
@@ -451,7 +451,7 @@ parse_file(struct dulge_handle *xhp, const char *path, bool nested)
 			store_noextract(xhp, val);
 			break;
 		case KEY_INCLUDE:
-			/* Ajaguar double-nested parsing, only allow it once */
+			/* Avoid double-nested parsing, only allow it once */
 			if (nested) {
 				dulge_dbg_printf("%s: ignoring nested include\n", path);
 				continue;

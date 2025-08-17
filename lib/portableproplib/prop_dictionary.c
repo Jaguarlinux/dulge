@@ -98,27 +98,27 @@ _PROP_POOL_INIT(_prop_dictionary_pool, sizeof(struct _prop_dictionary),
 
 static _prop_object_free_rv_t
 		_prop_dictionary_free(prop_stack_t, prop_object_t *);
-static jaguar	_prop_dictionary_emergency_free(prop_object_t);
+static void	_prop_dictionary_emergency_free(prop_object_t);
 static bool	_prop_dictionary_externalize(
 				struct _prop_object_externalize_context *,
-				jaguar *);
+				void *);
 static _prop_object_equals_rv_t
 		_prop_dictionary_equals(prop_object_t, prop_object_t,
-				        jaguar **, jaguar **,
+				        void **, void **,
 					prop_object_t *, prop_object_t *);
-static jaguar	_prop_dictionary_equals_finish(prop_object_t, prop_object_t);
+static void	_prop_dictionary_equals_finish(prop_object_t, prop_object_t);
 static prop_object_iterator_t
 		_prop_dictionary_iterator_locked(prop_dictionary_t);
 static prop_object_t
-		_prop_dictionary_iterator_next_object_locked(jaguar *);
+		_prop_dictionary_iterator_next_object_locked(void *);
 static prop_object_t
 		_prop_dictionary_get_keysym(prop_dictionary_t,
 					    prop_dictionary_keysym_t, bool);
 static prop_object_t
 		_prop_dictionary_get(prop_dictionary_t, const char *, bool);
 
-static jaguar _prop_dictionary_lock(jaguar);
-static jaguar _prop_dictionary_unlock(jaguar);
+static void _prop_dictionary_lock(void);
+static void _prop_dictionary_unlock(void);
 
 static const struct _prop_object_type _prop_object_type_dictionary = {
 	.pot_type		=	PROP_TYPE_DICTIONARY,
@@ -135,10 +135,10 @@ static _prop_object_free_rv_t
 		_prop_dict_keysym_free(prop_stack_t, prop_object_t *);
 static bool	_prop_dict_keysym_externalize(
 				struct _prop_object_externalize_context *,
-				jaguar *);
+				void *);
 static _prop_object_equals_rv_t
 		_prop_dict_keysym_equals(prop_object_t, prop_object_t,
-					 jaguar **, jaguar **,
+					 void **, void **,
 					 prop_object_t *, prop_object_t *);
 
 static const struct _prop_object_type _prop_object_type_dict_keysym = {
@@ -169,8 +169,8 @@ struct _prop_dictionary_iterator {
 
 static int
 /*ARGSUSED*/
-_prop_dict_keysym_rb_compare_nodes(jaguar *ctx _PROP_ARG_UNUSED,
-				   const jaguar *n1, const jaguar *n2)
+_prop_dict_keysym_rb_compare_nodes(void *ctx _PROP_ARG_UNUSED,
+				   const void *n1, const void *n2)
 {
 	const struct _prop_dictionary_keysym *pdk1 = n1;
 	const struct _prop_dictionary_keysym *pdk2 = n2;
@@ -180,8 +180,8 @@ _prop_dict_keysym_rb_compare_nodes(jaguar *ctx _PROP_ARG_UNUSED,
 
 static int
 /*ARGSUSED*/
-_prop_dict_keysym_rb_compare_key(jaguar *ctx _PROP_ARG_UNUSED,
-				 const jaguar *n, const jaguar *v)
+_prop_dict_keysym_rb_compare_key(void *ctx _PROP_ARG_UNUSED,
+				 const void *n, const void *v)
 {
 	const struct _prop_dictionary_keysym *pdk = n;
 	const char *cp = v;
@@ -202,7 +202,7 @@ _PROP_ONCE_DECL(_prop_dict_init_once)
 _PROP_MUTEX_DECL_STATIC(_prop_dict_keysym_tree_mutex)
 
 static int
-_prop_dict_init(jaguar)
+_prop_dict_init(void)
 {
 
 	_PROP_MUTEX_INIT(_prop_dict_keysym_tree_mutex);
@@ -211,7 +211,7 @@ _prop_dict_init(jaguar)
 	return 0;
 }
 
-static jaguar
+static void
 _prop_dict_keysym_put(prop_dictionary_keysym_t pdk)
 {
 
@@ -239,7 +239,7 @@ _prop_dict_keysym_free(prop_stack_t stack, prop_object_t *obj)
 
 static bool
 _prop_dict_keysym_externalize(struct _prop_object_externalize_context *ctx,
-			     jaguar *v)
+			     void *v)
 {
 	prop_dictionary_keysym_t pdk = v;
 
@@ -259,7 +259,7 @@ _prop_dict_keysym_externalize(struct _prop_object_externalize_context *ctx,
 /* ARGSUSED */
 static _prop_object_equals_rv_t
 _prop_dict_keysym_equals(prop_object_t v1, prop_object_t v2,
-    jaguar **stored_pointer1, jaguar **stored_pointer2,
+    void **stored_pointer1, void **stored_pointer2,
     prop_object_t *next_obj1, prop_object_t *next_obj2)
 {
 	prop_dictionary_keysym_t pdk1 = v1;
@@ -389,8 +389,8 @@ _prop_dictionary_free(prop_stack_t stack, prop_object_t *obj)
 }
 
 
-static jaguar
-_prop_dictionary_lock(jaguar)
+static void
+_prop_dictionary_lock(void)
 {
 
 	/* XXX: once necessary or paranoia? */
@@ -398,13 +398,13 @@ _prop_dictionary_lock(jaguar)
 	_PROP_MUTEX_LOCK(_prop_dict_keysym_tree_mutex);
 }
 
-static jaguar
-_prop_dictionary_unlock(jaguar)
+static void
+_prop_dictionary_unlock(void)
 {
 	_PROP_MUTEX_UNLOCK(_prop_dict_keysym_tree_mutex);
 }
 
-static jaguar
+static void
 _prop_dictionary_emergency_free(prop_object_t obj)
 {
 	prop_dictionary_t pd = obj;
@@ -420,7 +420,7 @@ _prop_dictionary_emergency_free(prop_object_t obj)
 
 static bool
 _prop_dictionary_externalize(struct _prop_object_externalize_context *ctx,
-			     jaguar *v)
+			     void *v)
 {
 	prop_dictionary_t pd = v;
 	prop_dictionary_keysym_t pdk;
@@ -481,7 +481,7 @@ _prop_dictionary_externalize(struct _prop_object_externalize_context *ctx,
 /* ARGSUSED */
 static _prop_object_equals_rv_t
 _prop_dictionary_equals(prop_object_t v1, prop_object_t v2,
-    jaguar **stored_pointer1, jaguar **stored_pointer2,
+    void **stored_pointer1, void **stored_pointer2,
     prop_object_t *next_obj1, prop_object_t *next_obj2)
 {
 	prop_dictionary_t dict1 = v1;
@@ -516,8 +516,8 @@ _prop_dictionary_equals(prop_object_t v1, prop_object_t v2,
 
 	_PROP_ASSERT(idx < dict1->pd_count);
 
-	*stored_pointer1 = (jaguar *)(idx + 1);
-	*stored_pointer2 = (jaguar *)(idx + 1);
+	*stored_pointer1 = (void *)(idx + 1);
+	*stored_pointer2 = (void *)(idx + 1);
 
 	*next_obj1 = dict1->pd_array[idx].pde_objref;
 	*next_obj2 = dict2->pd_array[idx].pde_objref;
@@ -534,7 +534,7 @@ _prop_dictionary_equals(prop_object_t v1, prop_object_t v2,
 	return (rv);
 }
 
-static jaguar
+static void
 _prop_dictionary_equals_finish(prop_object_t v1, prop_object_t v2)
 {
  	_PROP_RWLOCK_UNLOCK(((prop_dictionary_t)v1)->pd_rwlock);
@@ -597,7 +597,7 @@ _prop_dictionary_expand(prop_dictionary_t pd, unsigned int capacity)
 }
 
 static prop_object_t
-_prop_dictionary_iterator_next_object_locked(jaguar *v)
+_prop_dictionary_iterator_next_object_locked(void *v)
 {
 	struct _prop_dictionary_iterator *pdi = v;
 	prop_dictionary_t pd = pdi->pdi_base.pi_obj;
@@ -621,7 +621,7 @@ _prop_dictionary_iterator_next_object_locked(jaguar *v)
 }
 
 static prop_object_t
-_prop_dictionary_iterator_next_object(jaguar *v)
+_prop_dictionary_iterator_next_object(void *v)
 {
 	struct _prop_dictionary_iterator *pdi = v;
 	prop_dictionary_t pd _PROP_ARG_UNUSED = pdi->pdi_base.pi_obj;
@@ -635,8 +635,8 @@ _prop_dictionary_iterator_next_object(jaguar *v)
 	return (pdk);
 }
 
-static jaguar
-_prop_dictionary_iterator_reset_locked(jaguar *v)
+static void
+_prop_dictionary_iterator_reset_locked(void *v)
 {
 	struct _prop_dictionary_iterator *pdi = v;
 	prop_dictionary_t pd = pdi->pdi_base.pi_obj;
@@ -647,8 +647,8 @@ _prop_dictionary_iterator_reset_locked(jaguar *v)
 	pdi->pdi_base.pi_version = pd->pd_version;
 }
 
-static jaguar
-_prop_dictionary_iterator_reset(jaguar *v)
+static void
+_prop_dictionary_iterator_reset(void *v)
 {
 	struct _prop_dictionary_iterator *pdi = v;
 	prop_dictionary_t pd _PROP_ARG_UNUSED = pdi->pdi_base.pi_obj;
@@ -663,7 +663,7 @@ _prop_dictionary_iterator_reset(jaguar *v)
  *	Create a dictionary.
  */
 prop_dictionary_t
-prop_dictionary_create(jaguar)
+prop_dictionary_create(void)
 {
 
 	return (_prop_dictionary_alloc(0));
@@ -743,7 +743,7 @@ prop_dictionary_copy_mutable(prop_dictionary_t opd)
  * prop_dictionary_make_immutable --
  *	Set the immutable flag on that dictionary.
  */
-jaguar
+void
 prop_dictionary_make_immutable(prop_dictionary_t pd)
 {
 
@@ -1075,7 +1075,7 @@ prop_dictionary_set_keysym(prop_dictionary_t pd, prop_dictionary_keysym_t pdk,
 	return (prop_dictionary_set(pd, pdk->pdk_key, po));
 }
 
-static jaguar
+static void
 _prop_dictionary_remove(prop_dictionary_t pd, struct _prop_dict_entry *pde,
     unsigned int idx)
 {
@@ -1107,7 +1107,7 @@ _prop_dictionary_remove(prop_dictionary_t pd, struct _prop_dict_entry *pde,
  *	Remove the reference to an object with the specified key from
  *	the dictionary.
  */
-jaguar
+void
 prop_dictionary_remove(prop_dictionary_t pd, const char *key)
 {
 	struct _prop_dict_entry *pde;
@@ -1137,7 +1137,7 @@ prop_dictionary_remove(prop_dictionary_t pd, const char *key)
  *	Remove a reference to an object stored in the dictionary at the
  *	location encoded by the keysym.
  */
-jaguar
+void
 prop_dictionary_remove_keysym(prop_dictionary_t pd,
 			      prop_dictionary_keysym_t pdk)
 {
@@ -1277,7 +1277,7 @@ _prop_dictionary_internalize(prop_stack_t stack, prop_object_t *obj,
 
 static bool
 _prop_dictionary_internalize_continue(prop_stack_t stack, prop_object_t *obj,
-    struct _prop_object_internalize_context *ctx, jaguar *data, prop_object_t child)
+    struct _prop_object_internalize_context *ctx, void *data, prop_object_t child)
 {
 	prop_dictionary_t dict = *obj;
 	char *tmpkey = data;

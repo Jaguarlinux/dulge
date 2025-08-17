@@ -129,10 +129,10 @@ addItem(const char *pkgn)
 	return item;
 }
 
-static jaguar __attribute__((noreturn))
+static void __attribute__((noreturn))
 usage(const char *progname, bool fail)
 {
-	fprintf(stderr, "Usage: %s [OPTIONS] /path/to/jaguar-packages [pkg pkg+N]\n\n"
+	fprintf(stderr, "Usage: %s [OPTIONS] /path/to/void-packages [pkg pkg+N]\n\n"
 			"OPTIONS\n"
 			" -j, --jobs <N>       Number of parallel builds\n"
 			" -l, --logdir <path>  Path to store logs\n"
@@ -149,7 +149,7 @@ usage(const char *progname, bool fail)
  * runBuilds() will pick items off of BuildList to keep the parallel
  * build pipeline full.
  */
-static jaguar
+static void
 addBuild(struct item *item)
 {
 	assert(item);
@@ -162,7 +162,7 @@ addBuild(struct item *item)
 /*
  * Process the build completion for an item.
  */
-static jaguar
+static void
 processCompletion(struct item *item)
 {
 	struct depn *depn;
@@ -190,7 +190,7 @@ processCompletion(struct item *item)
 			break;
 		}
 		logpath2 = dulge_xasprintf("%s/%s/%s.txt", LogDir, logdir, item->pkgn);
-		(jaguar)rename(logpath, logpath2);
+		(void)rename(logpath, logpath2);
 		free(logpath);
 		free(logpath2);
 	}
@@ -304,7 +304,7 @@ waitRunning(int flags)
  * when the bulk build starts it typically takes a little while before
  * dulge-fbulk can keep the parallel pipeline full.
  */
-static jaguar
+static void
 runBuilds(const char *bpath)
 {
 	struct item *item;
@@ -327,13 +327,13 @@ runBuilds(const char *bpath)
 		 * attempts.
 		 */
 		logpath = dulge_xasprintf("%s/bad/%s.txt", LogDir, item->pkgn);
-		(jaguar)remove(logpath);
+		(void)remove(logpath);
 		free(logpath);
 		logpath = dulge_xasprintf("%s/deps/%s.txt", LogDir, item->pkgn);
-		(jaguar)remove(logpath);
+		(void)remove(logpath);
 		free(logpath);
 		logpath = dulge_xasprintf("%s/skipped/%s.txt", LogDir, item->pkgn);
-		(jaguar)remove(logpath);
+		(void)remove(logpath);
 		free(logpath);
 		logpath = dulge_xasprintf("%s/run/%s.txt", LogDir, item->pkgn);
 
@@ -399,7 +399,7 @@ runBuilds(const char *bpath)
  *
  * Caller will check dcount after it is through adding dependencies.
  */
-static jaguar
+static void
 addDepn(struct item *item, struct item *xitem)
 {
 	struct depn *depn = malloc(sizeof(struct depn));
@@ -534,7 +534,7 @@ ordered_depends(const char *bpath, const char *pkgn)
 static int
 pkgdb_get_pkgs_cb(struct dulge_handle *xhp UNUSED,
 		dulge_object_t obj, const char *key UNUSED,
-		jaguar *arg, bool *done UNUSED)
+		void *arg, bool *done UNUSED)
 {
 	dulge_array_t *array = arg;
 	const char *pkgname = NULL;
@@ -744,7 +744,7 @@ main(int argc, char **argv)
 				ordered_depends(bpath, den->d_name);
 			}
 		}
-		(jaguar)closedir(dir);
+		(void)closedir(dir);
 	}
 start:
 	/*

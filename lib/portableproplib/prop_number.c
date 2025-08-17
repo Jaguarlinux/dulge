@@ -59,14 +59,14 @@ static _prop_object_free_rv_t
 		_prop_number_free(prop_stack_t, prop_object_t *);
 static bool	_prop_number_externalize(
 				struct _prop_object_externalize_context *,
-				jaguar *);
+				void *);
 static _prop_object_equals_rv_t
 		_prop_number_equals(prop_object_t, prop_object_t,
-				    jaguar **, jaguar **,
+				    void **, void **,
 				    prop_object_t *, prop_object_t *);
 
-static jaguar _prop_number_lock(jaguar);
-static jaguar _prop_number_unlock(jaguar);
+static void _prop_number_lock(void);
+static void _prop_number_unlock(void);
 
 static const struct _prop_object_type _prop_object_type_number = {
 	.pot_type	=	PROP_TYPE_NUMBER,
@@ -114,8 +114,8 @@ _prop_number_compare_values(const struct _prop_number_value *pnv1,
 
 static int
 /*ARGSUSED*/
-_prop_number_rb_compare_nodes(jaguar *ctx _PROP_ARG_UNUSED,
-			      const jaguar *n1, const jaguar *n2)
+_prop_number_rb_compare_nodes(void *ctx _PROP_ARG_UNUSED,
+			      const void *n1, const void *n2)
 {
 	const struct _prop_number *pn1 = n1;
 	const struct _prop_number *pn2 = n2;
@@ -125,8 +125,8 @@ _prop_number_rb_compare_nodes(jaguar *ctx _PROP_ARG_UNUSED,
 
 static int
 /*ARGSUSED*/
-_prop_number_rb_compare_key(jaguar *ctx _PROP_ARG_UNUSED,
-			    const jaguar *n, const jaguar *v)
+_prop_number_rb_compare_key(void *ctx _PROP_ARG_UNUSED,
+			    const void *n, const void *v)
 {
 	const struct _prop_number *pn = n;
 	const struct _prop_number_value *pnv = v;
@@ -160,7 +160,7 @@ _prop_number_free(prop_stack_t stack, prop_object_t *obj)
 _PROP_ONCE_DECL(_prop_number_init_once)
 
 static int
-_prop_number_init(jaguar)
+_prop_number_init(void)
 {
 
 	_PROP_MUTEX_INIT(_prop_number_tree_mutex);
@@ -168,23 +168,23 @@ _prop_number_init(jaguar)
 	return 0;
 }
 
-static jaguar 
-_prop_number_lock(jaguar)
+static void 
+_prop_number_lock(void)
 {
 	/* XXX: init necessary? */
 	_PROP_ONCE_RUN(_prop_number_init_once, _prop_number_init);
 	_PROP_MUTEX_LOCK(_prop_number_tree_mutex);
 }
 
-static jaguar
-_prop_number_unlock(jaguar)
+static void
+_prop_number_unlock(void)
 {
 	_PROP_MUTEX_UNLOCK(_prop_number_tree_mutex);
 }
 	
 static bool
 _prop_number_externalize(struct _prop_object_externalize_context *ctx,
-			 jaguar *v)
+			 void *v)
 {
 	prop_number_t pn = v;
 	char tmpstr[32];
@@ -211,7 +211,7 @@ _prop_number_externalize(struct _prop_object_externalize_context *ctx,
 /* ARGSUSED */
 static _prop_object_equals_rv_t
 _prop_number_equals(prop_object_t v1, prop_object_t v2,
-    jaguar **stored_pointer1, jaguar **stored_pointer2,
+    void **stored_pointer1, void **stored_pointer2,
     prop_object_t *next_obj1, prop_object_t *next_obj2)
 {
 	prop_number_t num1 = v1;

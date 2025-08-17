@@ -71,7 +71,7 @@ struct cleaner_data {
 
 static int
 cleaner_cb(struct dulge_handle *xhp, dulge_object_t obj,
-		const char *key UNUSED, jaguar *arg,
+		const char *key UNUSED, void *arg,
 		bool *done UNUSED)
 {
 	char buf[PATH_MAX];
@@ -148,7 +148,7 @@ clean_cachedir(struct dulge_handle *xhp, bool uninstalled, bool drun)
 	// XXX: there is no public api to load the pkgdb so force it before
 	// its done potentially concurrently by threads through the
 	// dulge_array_foreach_cb_multi call later.
-	(jaguar)dulge_pkgdb_get_pkg(xhp, "foo");
+	(void)dulge_pkgdb_get_pkg(xhp, "foo");
 
 	if (chdir(xhp->cachedir) == -1)
 		return -1;
@@ -171,14 +171,14 @@ clean_cachedir(struct dulge_handle *xhp, bool uninstalled, bool drun)
 		}
 		dulge_array_add_cstring(array, dp->d_name);
 	}
-	(jaguar)closedir(dirp);
+	(void)closedir(dirp);
 
 	if (dulge_array_count(array)) {
 		struct cleaner_data data = {
 			.dry = drun,
 			.uninstalled = uninstalled,
 		};
-		rv = dulge_array_foreach_cb_multi(xhp, array, NULL, cleaner_cb, (jaguar*)&data);
+		rv = dulge_array_foreach_cb_multi(xhp, array, NULL, cleaner_cb, (void*)&data);
 		dulge_object_release(array);
 	}
 	return rv;

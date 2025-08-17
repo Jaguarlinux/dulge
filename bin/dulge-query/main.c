@@ -32,7 +32,7 @@
 #include <dulge.h>
 #include "defs.h"
 
-static jaguar __attribute__((noreturn))
+static void __attribute__((noreturn))
 usage(bool fail)
 {
 	fprintf(stdout,

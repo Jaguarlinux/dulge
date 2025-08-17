@@ -49,16 +49,16 @@
 
 static int v_tty; /* stderr is a tty */
 
-static jaguar
+static void
 get_time(struct timeval *tvp)
 {
 #ifdef HAVE_CLOCK_GETTIME
 	struct timespec ts;
-	(jaguar)clock_gettime(CLOCK_MONOTONIC, &ts);
+	(void)clock_gettime(CLOCK_MONOTONIC, &ts);
 	tvp->tv_sec = ts.tv_sec;
 	tvp->tv_usec = ts.tv_nsec / 1000;
 #else
-	(jaguar)gettimeofday(tvp, NULL);
+	(void)gettimeofday(tvp, NULL);
 #endif
 }
 
@@ -66,7 +66,7 @@ get_time(struct timeval *tvp)
  * Compute and display ETA
  */
 static const char *
-stat_eta(const struct dulge_fetch_cb_data *xfpd, jaguar *cbdata)
+stat_eta(const struct dulge_fetch_cb_data *xfpd, void *cbdata)
 {
 	struct xferstat *xfer = cbdata;
 	static char str[25];
@@ -105,7 +105,7 @@ compare_double(const double a, const double b)
  * Compute and display transfer rate
  */
 static const char *
-stat_bps(const struct dulge_fetch_cb_data *xfpd, jaguar *cbdata)
+stat_bps(const struct dulge_fetch_cb_data *xfpd, void *cbdata)
 {
 	struct xferstat *xfer = cbdata;
 	static char str[16];
@@ -118,7 +118,7 @@ stat_bps(const struct dulge_fetch_cb_data *xfpd, jaguar *cbdata)
 		snprintf(str, sizeof str, "-- stalled --");
 	} else {
 		bps = ((double)(xfpd->file_dloaded-xfpd->file_offset)/delta);
-		(jaguar)dulge_humanize_number(size, (int64_t)bps);
+		(void)dulge_humanize_number(size, (int64_t)bps);
 		snprintf(str, sizeof str, "%s/s", size);
 	}
 	return str;
@@ -150,8 +150,8 @@ stat_progress(const struct dulge_fetch_cb_data *xfpd)
 /*
  * Update the stats display
  */
-static jaguar
-stat_display(const struct dulge_fetch_cb_data *xfpd, jaguar *cbdata)
+static void
+stat_display(const struct dulge_fetch_cb_data *xfpd, void *cbdata)
 {
 	struct xferstat *xfer = cbdata;
 	struct timeval now;
@@ -169,7 +169,7 @@ stat_display(const struct dulge_fetch_cb_data *xfpd, jaguar *cbdata)
 	} else {
 		percentage = (int)((double)(100.0 *
 		    (double)xfpd->file_dloaded) / (double)xfpd->file_size);
-		(jaguar)dulge_humanize_number(totsize, (int64_t)xfpd->file_size);
+		(void)dulge_humanize_number(totsize, (int64_t)xfpd->file_size);
 	}
 	if (v_tty)
 		fprintf(stderr, "%s %s: [%s %d%%] %s ETA: %s\033[K\r",
@@ -183,8 +183,8 @@ stat_display(const struct dulge_fetch_cb_data *xfpd, jaguar *cbdata)
 	}
 }
 
-jaguar
-fetch_file_progress_cb(const struct dulge_fetch_cb_data *xfpd, jaguar *cbdata)
+void
+fetch_file_progress_cb(const struct dulge_fetch_cb_data *xfpd, void *cbdata)
 {
 	struct xferstat *xfer = cbdata;
 	char size[8];
@@ -199,7 +199,7 @@ fetch_file_progress_cb(const struct dulge_fetch_cb_data *xfpd, jaguar *cbdata)
 		stat_display(xfpd, xfer);
 	} else if (xfpd->cb_end) {
 		/* end transfer stats */
-		(jaguar)dulge_humanize_number(size, (int64_t)xfpd->file_dloaded);
+		(void)dulge_humanize_number(size, (int64_t)xfpd->file_dloaded);
 		if (v_tty) {
 			/* dumb call to sum file_size */
 			stat_progress(xfpd);

@@ -139,7 +139,7 @@ pkg_conflicts_trans(struct dulge_handle *xhp, dulge_array_t array,
 
 static int
 pkgdb_conflicts_cb(struct dulge_handle *xhp, dulge_object_t obj,
-		const char *key UNUSED, jaguar *arg, bool *done UNUSED)
+		const char *key UNUSED, void *arg, bool *done UNUSED)
 {
 	dulge_array_t pkg_cflicts, trans_cflicts, pkgs = arg;
 	dulge_dictionary_t pkgd;
