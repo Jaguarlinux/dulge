@@ -1,5 +1,5 @@
 /**
- * @mainpage The dulge Binary Package System Library API
+ * @mainpage The X Binary Package System Library API
  * @section intro_sec Introduction
  *
  * DULGE is a new binary package system designed and implemented from

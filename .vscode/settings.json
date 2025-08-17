@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "*.in": "cpp",
-        "libgen.h": "c",
-        "string.h": "c",
-        "dulge_api_impl.h": "c",
-        "errno.h": "c"
-    }
-}

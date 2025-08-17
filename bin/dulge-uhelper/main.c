@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
+ * Copyright (c) 2008-2015 Juan Romero Pardines.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,8 +21,8 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *-
  */
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -47,7 +47,7 @@ usage(bool fail)
 	    " -d --debug                           Debug mode shown to stderr\n"
 	    " -r --rootdir <dir>                   Full path to rootdir\n"
 	    " -v --verbose                         Verbose messages\n"
-	    " -V --version                         Show DULGE verison\n"
+	    " -V --version                         Show DULGE version\n"
 	    "\n"
 	    "MODE\n"
 	    " arch                                 Prints the configured DULGE architecture\n"

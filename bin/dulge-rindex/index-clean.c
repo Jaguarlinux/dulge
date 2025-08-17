@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
+ * Copyright (c) 2012-2019 Juan Romero Pardines.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,7 +21,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *-
  */
 
 #include <sys/stat.h>
@@ -115,7 +114,7 @@ cleanup_repo(struct dulge_handle *xhp, const char *repodir, struct dulge_repo *r
 	/*
 	 * First pass: find out obsolete entries on index and index-files.
 	 */
-	index = dulge_dictionary_copy_mutable(repo->idx);
+	index = dulge_dictionary_copy_mutable(repo->index);
 	stage = dulge_dictionary_copy_mutable(repo->stage);
 
 	allkeys = dulge_dictionary_all_keys(index);
@@ -129,21 +128,28 @@ cleanup_repo(struct dulge_handle *xhp, const char *repodir, struct dulge_repo *r
 	dulge_object_release(allkeys);
 
 	if (dulge_dictionary_equals(index, repo->index) &&
-	    dulge_dictionary_equals(stage, repo->stage))
+	    dulge_dictionary_equals(stage, repo->stage)) {
+		dulge_object_release(index);
+		dulge_object_release(stage);
 		return 0;
+	}
 
 	r = repodata_flush(repodir, repoarch, index, stage, repo->idxmeta, compression);
 	if (r < 0) {
 		dulge_error_printf("failed to write repodata: %s\n", strerror(-r));
+		dulge_object_release(index);
+		dulge_object_release(stage);
 		return r;
 	}
 	printf("stage: %u packages registered.\n", dulge_dictionary_count(stage));
 	printf("index: %u packages registered.\n", dulge_dictionary_count(index));
-	return r;
+	dulge_object_release(index);
+	dulge_object_release(stage);
+	return 0;
 }
 
 /*
- * Removes stalled pkg entries in repository's dulge_REPOIDX file, if any
+ * Removes stalled pkg entries in repository's DULGE_REPOIDX file, if any
  * binary package cannot be read (unavailable, not enough perms, etc).
  */
 int
@@ -168,7 +174,7 @@ index_clean(struct dulge_handle *xhp, const char *repodir, const bool hashcheck,
 			return 0;
 		}
 		dulge_error_printf("cannot read repository data: %s\n",
-		    strerror(errno));
+		    strerror(-r));
 		dulge_repo_unlock(repodir, arch, lockfd);
 		return EXIT_FAILURE;
 	}

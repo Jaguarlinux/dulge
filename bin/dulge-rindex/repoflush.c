@@ -1,5 +1,6 @@
 /*-
- * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
+ * Copyright (c) 2013-2019 Juan Romero Pardines.
+ * Copyright (c) 2023 Duncan Overbruck <mail@duncano.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,7 +22,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *-
  */
 
 #include <sys/stat.h>
@@ -83,6 +83,8 @@ open_archive(int fd, const char *compression)
 	r = archive_write_open_fd(ar, fd);
 	if (r != ARCHIVE_OK) {
 		r = -archive_errno(ar);
+		if (r == 1)
+			r = -EINVAL;
 		archive_write_free(ar);
 		errno = -r;
 		return NULL;
@@ -186,6 +188,8 @@ repodata_flush(const char *repodir,
 	/* Write data to tempfile and rename */
 	if (archive_write_close(ar) == ARCHIVE_FATAL) {
 		r = -archive_errno(ar);
+		if (r == 1)
+			r = -EINVAL;
 		dulge_error_printf("failed to close archive: %s\n", archive_error_string(ar));
 		goto err;
 	}

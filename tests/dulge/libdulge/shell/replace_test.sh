@@ -46,34 +46,33 @@ replace_ntimes_head() {
 replace_ntimes_body() {
 	mkdir some_repo root
 	mkdir -p pkg_A/usr/bin pkg_B/usr/bin pkg_C/usr/bin pkg_D/usr/bin
+
 	cd some_repo
-	dulge-create -A noarch -n A-1.0_1 -s "A pkg" ../pkg_A
-	atf_check_equal $? 0
-	dulge-create -A noarch -n B-1.0_1 -s "B pkg" ../pkg_B
-	atf_check_equal $? 0
-	dulge-create -A noarch -n C-1.0_1 -s "C pkg" ../pkg_C
-	atf_check_equal $? 0
-	dulge-create -A noarch -n D-1.0_1 -s "D pkg" ../pkg_D
-	atf_check_equal $? 0
-	dulge-rindex -d -a $PWD/*.dulge
-	atf_check_equal $? 0
+	atf_check -o ignore -- dulge-create -A noarch -n A-1.0_1 -s "A pkg" ../pkg_A
+	atf_check -o ignore -- dulge-create -A noarch -n B-1.0_1 -s "B pkg" ../pkg_B
+	atf_check -o ignore -- dulge-create -A noarch -n C-1.0_1 -s "C pkg" ../pkg_C
+	atf_check -o ignore -- dulge-create -A noarch -n D-1.0_1 -s "D pkg" ../pkg_D
+	atf_check -o ignore -- dulge-rindex -a $PWD/*.dulge
 	cd ..
-	dulge-install -C dulge.d -r root --repository=$PWD/some_repo -yd A B C D
-	atf_check_equal $? 0
+
+	atf_check -o ignore -e ignore -- \
+		dulge-install -C dulge.d -r root --repository=$PWD/some_repo -yd A B C D
+
 	cd some_repo
-	dulge-create -A noarch -n A-1.1_1 -s "A pkg" ../pkg_A
-	atf_check_equal $? 0
-	dulge-create -A noarch -n B-1.1_1 -s "B pkg" --replaces "A<1.1" ../pkg_B
-	atf_check_equal $? 0
-	dulge-create -A noarch -n C-1.1_1 -s "C pkg" --replaces "A<1.1" ../pkg_C
-	atf_check_equal $? 0
-	dulge-create -A noarch -n D-1.1_1 -s "D pkg" --replaces "A<1.1" ../pkg_D
-	atf_check_equal $? 0
-	dulge-rindex -d -a $PWD/*.dulge
-	atf_check_equal $? 0
+	atf_check -o ignore -- dulge-create -A noarch -n A-1.1_1 -s "A pkg" ../pkg_A
+	atf_check -o ignore -- dulge-create -A noarch -n B-1.1_1 -s "B pkg" --replaces "A<1.1" ../pkg_B
+	atf_check -o ignore -- dulge-create -A noarch -n C-1.1_1 -s "C pkg" --replaces "A<1.1" ../pkg_C
+	atf_check -o ignore -- dulge-create -A noarch -n D-1.1_1 -s "D pkg" --replaces "A<1.1" ../pkg_D
+	atf_check -o ignore -e ignore -- dulge-rindex -a $PWD/*.dulge
 	cd ..
-	result=$(dulge-install -C dulge.d -r root --repository=$PWD/some_repo -yun|wc -l)
-	atf_check_equal $result 4
+
+	atf_check \
+		-o match:"A-1.1_1 update" \
+		-o match:"B-1.1_1 update" \
+		-o match:"C-1.1_1 update" \
+		-o match:"D-1.1_1 update" \
+		-e ignore \
+		-- dulge-install -C dulge.d -r root --repository=$PWD/some_repo -dvyun
 }
 
 atf_test_case self_replace
@@ -88,23 +87,18 @@ self_replace_body() {
 	echo "A-1.0_1" > pkg_A/usr/bin/foo
 	echo "B-1.0_1" > pkg_B/usr/bin/foo
 	cd some_repo
-	dulge-create -A noarch -n A-1.0_1 -s "A pkg" ../pkg_A
-	atf_check_equal $? 0
-	dulge-create -A noarch -n B-1.0_1 -s "B pkg" --replaces "A>=0" --provides="A-1.0_1" ../pkg_B
-	atf_check_equal $? 0
-	dulge-rindex -d -a $PWD/*.dulge
-	atf_check_equal $? 0
+	atf_check -o ignore -- dulge-create -A noarch -n A-1.0_1 -s "A pkg" ../pkg_A
+	atf_check -o ignore -- dulge-create -A noarch -n B-1.0_1 -s "B pkg" --replaces "A>=0" --provides="A-1.0_1" ../pkg_B
+	atf_check -o ignore -- dulge-rindex -a $PWD/*.dulge
 	cd ..
-	dulge-install -C dulge.d -r root --repository=$PWD/some_repo -yd A
-	atf_check_equal $? 0
-	dulge-install -C dulge.d -r root --repository=$PWD/some_repo -yd B
-	atf_check_equal $? 0
-	dulge-install -C dulge.d -r root --repository=$PWD/some_repo -yd A
-	atf_check_equal $? 0
-	out=$(dulge-query -C dulge.d -r root -l|awk '{print $2}')
-	exp="A-1.0_1"
-	atf_check_equal $out $exp
-	atf_check_equal $(dulge-query -C dulge.d -r root -p state A) installed
+	atf_check -o ignore -e ignore -- dulge-install -C dulge.d -r root --repository=$PWD/some_repo -yd A
+	atf_check -o ignore -e ignore -- dulge-install -C dulge.d -r root --repository=$PWD/some_repo -yd B
+	atf_check -e ignore \
+		-o match:'A-1\.0_1: installed successfully.' \
+		-o match:'B-1\.0_1: removed successfully.' \
+		-- dulge-install -C dulge.d -r root --repository=$PWD/some_repo -yd A
+	atf_check -o inline:"A-1.0_1\n" -- dulge-query -C dulge.d -r root -p pkgver A
+	atf_check -o inline:"installed\n" -- dulge-query -C dulge.d -r root -p state A
 }
 
 atf_test_case replace_vpkg

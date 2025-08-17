@@ -37,25 +37,20 @@
 static dulge_dictionary_t
 get_pkg_in_array(dulge_array_t array, const char *str, dulge_trans_type_t tt, bool virtual)
 {
-	dulge_object_t obj;
-	dulge_object_iterator_t iter;
+	dulge_object_t obj = NULL;
 	dulge_trans_type_t ttype;
 	bool found = false;
 
 	assert(array);
 	assert(str);
 
-	iter = dulge_array_iterator(array);
-	if (!iter)
-		return NULL;
-
-	while ((obj = dulge_object_iterator_next(iter))) {
+	for (unsigned int i = 0; i < dulge_array_count(array); i++) {
 		const char *pkgver = NULL;
 		char pkgname[DULGE_NAME_SIZE] = {0};
 
-		if (!dulge_dictionary_get_cstring_nocopy(obj, "pkgver", &pkgver)) {
-			continue;
-		}
+		obj = dulge_array_get(array, i);
+		if (!dulge_dictionary_get_cstring_nocopy(obj, "pkgver", &pkgver))
+			abort();
 		if (virtual) {
 			/*
 			 * Check if package pattern matches
@@ -87,7 +82,6 @@ get_pkg_in_array(dulge_array_t array, const char *str, dulge_trans_type_t tt, bo
 			}
 		}
 	}
-	dulge_object_iterator_release(iter);
 
 	ttype = dulge_transaction_pkg_type(obj);
 	if (found && tt && (ttype != tt)) {
@@ -329,12 +323,11 @@ dulge_find_virtualpkg_in_conf(struct dulge_handle *xhp,
 					continue;
 				}
 			} else {
-				char *vpkgver = dulge_xasprintf("%s-999999_1", vpkg_conf);
+				char vpkgver[DULGE_NAME_SIZE + sizeof("-999999_1")];
+				snprintf(buf, sizeof(buf), "%s-999999_1", vpkg_conf);
 				if (!dulge_pkgpattern_match(vpkgver, pkg)) {
-					free(vpkgver);
 					continue;
 				}
-				free(vpkgver);
 			}
 		} else if (dulge_pkg_version(pkg)) {
 			// XXX: this is the old behaviour of only matching pkgname's,

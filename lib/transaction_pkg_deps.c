@@ -205,7 +205,7 @@ repo_deps(struct dulge_handle *xhp,
 		}
 		if (xhp->flags & DULGE_FLAG_DOWNLOAD_ONLY) {
 			/*
-			 * if dulge_FLAG_DOWNLOAD_ONLY always assume
+			 * if DULGE_FLAG_DOWNLOAD_ONLY always assume
 			 * all deps are not installed. This way one can download
 			 * the whole set of binary packages to perform an
 			 * off-line installation later on.

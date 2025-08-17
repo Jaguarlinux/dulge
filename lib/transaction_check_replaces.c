@@ -48,7 +48,7 @@ dulge_transaction_check_replaces(struct dulge_handle *xhp, dulge_array_t pkgs)
 
 	for (unsigned int i = 0; i < dulge_array_count(pkgs); i++) {
 		dulge_array_t replaces;
-		dulge_object_t obj, obj2;
+		dulge_object_t obj;
 		dulge_object_iterator_t iter;
 		dulge_dictionary_t instd, reppkgd;
 		const char *pkgver = NULL;
@@ -69,13 +69,15 @@ dulge_transaction_check_replaces(struct dulge_handle *xhp, dulge_array_t pkgs)
 		iter = dulge_array_iterator(replaces);
 		assert(iter);
 
-		while ((obj2 = dulge_object_iterator_next(iter)) != NULL) {
+		for (unsigned int j = 0; j < dulge_array_count(replaces); j++) {
 			const char *curpkgver = NULL, *pattern = NULL;
 			char curpkgname[DULGE_NAME_SIZE] = {0};
 			bool instd_auto = false, hold = false;
 			dulge_trans_type_t ttype;
 
-			pattern = dulge_string_cstring_nocopy(obj2);
+			if(!dulge_array_get_cstring_nocopy(replaces, j, &pattern))
+				abort();
+
 			/*
 			 * Find the installed package that matches the pattern
 			 * to be replaced.

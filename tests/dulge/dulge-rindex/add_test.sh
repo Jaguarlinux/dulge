@@ -156,9 +156,48 @@ stage_resolve_bug_body() {
 		dulge-query -r ../root -i --repository=$PWD -L
 }
 
+atf_test_case stage_stacked
+
+stage_stacked_head() {
+	atf_set "descr" "dulge-rindex(1) -a: staging multiple libraries and clean one to half unstage"
+}
+
+stage_stacked_body() {
+	mkdir -p repo root pkg
+
+	cd repo
+	atf_check -o ignore -- dulge-create -A noarch -n flac-1.4.3_1 -s "flac pkg" --shlib-provides "libFLAC.so.12" ../pkg
+	atf_check -o ignore -- dulge-create -A noarch -n ruby-3.3.8_1 -s "ruby pkg" --shlib-provides "libruby.so.3.3" ../pkg
+	atf_check -o ignore -- dulge-create -A noarch -n A-1.0_1 -s "A pkg" --shlib-requires "libFLAC.so.12" ../pkg
+	atf_check -o ignore -- dulge-create -A noarch -n B-1.0_1 -s "B pkg" --shlib-requires  "libruby.so.3.3" ../pkg
+	atf_check -e ignore -o ignore -- dulge-rindex -va *.dulge
+
+	atf_check -o ignore -- dulge-create -A noarch -n flac-1.5.0_1 -s "flac pkg" --shlib-provides "libFLAC.so.14" ../pkg
+	atf_check -e ignore -o match:"stage: added \`flac-1\.5\.0_1' \(noarch\)" -- dulge-rindex -va flac-1.5.0_1.noarch.dulge
+
+	atf_check -o ignore -- dulge-create -A noarch -n ruby-3.4.5_1 -s "ruby pkg" --shlib-provides "libruby.so.3.4" ../pkg
+	atf_check -e ignore -o match:"stage: added \`ruby-3\.4\.5_1' \(noarch\)" -- dulge-rindex -va ruby-3.4.5_1.noarch.dulge
+
+	# atf_check -o ignore -- dulge-create -A noarch -n A-1.0_2 -s "A pkg" --shlib-requires  "libFLAC.so.14" ../pkg
+	# atf_check -e ignore -o match:"stage: added \`A-1\.0_2' \(noarch\)" -- dulge-rindex -va A-1.0_2.noarch.dulge
+
+	rm A-1.0_1.noarch.dulge
+	atf_check -o match:"index: removed pkg A-1\.0_1" -- dulge-rindex -c .
+
+	atf_check -o match:"\(Staged\)" -- dulge-query -r root --repository=. -L
+
+	atf_check -o ignore -- dulge-create -A noarch -n C-1.0_1 -s "C pkg" --shlib-requires  "libFLAC.so.14" ../pkg
+	atf_check -o match:"stage: added \`C-1\.0_1' \(noarch\)" -- dulge-rindex -va C-1.0_1.noarch.dulge
+
+	atf_check -o ignore -- dulge-create -A noarch -n B-1.0_2 -s "B pkg" --shlib-requires  "libruby.so.3.4" ../pkg
+	atf_check -o match:"index: added \`B-1\.0_2' \(noarch\)" -- dulge-rindex -va B-1.0_2.noarch.dulge
+
+}
+
 atf_init_test_cases() {
 	atf_add_test_case update
 	atf_add_test_case revert
 	atf_add_test_case stage
 	atf_add_test_case stage_resolve_bug
+	atf_add_test_case stage_stacked
 }

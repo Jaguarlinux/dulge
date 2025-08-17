@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
+ * Copyright (c) 2010-2015 Juan Romero Pardines.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,7 @@ dulge_dictionary_t HIDDEN dulge_find_virtualpkg_in_array(struct dulge_handle *,
 bool HIDDEN dulge_transaction_check_revdeps(struct dulge_handle *, dulge_array_t);
 bool HIDDEN dulge_transaction_check_shlibs(struct dulge_handle *, dulge_array_t);
 bool HIDDEN dulge_transaction_check_replaces(struct dulge_handle *, dulge_array_t);
-bool HIDDEN dulge_transaction_check_conflicts(struct dulge_handle *, dulge_array_t);
+int HIDDEN dulge_transaction_check_conflicts(struct dulge_handle *, dulge_array_t);
 bool HIDDEN dulge_transaction_store(struct dulge_handle *, dulge_array_t, dulge_dictionary_t, bool);
 int HIDDEN dulge_transaction_init(struct dulge_handle *);
 int HIDDEN dulge_transaction_files(struct dulge_handle *,
@@ -120,6 +120,7 @@ const char HIDDEN *vpkg_user_conf(struct dulge_handle *, const char *);
 struct archive HIDDEN *dulge_archive_read_new(void);
 int HIDDEN dulge_archive_read_open(struct archive *ar, const char *path);
 int HIDDEN dulge_archive_read_open_remote(struct archive *ar, const char *url);
+int HIDDEN dulge_archive_errno(struct archive *ar);
 
 dulge_array_t HIDDEN dulge_get_pkg_fulldeptree(struct dulge_handle *,
 		const char *, bool);

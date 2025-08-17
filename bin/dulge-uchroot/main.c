@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
+ * Copyright (c) 2014-2020 Juan Romero Pardines.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,7 +21,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *-
  */
 
 /*
@@ -476,6 +475,10 @@ main(int argc, char **argv)
 		/* move chrootdir to / and chroot to it */
 		if (chdir(chrootdir) == -1)
 			die("Failed to chdir to %s", chrootdir);
+
+		if (mount("devpts", "./dev/pts", "devpts", MS_NOSUID|MS_NOEXEC,
+		    "newinstance,ptmxmode=0666,mode=620") == -1)
+			die("Failed to mount /dev/pts");
 
 		if (mount(".", ".", NULL, MS_BIND|MS_PRIVATE, NULL) == -1)
 			die("Failed to bind mount %s", chrootdir);

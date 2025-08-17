@@ -106,7 +106,7 @@ repo_read_next(struct dulge_repo *repo, struct archive *ar, struct archive_entry
 	if (r == ARCHIVE_FATAL) {
 		dulge_error_printf("failed to read repository: %s: %s\n",
 		    repo->uri, archive_error_string(ar));
-		return -archive_errno(ar);
+		return -dulge_archive_errno(ar);
 	} else if (r == ARCHIVE_WARN) {
 		dulge_warn_printf("reading repository: %s: %s\n",
 		    repo->uri, archive_error_string(ar));
@@ -141,7 +141,7 @@ repo_read_index(struct dulge_repo *repo, struct archive *ar)
 		if (r == ARCHIVE_FATAL) {
 			dulge_error_printf("failed to read repository: %s: archive error: %s\n",
 			    repo->uri, archive_error_string(ar));
-			return -archive_errno(ar);
+			return -dulge_archive_errno(ar);
 		}
 		repo->index = dulge_dictionary_create();
 		return 0;
@@ -193,7 +193,7 @@ repo_read_meta(struct dulge_repo *repo, struct archive *ar)
 		if (r == ARCHIVE_FATAL) {
 			dulge_error_printf("failed to read repository: %s: archive error: %s\n",
 			    repo->uri, archive_error_string(ar));
-			return -archive_errno(ar);
+			return -dulge_archive_errno(ar);
 		}
 		repo->idxmeta = NULL;
 		return 0;
@@ -346,7 +346,6 @@ repo_open_remote(struct dulge_repo *repo, struct archive *ar)
 	r = dulge_archive_read_open_remote(ar, url);
 	if (r < 0) {
 		dulge_error_printf("failed to open repository: %s: %s\n", repo->uri, strerror(-r));
-		archive_read_free(ar);
 		return r;
 	}
 

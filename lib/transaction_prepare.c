@@ -198,12 +198,12 @@ dulge_transaction_init(struct dulge_handle *xhp)
 		return 0;
 
 	if ((xhp->transd = dulge_dictionary_create()) == NULL)
-		return ENOMEM;
+		return dulge_error_oom();
 
 	if ((array = dulge_array_create()) == NULL) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return ENOMEM;
+		return dulge_error_oom();
 	}
 	if (!dulge_dictionary_set(xhp->transd, "packages", array)) {
 		dulge_object_release(xhp->transd);
@@ -215,7 +215,7 @@ dulge_transaction_init(struct dulge_handle *xhp)
 	if ((array = dulge_array_create()) == NULL) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return ENOMEM;
+		return dulge_error_oom();
 	}
 	if (!dulge_dictionary_set(xhp->transd, "missing_deps", array)) {
 		dulge_object_release(xhp->transd);
@@ -227,48 +227,48 @@ dulge_transaction_init(struct dulge_handle *xhp)
 	if ((array = dulge_array_create()) == NULL) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return ENOMEM;
+		return dulge_error_oom();
 	}
 	if (!dulge_dictionary_set(xhp->transd, "missing_shlibs", array)) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return EINVAL;
+		return dulge_error_oom();
 	}
 	dulge_object_release(array);
 
 	if ((array = dulge_array_create()) == NULL) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return ENOMEM;
+		return dulge_error_oom();
 	}
 	if (!dulge_dictionary_set(xhp->transd, "conflicts", array)) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return EINVAL;
+		return dulge_error_oom();
 	}
 	dulge_object_release(array);
 
 	if ((dict = dulge_dictionary_create()) == NULL) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return ENOMEM;
+		return dulge_error_oom();
 	}
 	if (!dulge_dictionary_set(xhp->transd, "obsolete_files", dict)) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return EINVAL;
+		return dulge_error_oom();
 	}
 	dulge_object_release(dict);
 
 	if ((dict = dulge_dictionary_create()) == NULL) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return ENOMEM;
+		return dulge_error_oom();
 	}
 	if (!dulge_dictionary_set(xhp->transd, "remove_files", dict)) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return EINVAL;
+		return dulge_error_oom();
 	}
 	dulge_object_release(dict);
 
@@ -283,6 +283,7 @@ dulge_transaction_prepare(struct dulge_handle *xhp)
 	dulge_trans_type_t ttype;
 	unsigned int i, cnt;
 	int rv = 0;
+	int r;
 	bool all_on_hold = true;
 
 	if ((rv = dulge_transaction_init(xhp)) != 0)
@@ -390,10 +391,11 @@ dulge_transaction_prepare(struct dulge_handle *xhp)
 	 * Check for package conflicts.
 	 */
 	dulge_dbg_printf("%s: checking conflicts\n", __func__);
-	if (!dulge_transaction_check_conflicts(xhp, pkgs)) {
+	r = dulge_transaction_check_conflicts(xhp, pkgs);
+	if (r < 0) {
 		dulge_object_release(xhp->transd);
 		xhp->transd = NULL;
-		return EINVAL;
+		return -r;
 	}
 	if (dulge_dictionary_get(xhp->transd, "conflicts")) {
 		return EAGAIN;

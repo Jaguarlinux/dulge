@@ -8,7 +8,7 @@
 The X Binary Package System (DULGE) is a binary package system designed and implemented from scratch.
 Its goal is to be fast, easy to use, bug-free, featureful and portable as much as possible.
 
-The primary interface of DUGLE is its suite of tools, including
+The primary interface of DULGE is its suite of tools, including
 .Xr dulge-install 1
 for installing packages,
 .Xr dulge-remove 1
@@ -18,7 +18,7 @@ for searching repositories and querying package properties.
 A C library is also available, called
 .Em libdulge .
 .Sh PACKAGES
-An DUGLE package is a compressed archive of the package's files and metadata.
+An DULGE package is a compressed archive of the package's files and metadata.
 
 Packages can also include scripts that run during installation and removal, during the
 .Dq configuration
@@ -96,12 +96,12 @@ To list packages in this mode use
 .Nm dulge-query Fl -list-repolock-pkgs .
 .El
 .Sh REPOSITORIES
-An DUGLE repository is a directory containing DUGLE packages and an
+An DULGE repository is a directory containing DULGE packages and an
 .Em <arch>-repodata
 repository index file.
 If the repository is remote (served via a web server), packages must be RSA-signed.
 
-In DUGLE configuration and command-line flags, repositories are specified by a complete url or absolute path to the directory where the
+In DULGE configuration and command-line flags, repositories are specified by a complete url or absolute path to the directory where the
 .Em <arch>-repodata
 resides.
 To synchronize configured remote repositories locally, use
@@ -128,14 +128,14 @@ Keeps track of installed packages and properties.
 Default cache directory to store downloaded binary packages.
 .El
 .Sh ENVIRONMENT
-.Bl -tag -width DUGLE_TARGET_ARCH
-.It Sy DUGLE_ARCH
+.Bl -tag -width DULGE_TARGET_ARCH
+.It Sy DULGE_ARCH
 Overrides
 .Xr uname 2
 machine result with this value.
-.It Sy DUGLE_TARGET_ARCH
+.It Sy DULGE_TARGET_ARCH
 Sets the target architecture to this value.
-.It Sy DUGLE_SYSLOG
+.It Sy DULGE_SYSLOG
 Overrides the
 .Xr dulge.d 5
 .Sy syslog=true|false
@@ -154,13 +154,14 @@ configuration option.
 .Xr dulge-remove 1 ,
 .Xr dulge-rindex 1 ,
 .Xr dulge.d 5 ,
-.Lk https://github.com/Jaguarlinux/dulge ,
-.Lk https://github.com/Jaguarlinux/dulge/doc
+.Lk https://github.com/void-linux/dulge ,
+.Lk https://dulge-api-docs.voidlinux.org
 .Sh AUTHORS
-.An TigerClips1 spongebob1966@proton.me
+.An Juan Romero Pardines Aq Mt xtraeme@gmail.com
+.An Duncan Overbruck Aq Mt mail@duncano.de
 .Sh BUGS
 Probably, but I try to make this not happen. Use it under your own
 responsibility and enjoy your life.
 .Pp
 Report bugs at
-.Lk https://github.com/Jaguarlinux/dulge/issues
+.Lk https://github.com/void-linux/dulge/issues

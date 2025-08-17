@@ -159,7 +159,7 @@ dulge_init(struct dulge_handle *xhp)
 	if (dulge_path_clean(xhp->metadir) == -1)
 		return ENOTSUP;
 
-	p = getenv("dulge_SYSLOG");
+	p = getenv("DULGE_SYSLOG");
 	if (p) {
 		if (strcasecmp(p, "true") == 0)
 			xhp->flags &= ~DULGE_FLAG_DISABLE_SYSLOG;

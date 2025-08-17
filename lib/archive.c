@@ -35,6 +35,13 @@
 #include "fetch.h"
 #include "dulge_api_impl.h"
 
+int HIDDEN
+dulge_archive_errno(struct archive *ar)
+{
+	int err = archive_errno(ar);
+	return err == -1 ? EINVAL : err;
+}
+
 char HIDDEN *
 dulge_archive_get_file(struct archive *ar, struct archive_entry *entry)
 {
@@ -58,9 +65,9 @@ dulge_archive_get_file(struct archive *ar, struct archive_entry *entry)
 	for (;;) {
 		ssize_t rd = archive_read_data(ar, buf + used, len - used);
 		if (rd == ARCHIVE_FATAL || rd == ARCHIVE_WARN) {
-			r = -archive_errno(ar);
+			r = -dulge_archive_errno(ar);
 			dulge_error_printf(
-			    "failed to ready archive entry: %s: %s\n",
+			    "failed to read archive entry: %s: %s\n",
 			    archive_entry_pathname(entry),
 			    archive_error_string(ar));
 			goto err;
@@ -117,7 +124,7 @@ dulge_archive_append_buf(struct archive *ar, const void *buf, const size_t bufle
 
 	entry = archive_entry_new();
 	if (!entry)
-		return -archive_errno(ar);
+		return -dulge_archive_errno(ar);
 
 	archive_entry_set_filetype(entry, AE_IFREG);
 	archive_entry_set_perm(entry, mode);
@@ -128,15 +135,15 @@ dulge_archive_append_buf(struct archive *ar, const void *buf, const size_t bufle
 
 	if (archive_write_header(ar, entry) != ARCHIVE_OK) {
 		archive_entry_free(entry);
-		return -archive_errno(ar);
+		return -dulge_archive_errno(ar);
 	}
 	if (archive_write_data(ar, buf, buflen) != ARCHIVE_OK) {
 		archive_entry_free(entry);
-		return -archive_errno(ar);
+		return -dulge_archive_errno(ar);
 	}
 	if (archive_write_finish_entry(ar) != ARCHIVE_OK) {
 		archive_entry_free(entry);
-		return -archive_errno(ar);
+		return -dulge_archive_errno(ar);
 	}
 	archive_entry_free(entry);
 
@@ -150,25 +157,43 @@ struct fetch_archive {
 };
 
 static int
-fetch_archive_open(struct archive *a UNUSED, void *client_data)
+fetch_archive_open(struct archive *a, void *client_data)
 {
 	struct fetch_archive *f = client_data;
 
 	f->fetch = fetchGet(f->url, NULL);
+	if (!f->fetch) {
+		const char *errstr = dulge_fetch_error_string();
+		int err;
+		switch (fetchLastErrCode) {
+		case FETCH_UNAVAIL:
+			err = ENOENT;
+			break;
+		default:
+			err = EIO;
+			break;
+		}
+		archive_set_error(a, err, "%s", errstr ? errstr : "unknown fetch error");
+		return ARCHIVE_FATAL;
+	}
 
-	if (f->fetch == NULL)
-		return ENOENT;
-
-	return 0;
+	return ARCHIVE_OK;
 }
 
 static ssize_t
 fetch_archive_read(struct archive *a UNUSED, void *client_data, const void **buf)
 {
 	struct fetch_archive *f = client_data;
+	ssize_t rd;
 
 	*buf = f->buffer;
-	return fetchIO_read(f->fetch, f->buffer, sizeof(f->buffer));
+	rd = fetchIO_read(f->fetch, f->buffer, sizeof(f->buffer));
+	if (rd == -1) {
+		const char *errstr = dulge_fetch_error_string();
+		archive_set_error(a, EIO, "%s", errstr ? errstr : "unknown fetch error");
+		return -1;
+	}
+	return rd;
 }
 
 static int
@@ -204,7 +229,7 @@ dulge_archive_read_open(struct archive *ar, const char *filename)
 {
 	int r = archive_read_open_filename(ar, filename, 4096);
 	if (r == ARCHIVE_FATAL)
-		return -archive_errno(ar);
+		return -dulge_archive_errno(ar);
 	return 0;
 }
 
@@ -222,7 +247,6 @@ dulge_archive_read_open_remote(struct archive *ar, const char *url)
 	f = calloc(1, sizeof(*f));
 	if (!f) {
 		r = -errno;
-		archive_read_free(ar);
 		fetchFreeURL(furl);
 		return r;
 	}
@@ -231,10 +255,7 @@ dulge_archive_read_open_remote(struct archive *ar, const char *url)
 	r = archive_read_open(ar, f, fetch_archive_open, fetch_archive_read,
 	    fetch_archive_close);
 	if (r == ARCHIVE_FATAL) {
-		r = -archive_errno(ar);
-		fetchFreeURL(f->url);
-		free(f);
-		return r;
+		return -dulge_archive_errno(ar);
 	}
 
 	return 0;

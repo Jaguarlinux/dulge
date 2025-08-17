@@ -160,7 +160,7 @@ unpack_archive(struct dulge_handle *xhp,
 	 * 	- props.plist	<required> but currently ignored
 	 * 	- files.plist	<required>
 	 *
-	 * The dulge package must contain props and files plists, otherwise
+	 * The DULGE package must contain props and files plists, otherwise
 	 * it's not a valid package.
 	 */
 	for (uint8_t i = 0; i < 4; i++) {
@@ -418,7 +418,7 @@ unpack_archive(struct dulge_handle *xhp,
 		 * Extract entry from archive.
 		 */
 		if (archive_read_extract(ar, entry, flags) != 0) {
-			error = archive_errno(ar);
+			error = dulge_archive_errno(ar);
 			dulge_set_cb_state(xhp, DULGE_STATE_UNPACK_FAIL,
 			    error, pkgver,
 			    "%s: [unpack] failed to extract file `%s': %s",
@@ -534,7 +534,7 @@ dulge_unpack_binary_pkg(struct dulge_handle *xhp, dulge_dictionary_t pkg_repod)
 		goto out;
 	}
 	if (archive_read_open_fd(ar, pkg_fd, st.st_blksize) == ARCHIVE_FATAL) {
-		rv = archive_errno(ar);
+		rv = dulge_archive_errno(ar);
 		dulge_set_cb_state(xhp, DULGE_STATE_UNPACK_FAIL,
 		    rv, pkgver,
 		    "%s: [unpack] failed to read binary package `%s': %s",

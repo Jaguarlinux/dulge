@@ -21,4 +21,4 @@ dulge-fetch:
 dulge-digest:
  - blake2b support
 
-Issues listed at https://github.com/Jaguarlinux/dulge/issues
+Issues listed at https://github.com/void-linux/dulge/issues

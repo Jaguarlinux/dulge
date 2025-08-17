@@ -42,10 +42,6 @@
 
 #include "dulge_api_impl.h"
 
-#ifdef __clang__
-#pragma clang diagnostic ignored "-Wformat-nonliteral"
-#endif
-
 static bool
 is_revision(const char *str)
 {
@@ -93,7 +89,7 @@ dulge_pkg_is_installed(struct dulge_handle *xhp, const char *pkg)
 	 */
 	if (dulge_pkg_state_dictionary(dict, &state) != 0)
 		return -1; /* error */
-	if (state == DULGE_PKG_STATE_INSTALLED || state == DULGE_PKG_STATE_INSTALLED)
+	if (state == DULGE_PKG_STATE_INSTALLED || state == DULGE_PKG_STATE_UNPACKED)
 		return 1;
 
 	return 0; /* not fully installed */

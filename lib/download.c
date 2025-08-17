@@ -55,7 +55,7 @@
  * @brief Download routines
  * @defgroup download Download functions
  *
- * dulge download related functions, frontend for NetBSD's libfetch.
+ * DULGE download related functions, frontend for NetBSD's libfetch.
  */
 static const char *
 print_time(time_t *t)

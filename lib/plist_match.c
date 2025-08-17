@@ -100,19 +100,14 @@ dulge_match_any_virtualpkg_in_rundeps(dulge_array_t rundeps,
 static bool
 match_string_in_array(dulge_array_t array, const char *str, int mode)
 {
-	dulge_object_iterator_t iter;
-	dulge_object_t obj;
-	const char *pkgdep;
 	char pkgname[DULGE_NAME_SIZE];
 	bool found = false;
 
 	assert(dulge_object_type(array) == DULGE_TYPE_ARRAY);
 	assert(str != NULL);
 
-	iter = dulge_array_iterator(array);
-	assert(iter);
-
-	while ((obj = dulge_object_iterator_next(iter))) {
+	for (unsigned int i = 0; i < dulge_array_count(array); i++) {
+		dulge_object_t obj = dulge_array_get(array, i);
 		if (mode == 0) {
 			/* match by string */
 			if (dulge_string_equals_cstring(obj, str)) {
@@ -121,7 +116,7 @@ match_string_in_array(dulge_array_t array, const char *str, int mode)
 			}
 		} else if (mode == 1) {
 			/* match by pkgname against pkgver */
-			pkgdep = dulge_string_cstring_nocopy(obj);
+			const char *pkgdep = dulge_string_cstring_nocopy(obj);
 			if (!dulge_pkg_name(pkgname, DULGE_NAME_SIZE, pkgdep))
 				break;
 			if (strcmp(pkgname, str) == 0) {
@@ -130,7 +125,7 @@ match_string_in_array(dulge_array_t array, const char *str, int mode)
 			}
 		} else if (mode == 2) {
 			/* match by pkgver against pkgname */
-			pkgdep = dulge_string_cstring_nocopy(obj);
+			const char *pkgdep = dulge_string_cstring_nocopy(obj);
 			if (!dulge_pkg_name(pkgname, DULGE_NAME_SIZE, str))
 				break;
 			if (strcmp(pkgname, pkgdep) == 0) {
@@ -139,21 +134,20 @@ match_string_in_array(dulge_array_t array, const char *str, int mode)
 			}
 		} else if (mode == 3) {
 			/* match pkgpattern against pkgdep */
-			pkgdep = dulge_string_cstring_nocopy(obj);
+			const char *pkgdep = dulge_string_cstring_nocopy(obj);
 			if (dulge_pkgpattern_match(pkgdep, str)) {
 				found = true;
 				break;
 			}
 		} else if (mode == 4) {
 			/* match pkgdep against pkgpattern */
-			pkgdep = dulge_string_cstring_nocopy(obj);
+			const char *pkgdep = dulge_string_cstring_nocopy(obj);
 			if (dulge_pkgpattern_match(str, pkgdep)) {
 				found = true;
 				break;
 			}
 		}
 	}
-	dulge_object_iterator_release(iter);
 
 	return found;
 }

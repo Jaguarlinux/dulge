@@ -3,17 +3,17 @@
 .Os
 .Sh NAME
 .Nm dulge-fbulk
-.Nd DULGE utility to perform a fast bulk build of jaguar-packages
+.Nd DULGE utility to perform a fast bulk build of void-packages
 .Sh SYNOPSIS
 .Nm
 .Op OPTIONS
-.Ar /path/to/jaguar-packages
+.Ar /path/to/void-packages
 .Op pkgN pkg+N ...
 .Sh DESCRIPTION
 The
 .Nm
 utility iterates all srcpkg directories in the
-.Xr jaguar-packages
+.Xr void-packages
 repository or processes the
 .Xr pkgN
 arguments, and then runs
@@ -73,7 +73,7 @@ A descriptive error message will be printed to stderr.
 The
 .Ar masterdir
 in the
-.Ar jaguar-packages
+.Ar void-packages
 repository must be fully populated for chroot operations, and some options
 need to be set in
 .Ar etc/conf
@@ -120,11 +120,11 @@ utility was originally written by
 for the
 .Ar DragonFlyBSD project.
 .Pp
-.An TigerClips1 spongebob1966@proton.me
+.An Juan Romero Pardines Aq Mt xtraeme@gmail.com
 adapted it for dulge and added some new features.
 .Sh BUGS
 Probably, but I try to make this not happen. Use it under your own
 responsibility and enjoy your life.
 .Pp
 Report bugs at
-.Lk https://github.com/Jaguarlinux/dulge/issues
+.Lk https://github.com/void-linux/dulge/issues

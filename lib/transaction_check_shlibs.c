@@ -28,6 +28,11 @@
 #include <stdbool.h>
 #include <errno.h>
 
+#include "uthash.h"
+
+#include "dulge.h"
+#include "dulge/dulge_array.h"
+#include "dulge/dulge_dictionary.h"
 #include "dulge_api_impl.h"
 
 /*
@@ -43,142 +48,250 @@
  * Abort transaction if such case is found.
  */
 
-static void
-shlib_register(dulge_dictionary_t d, const char *shlib, const char *pkgver)
-{
-	dulge_array_t array;
-	bool alloc = false;
+struct shlib_entry {
+	const char *name;
+	UT_hash_handle hh;
+};
 
-	if ((array = dulge_dictionary_get(d, shlib)) == NULL) {
-		alloc = true;
-		array = dulge_array_create();
-		dulge_dictionary_set(d, shlib, array);
-	}
-	if (!dulge_match_string_in_array(array, pkgver))
-		dulge_array_add_cstring_nocopy(array, pkgver);
-	if (alloc)
-		dulge_object_release(array);
+struct shlib_ctx {
+	struct dulge_handle *xhp;
+	struct shlib_entry *entries;
+	dulge_dictionary_t seen;
+	dulge_array_t missing;
+};
+
+static struct shlib_entry *
+shlib_entry_find(struct shlib_entry *head, const char *name)
+{
+	struct shlib_entry *res = NULL;
+	HASH_FIND_STR(head, name, res);
+	return res;
 }
 
-static dulge_dictionary_t
-collect_shlibs(struct dulge_handle *xhp, dulge_array_t pkgs, bool req)
+static struct shlib_entry *
+shlib_entry_get(struct shlib_ctx *ctx, const char *name)
+{
+	struct shlib_entry *res = shlib_entry_find(ctx->entries, name);
+	if (res)
+		return res;
+	res = calloc(1, sizeof(*res));
+	if (!res) {
+		dulge_error_printf("out of memory\n");
+		errno = ENOMEM;
+		return NULL;
+	}
+	res->name = name;
+	HASH_ADD_STR(ctx->entries, name, res);
+	return res;
+}
+
+static int
+collect_shlib_array(struct shlib_ctx *ctx, dulge_array_t array)
+{
+	for (unsigned int i = 0; i < dulge_array_count(array); i++) {
+		struct shlib_entry *entry;
+		const char *shlib = NULL;
+		if (!dulge_array_get_cstring_nocopy(array, i, &shlib))
+			return -EINVAL;
+		entry = shlib_entry_get(ctx, shlib);
+		if (!entry)
+			return -errno;
+	}
+	return 0;
+}
+
+static int
+collect_shlibs(struct shlib_ctx *ctx, dulge_array_t pkgs)
 {
 	dulge_object_t obj;
 	dulge_object_iterator_t iter;
-	dulge_dictionary_t d, pd;
-	const char *pkgname, *pkgver;
+	dulge_bool_t placeholder;
 
-	d = dulge_dictionary_create();
-	assert(d);
+	// can't set null values to dulge_dictionary so just use one boolean
+	placeholder = dulge_bool_create(true);
+	if (!placeholder) {
+		dulge_error_printf("out of memory\n");
+		return -ENOMEM;
+	}
 
-	/* copy pkgdb to out temporary dictionary */
-	pd = dulge_dictionary_copy(xhp->pkgdb);
-	assert(pd);
+	ctx->seen = dulge_dictionary_create();
+	if (!ctx->seen) {
+		dulge_error_printf("out of memory\n");
+		return -ENOMEM;
+	}
 
-	/*
-	 * copy pkgs from transaction to our dictionary, overriding them
-	 * if they were there from pkgdb.
-	 */
-	iter = dulge_array_iterator(pkgs);
-	assert(iter);
-	while ((obj = dulge_object_iterator_next(iter))) {
-		if (!dulge_dictionary_get_cstring_nocopy(obj, "pkgname", &pkgname))
+	for (unsigned int i = 0; i < dulge_array_count(pkgs); i++) {
+		const char *pkgname;
+		dulge_dictionary_t pkgd = dulge_array_get(pkgs, i);
+		dulge_array_t array;
+
+		if (dulge_transaction_pkg_type(pkgd) == DULGE_TRANS_HOLD)
 			continue;
-
-		/* ignore shlibs if pkg is on hold mode */
-		if (dulge_transaction_pkg_type(obj) == DULGE_TRANS_HOLD) {
-			continue;
+		if (!dulge_dictionary_get_cstring_nocopy(pkgd, "pkgname", &pkgname)) {
+			dulge_error_printf("invalid package: missing `pkgname` property\n");
+			return -EINVAL;
+		}
+		if (!dulge_dictionary_set(ctx->seen, pkgname, placeholder)) {
+			dulge_error_printf("out of memory\n");
+			return -ENOMEM;
 		}
 
-		dulge_dictionary_set(pd, pkgname, obj);
-	}
-	dulge_object_iterator_release(iter);
+		if (dulge_transaction_pkg_type(pkgd) == DULGE_TRANS_REMOVE)
+			continue;
 
-	/*
-	 * iterate over our dictionary to collect shlib-{requires,provides}.
-	 */
-	iter = dulge_dictionary_iterator(pd);
-	assert(iter);
+		array = dulge_dictionary_get(pkgd, "shlib-provides");
+		if (array) {
+			int r = collect_shlib_array(ctx, array);
+			if (r < 0)
+				return r;
+		}
+	}
+
+	iter = dulge_dictionary_iterator(ctx->xhp->pkgdb);
+	if (!iter) {
+		dulge_error_printf("out of memory\n");
+		return -ENOMEM;
+	}
 
 	while ((obj = dulge_object_iterator_next(iter))) {
-		dulge_array_t shobjs;
+		dulge_array_t array;
 		dulge_dictionary_t pkgd;
+		const char *pkgname = NULL;
 
-		pkgd = dulge_dictionary_get_keysym(pd, obj);
-		if (dulge_transaction_pkg_type(pkgd) == DULGE_TRANS_REMOVE) {
-			continue;
-		}
-		/*
-		 * If pkg does not have the required obj, pass to next one.
-		 */
-		dulge_dictionary_get_cstring_nocopy(pkgd, "pkgver", &pkgver);
-		shobjs = dulge_dictionary_get(pkgd,
-				req ? "shlib-requires" : "shlib-provides");
-		if (shobjs == NULL)
+		pkgname = dulge_dictionary_keysym_cstring_nocopy(obj);
+		/* ignore internal objs */
+		if (strncmp(pkgname, "_DULGE_", 6) == 0)
 			continue;
 
-		for (unsigned int i = 0; i < dulge_array_count(shobjs); i++) {
-			const char *shlib = NULL;
+		pkgd = dulge_dictionary_get_keysym(ctx->xhp->pkgdb, obj);
 
-			dulge_array_get_cstring_nocopy(shobjs, i, &shlib);
-			dulge_dbg_printf("%s: registering %s for %s\n",
-			    pkgver, shlib, req ? "shlib-requires" : "shlib-provides");
-			if (req)
-				shlib_register(d, shlib, pkgver);
-			else
-				dulge_dictionary_set_cstring_nocopy(d, shlib, pkgver);
+		if (dulge_dictionary_get(ctx->seen, pkgname))
+			continue;
+
+		array = dulge_dictionary_get(pkgd, "shlib-provides");
+		if (array) {
+			int r = collect_shlib_array(ctx, array);
+			if (r < 0)
+				return r;
 		}
 	}
+
 	dulge_object_iterator_release(iter);
-	dulge_object_release(pd);
-	return d;
+	return 0;
+}
+
+static int
+check_shlibs(struct shlib_ctx *ctx, dulge_array_t pkgs)
+{
+	dulge_object_iterator_t iter;
+	dulge_object_t obj;
+
+	for (unsigned int i = 0; i < dulge_array_count(pkgs); i++) {
+		dulge_array_t array;
+		dulge_dictionary_t pkgd = dulge_array_get(pkgs, i);
+		dulge_trans_type_t ttype = dulge_transaction_pkg_type(pkgd);
+
+		if (ttype == DULGE_TRANS_HOLD || ttype == DULGE_TRANS_REMOVE)
+			continue;
+
+		array = dulge_dictionary_get(pkgd, "shlib-requires");
+		if (!array)
+			continue;
+		for (unsigned int j = 0; j < dulge_array_count(array); j++) {
+			const char *pkgver = NULL;
+			const char *shlib = NULL;
+			char *missing;
+			if (!dulge_array_get_cstring_nocopy(array, j, &shlib))
+				return -EINVAL;
+			if (shlib_entry_find(ctx->entries, shlib))
+				continue;
+			if (!dulge_dictionary_get_cstring_nocopy(pkgd, "pkgver", &pkgver))
+				return -EINVAL;
+			missing = dulge_xasprintf(
+			    "%s: broken, unresolvable shlib `%s'",
+			    pkgver, shlib);
+			if (!dulge_array_add_cstring_nocopy(ctx->missing, missing)) {
+				dulge_error_printf("out of memory\n");
+				return -ENOMEM;
+			}
+		}
+	}
+
+	iter = dulge_dictionary_iterator(ctx->xhp->pkgdb);
+	if (!iter) {
+		dulge_error_printf("out of memory\n");
+		return -ENOMEM;
+	}
+
+	while ((obj = dulge_object_iterator_next(iter))) {
+		dulge_array_t array;
+		dulge_dictionary_t pkgd;
+		const char *pkgname = NULL;
+
+		pkgname = dulge_dictionary_keysym_cstring_nocopy(obj);
+		/* ignore internal objs */
+		if (strncmp(pkgname, "_DULGE_", 6) == 0)
+			continue;
+
+		pkgd  = dulge_dictionary_get_keysym(ctx->xhp->pkgdb, obj);
+
+		if (dulge_dictionary_get(ctx->seen, pkgname))
+			continue;
+
+		array = dulge_dictionary_get(pkgd, "shlib-requires");
+		if (!array)
+			continue;
+		for (unsigned int i = 0; i < dulge_array_count(array); i++) {
+			const char *pkgver = NULL;
+			const char *shlib = NULL;
+			char *missing;
+			if (!dulge_array_get_cstring_nocopy(array, i, &shlib))
+				return -EINVAL;
+			if (shlib_entry_find(ctx->entries, shlib))
+				continue;
+			if (!dulge_dictionary_get_cstring_nocopy(pkgd, "pkgver", &pkgver))
+				return -EINVAL;
+			missing = dulge_xasprintf(
+			    "%s: broken, unresolvable shlib `%s'", pkgver,
+			    shlib);
+			if (!dulge_array_add_cstring_nocopy(ctx->missing, missing)) {
+				dulge_error_printf("out of memory\n");
+				return -ENOMEM;
+			}
+		}
+	}
+
+	dulge_object_iterator_release(iter);
+	return 0;
 }
 
 bool HIDDEN
 dulge_transaction_check_shlibs(struct dulge_handle *xhp, dulge_array_t pkgs)
 {
-	dulge_array_t array, mshlibs;
-	dulge_object_t obj, obj2;
-	dulge_object_iterator_t iter;
-	dulge_dictionary_t shrequires, shprovides;
-	const char *pkgver = NULL, *shlib = NULL;
-	char *buf;
-	bool broken = false;
+	struct shlib_entry *entry, *tmp;
+	struct shlib_ctx ctx = { .xhp = xhp };
+	int r;
 
-	shrequires = collect_shlibs(xhp, pkgs, true);
-	shprovides = collect_shlibs(xhp, pkgs, false);
+	ctx.missing = dulge_dictionary_get(xhp->transd, "missing_shlibs");
 
-	mshlibs = dulge_dictionary_get(xhp->transd, "missing_shlibs");
-	/* iterate over shlib-requires to find unmatched shlibs */
-	iter = dulge_dictionary_iterator(shrequires);
-	assert(iter);
+	r = collect_shlibs(&ctx, pkgs);
+	if (r < 0)
+		goto err;
 
-	while ((obj = dulge_object_iterator_next(iter))) {
-		shlib = dulge_dictionary_keysym_cstring_nocopy(obj);
-		dulge_dbg_printf("%s: checking for `%s': ", __func__, shlib);
-		if ((obj2 = dulge_dictionary_get(shprovides, shlib))) {
-			dulge_dbg_printf_append("provided by `%s'\n",
-			    dulge_string_cstring_nocopy(obj2));
-			continue;
-		}
-		dulge_dbg_printf_append("not found\n");
+	r = check_shlibs(&ctx, pkgs);
+	if (r < 0)
+		goto err;
 
-		broken = true;
-		array = dulge_dictionary_get_keysym(shrequires, obj);
-		for (unsigned int i = 0; i < dulge_array_count(array); i++) {
-			dulge_array_get_cstring_nocopy(array, i, &pkgver);
-			buf = dulge_xasprintf("%s: broken, unresolvable "
-			    "shlib `%s'", pkgver, shlib);
-			dulge_array_add_cstring(mshlibs, buf);
-			free(buf);
-		}
-	}
-	dulge_object_iterator_release(iter);
-	if (!broken) {
+	if (dulge_array_count(ctx.missing) == 0)
 		dulge_dictionary_remove(xhp->transd, "missing_shlibs");
-	}
-	dulge_object_release(shprovides);
-	dulge_object_release(shrequires);
 
-	return true;
+	r = 0;
+err:
+	HASH_ITER(hh, ctx.entries, entry, tmp) {
+		HASH_DEL(ctx.entries, entry);
+		free(entry);
+	}
+	if (ctx.seen)
+		dulge_object_release(ctx.seen);
+	return r == 0;
 }

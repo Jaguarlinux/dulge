@@ -68,7 +68,7 @@ script_arch_body() {
 
 	# Check that DULGE_ARCH overrides $ARCH.
 	rval=0
-	dulge_ARCH=foo dulge-reconfigure -C empty.conf -r root -f A 2>out
+	DULGE_ARCH=foo dulge-reconfigure -C empty.conf -r root -f A 2>out
 	out="$(cat out)"
 	expected="post A 1.0_1 no no foo"
 	if [ "$out" != "$expected" ]; then

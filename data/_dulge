@@ -42,7 +42,7 @@ _dulge_properties=(
 	'shlib-provides[shared libraries provided by the package]'
 	'shlib-requires[shared libraries required by the package]'
 	'short_desc[short description of the package]'
-	'source-revisions[source package and commit hash of package last change from the jaguar-packages repository]'
+	'source-revisions[source package and commit hash of package last change from the void-packages repository]'
 	'state[installation state of the package]'
 	'tags[list of categories the package is associated with]'
 )
@@ -76,7 +76,7 @@ _dulge_alternatives() {
 _dulge_checkvers() {
 	_arguments -s : \
 		$_dulge_common \
-		{-D,--distdir}'[Set the path to jaguar-packages]:path:_files -/' \
+		{-D,--distdir}'[Set the path to void-packages]:path:_files -/' \
 		{-i,--installed}'[Check for outdated packages in rootdir]' \
 		{-m,--manual}'[Only process listed files]' \
 		'*'{-R,--repository=-}'[Add repository to the top of the list]:repository url:_files -/' \
@@ -107,7 +107,7 @@ _dulge_create() {
 		{-S,--long-desc}'[Long description]:long description: ' \
 		{-s,--desc}'[Short description]:short description: ' \
 		{-t,--tags}'[A list of tags/categories]:tags: ' \
-		{-V,--version}'[Prints dulge release version]' \
+		{-V,--version}'[Prints DULGE release version]' \
 		--build-options'[A string with the used build options]:used build options: ' \
 		--compression'[Compression format]:compression format:(gzip bzip2 xz)' \
 		--shlib-provides'[List of provided shared libraries]:provided shared libraries: ' \
@@ -241,7 +241,7 @@ _dulge_rindex() {
 		{-f,--force}'[Force mode to overwrite entry in add mode]' \
 		{-h,--help}'[Print help usage]' \
 		{-v,--verbose}'[Verbose messages]' \
-		{-V,--version}'[Show dulge version]' \
+		{-V,--version}'[Show DULGE version]' \
 		'--privkey[Path to the private key for signing]:private key path:_files' \
 		'--signedby[Signature details]:signature details: ' \
 		- '(mode)' \

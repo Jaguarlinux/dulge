@@ -1,5 +1,6 @@
 /*-
- * Copyright (c) 2025 TigerClips1
+ * Copyright (c) 2009-2014 Juan Romero Pardines
+ * Copyright (c) 2000-2004 Dag-Erling Coïdan Smørgrav
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

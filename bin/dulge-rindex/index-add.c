@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
+ * Copyright (c) 2012-2015 Juan Romero Pardines.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,7 +21,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *-
  */
 
 #include <sys/stat.h>
@@ -88,6 +87,7 @@ repodata_commit(const char *repodir, const char *repoarch,
 
 		for (unsigned int i = 0; i < dulge_array_count(pkgshlibs); i++) {
 			const char *shlib = NULL;
+			bool alloc = false;
 			dulge_array_t users;
 			dulge_array_get_cstring_nocopy(pkgshlibs, i, &shlib);
 			if (!dulge_dictionary_get(oldshlibs, shlib))
@@ -96,8 +96,11 @@ repodata_commit(const char *repodir, const char *repoarch,
 			if (!users) {
 				users = dulge_array_create();
 				dulge_dictionary_set(usedshlibs, shlib, users);
+				alloc = true;
 			}
 			dulge_array_add_cstring(users, pkgname);
+			if (alloc)
+				dulge_object_release(users);
 		}
 	}
 	dulge_object_iterator_release(iter);
@@ -157,8 +160,7 @@ repodata_commit(const char *repodir, const char *repoarch,
 			for (unsigned int i = 0; i < dulge_array_count(users); i++) {
 				const char *user = NULL;
 				dulge_array_get_cstring_nocopy(users, i, &user);
-				dulge_dictionary_remove(usedshlibs, shlib);
-				printf("%s%s",pre, user);
+				printf("%s%s", pre, user);
 				pre = ", ";
 			}
 			printf(")\n");
@@ -184,6 +186,7 @@ repodata_commit(const char *repodir, const char *repoarch,
 			printf("index: added `%s' (%s).\n", pkgver, arch);
 			dulge_dictionary_set(index, pkgname, pkg);
 		}
+		dulge_object_iterator_release(iter);
 		stage = NULL;
 	}
 

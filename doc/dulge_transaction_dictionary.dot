@@ -43,6 +43,7 @@ digraph transaction_dictionary {
 	instsize [label="installed_size"];
 	dictionary -> repository [label="value"];
 	repository -> repoval [label="value"];
+	repoval [style=filled,fillcolor="yellowgreen",label="http://dulge.nopcode.org/repos/stable"];
 	dictionary -> archive_comptype [label="string"];
 	archive_comptype [label="archive-compression-type"];
 	archive_comptype -> comptype_gz [label="value"];

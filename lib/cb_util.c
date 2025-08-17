@@ -28,13 +28,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-#include <errno.h>
 
 #include "dulge_api_impl.h"
-
-#ifdef __clang__
-#pragma clang diagnostic ignored "-Wformat-nonliteral"
-#endif
 
 void HIDDEN
 dulge_set_cb_fetch(struct dulge_handle *xhp,
@@ -62,7 +57,7 @@ dulge_set_cb_fetch(struct dulge_handle *xhp,
 	(*xhp->fetch_cb)(&xfcd, xhp->fetch_cb_data);
 }
 
-int HIDDEN
+int HIDDEN PRINTF_LIKE(5, 6)
 dulge_set_cb_state(struct dulge_handle *xhp,
 		  dulge_state_t state,
 		  int err,

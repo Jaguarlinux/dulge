@@ -1,5 +1,6 @@
 /*-
- * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
+ * Copyright (c) 2015 Juan Romero Pardines.
+ * Copyright (c) 2020 Duncan Overbruck <mail@duncano.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,7 +22,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *-
  */
 
 #include <stdio.h>
@@ -346,9 +346,13 @@ main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	if (set_mode) {
+		// XXX: dulge_pkgdb_init
+		(void)dulge_pkgdb_get_pkg(&xh, "foo");
+
 		/* in set mode pkgdb must be locked and flushed on success */
-		if ((rv = dulge_pkgdb_lock(&xh)) != 0) {
+		if (dulge_pkgdb_lock(&xh) < 0) {
 			dulge_error_printf("failed to lock pkgdb: %s\n", strerror(rv));
+			dulge_end(&xh);
 			exit(EXIT_FAILURE);
 		}
 		if ((rv = dulge_alternatives_set(&xh, pkg, group)) == 0)
@@ -361,6 +365,7 @@ main(int argc, char **argv)
 			struct search_data sd = { 0 };
 			if ((sd.result = dulge_dictionary_create()) == NULL) {
 				dulge_error_printf("Failed to create dictionary: %s\n", strerror(errno));
+				dulge_end(&xh);
 				exit(EXIT_FAILURE);
 			}
 			sd.group = group;
@@ -368,12 +373,14 @@ main(int argc, char **argv)
 			if (rv != 0 && rv != ENOTSUP) {
 				fprintf(stderr, "Failed to initialize rpool: %s\n",
 				    strerror(rv));
+				dulge_end(&xh);
 				exit(EXIT_FAILURE);
 			}
 			if (dulge_dictionary_count(sd.result) > 0) {
 				print_alternatives(&xh, sd.result, group, true);
 			} else {
 				dulge_error_printf("no alternatives groups found\n");
+				dulge_end(&xh);
 				exit(EXIT_FAILURE);
 			}
 		} else {

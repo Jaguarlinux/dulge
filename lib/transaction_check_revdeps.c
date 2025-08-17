@@ -28,6 +28,7 @@
 #include <stdbool.h>
 #include <errno.h>
 
+#include "dulge.h"
 #include "dulge_api_impl.h"
 
 /*
@@ -136,9 +137,8 @@ dulge_transaction_check_revdeps(struct dulge_handle *xhp, dulge_array_t pkgs)
 		 * if pkg in transaction is not installed,
 		 * pass to next one.
 		 */
-		if (dulge_pkg_is_installed(xhp, pkgname) == 0) {
+		if (ttype == DULGE_TRANS_INSTALL)
 			continue;
-		}
 		/*
 		 * If pkg is installed but does not have revdeps,
 		 * pass to next one.

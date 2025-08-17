@@ -23,6 +23,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -61,84 +62,76 @@
  * data type is specified on its edge, i.e array, bool, integer, string,
  * dictionary.
  */
-static int pkgdb_fd = -1;
-static bool pkgdb_map_names_done = false;
 
 int
 dulge_pkgdb_lock(struct dulge_handle *xhp)
 {
+	char path[PATH_MAX];
 	mode_t prev_umask;
-	int rv = 0;
-	/*
-	 * Use a mandatory file lock to only allow one writer to pkgdb,
-	 * other writers will block.
-	 */
+	int r = 0;
+
+	if (access(xhp->rootdir, W_OK) == -1 && errno != ENOENT) {
+		return dulge_error_errno(errno,
+		    "failed to check whether the rootdir is writable: "
+		    "%s: %s\n",
+		    xhp->rootdir, strerror(errno));
+	}
+
+	if (dulge_path_join(path, sizeof(path), xhp->metadir, "lock", (char *)NULL) == -1) {
+		return dulge_error_errno(errno,
+		    "failed to create lockfile path: %s\n", strerror(errno));
+	}
+
 	prev_umask = umask(022);
-	xhp->pkgdb_plist = dulge_xasprintf("%s/%s", xhp->metadir, DULGE_PKGDB);
-	if (dulge_pkgdb_init(xhp) == ENOENT) {
-		/* if metadir does not exist, create it */
-		if (access(xhp->metadir, R_OK|X_OK) == -1) {
-			if (errno != ENOENT) {
-				rv = errno;
-				goto ret;
-			}
-			if (dulge_mkpath(xhp->metadir, 0755) == -1) {
-				rv = errno;
-				dulge_dbg_printf("[pkgdb] failed to create metadir "
-				    "%s: %s\n", xhp->metadir, strerror(rv));
-				goto ret;
-			}
+
+	/* if metadir does not exist, create it */
+	if (access(xhp->metadir, R_OK|X_OK) == -1) {
+		if (errno != ENOENT) {
+			umask(prev_umask);
+			return dulge_error_errno(errno,
+			    "failed to check access to metadir: %s: %s\n",
+			    xhp->metadir, strerror(-r));
 		}
-		/* if pkgdb is unexistent, create it with an empty dictionary */
-		xhp->pkgdb = dulge_dictionary_create();
-		if (!dulge_dictionary_externalize_to_file(xhp->pkgdb, xhp->pkgdb_plist)) {
-			rv = errno;
-			dulge_dbg_printf("[pkgdb] failed to create pkgdb "
-			    "%s: %s\n", xhp->pkgdb_plist, strerror(rv));
-			goto ret;
+		if (dulge_mkpath(xhp->metadir, 0755) == -1 && errno != EEXIST) {
+			umask(prev_umask);
+			return dulge_error_errno(errno,
+			    "failed to create metadir: %s: %s\n",
+			    xhp->metadir, strerror(errno));
 		}
 	}
 
-	if ((pkgdb_fd = open(xhp->pkgdb_plist, O_CREAT|O_RDWR|O_CLOEXEC, 0664)) == -1) {
-		rv = errno;
-		dulge_dbg_printf("[pkgdb] cannot open pkgdb for locking "
-		    "%s: %s\n", xhp->pkgdb_plist, strerror(rv));
-		free(xhp->pkgdb_plist);
-		goto ret;
+	xhp->lock_fd = open(path, O_CREAT|O_WRONLY|O_CLOEXEC, 0664);
+	if (xhp->lock_fd  == -1) {
+		return dulge_error_errno(errno,
+		    "failed to create lock file: %s: %s\n", path,
+		    strerror(errno));
 	}
-
-	/*
-	 * If we've acquired the file lock, then pkgdb is writable.
-	 */
-	if (lockf(pkgdb_fd, F_TLOCK, 0) == -1) {
-		rv = errno;
-		dulge_dbg_printf("[pkgdb] cannot lock pkgdb: %s\n", strerror(rv));
-	}
-	/*
-	 * Check if rootdir is writable.
-	 */
-	if (access(xhp->rootdir, W_OK) == -1) {
-		rv = errno;
-		dulge_dbg_printf("[pkgdb] rootdir %s: %s\n", xhp->rootdir, strerror(rv));
-	}
-
-ret:
 	umask(prev_umask);
-	return rv;
+
+	if (flock(xhp->lock_fd, LOCK_EX|LOCK_NB) == -1) {
+		if (errno != EWOULDBLOCK)
+			goto err;
+		dulge_warn_printf("package database locked, waiting...\n");
+	}
+
+	if (flock(xhp->lock_fd, LOCK_EX) == -1) {
+err:
+		close(xhp->lock_fd);
+		xhp->lock_fd = -1;
+		return dulge_error_errno(errno, "failed to lock file: %s: %s\n",
+		    path, strerror(errno));
+	}
+
+	return 0;
 }
 
 void
-dulge_pkgdb_unlock(struct dulge_handle *xhp UNUSED)
+dulge_pkgdb_unlock(struct dulge_handle *xhp)
 {
-	dulge_dbg_printf("%s: pkgdb_fd %d\n", __func__, pkgdb_fd);
-
-	if (pkgdb_fd != -1) {
-		if (lockf(pkgdb_fd, F_ULOCK, 0) == -1)
-			dulge_dbg_printf("[pkgdb] failed to unlock pkgdb: %s\n", strerror(errno));
-
-		(void)close(pkgdb_fd);
-		pkgdb_fd = -1;
-	}
+	if (xhp->lock_fd == -1)
+		return;
+	close(xhp->lock_fd);
+	xhp->lock_fd = -1;
 }
 
 static int
@@ -240,7 +233,7 @@ pkgdb_map_names(struct dulge_handle *xhp)
 	dulge_object_t obj;
 	int rv = 0;
 
-	if (pkgdb_map_names_done || !dulge_dictionary_count(xhp->pkgdb))
+	if (!dulge_dictionary_count(xhp->pkgdb))
 		return 0;
 
 	/*
@@ -269,9 +262,6 @@ pkgdb_map_names(struct dulge_handle *xhp)
 		}
 	}
 	dulge_object_iterator_release(iter);
-	if (!rv) {
-		pkgdb_map_names_done = true;
-	}
 	return rv;
 }
 
@@ -296,9 +286,7 @@ dulge_pkgdb_init(struct dulge_handle *xhp)
 
 	if ((rv = dulge_pkgdb_update(xhp, false, true)) != 0) {
 		if (rv != ENOENT)
-			dulge_dbg_printf("[pkgdb] cannot internalize "
-			    "pkgdb dictionary: %s\n", strerror(rv));
-
+			dulge_error_printf("failed to initialize pkgdb: %s\n", strerror(rv));
 		return rv;
 	}
 	if ((rv = pkgdb_map_names(xhp)) != 0) {
@@ -382,16 +370,17 @@ dulge_pkgdb_foreach_cb(struct dulge_handle *xhp,
 		void *arg)
 {
 	dulge_array_t allkeys;
-	int rv;
+	int r;
 
-	if ((rv = dulge_pkgdb_init(xhp)) != 0)
-		return rv;
+	// XXX: this should be done before calling the function...
+	if ((r = dulge_pkgdb_init(xhp)) != 0)
+		return r > 0 ? -r : r;
 
 	allkeys = dulge_dictionary_all_keys(xhp->pkgdb);
 	assert(allkeys);
-	rv = dulge_array_foreach_cb(xhp, allkeys, xhp->pkgdb, fn, arg);
+	r = dulge_array_foreach_cb(xhp, allkeys, xhp->pkgdb, fn, arg);
 	dulge_object_release(allkeys);
-	return rv;
+	return r;
 }
 
 int
@@ -400,16 +389,19 @@ dulge_pkgdb_foreach_cb_multi(struct dulge_handle *xhp,
 		void *arg)
 {
 	dulge_array_t allkeys;
-	int rv;
+	int r;
 
-	if ((rv = dulge_pkgdb_init(xhp)) != 0)
-		return rv;
+	// XXX: this should be done before calling the function...
+	if ((r = dulge_pkgdb_init(xhp)) != 0)
+		return r > 0 ? -r : r;
 
 	allkeys = dulge_dictionary_all_keys(xhp->pkgdb);
-	assert(allkeys);
-	rv = dulge_array_foreach_cb_multi(xhp, allkeys, xhp->pkgdb, fn, arg);
+	if (!allkeys)
+		return dulge_error_oom();
+
+	r = dulge_array_foreach_cb_multi(xhp, allkeys, xhp->pkgdb, fn, arg);
 	dulge_object_release(allkeys);
-	return rv;
+	return r;
 }
 
 dulge_dictionary_t

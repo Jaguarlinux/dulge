@@ -55,7 +55,7 @@
 static int
 trans_find_pkg(struct dulge_handle *xhp, const char *pkg, bool force)
 {
-	dulge_dictionary_t pkg_pkgdb = NULL, pkg_repod = NULL;
+	dulge_dictionary_t pkg_pkgdb = NULL, pkg_repod = NULL, vpkg_pkgdb = NULL;
 	dulge_object_t obj;
 	dulge_array_t pkgs;
 	pkg_state_t state = 0;
@@ -72,8 +72,12 @@ trans_find_pkg(struct dulge_handle *xhp, const char *pkg, bool force)
 	 */
 	if (dulge_pkg_name(buf, sizeof(buf), pkg)) {
 		pkg_pkgdb = dulge_pkgdb_get_pkg(xhp, buf);
+		if (!pkg_pkgdb)
+			vpkg_pkgdb = dulge_pkgdb_get_virtualpkg(xhp, buf);
 	} else {
 		pkg_pkgdb = dulge_pkgdb_get_pkg(xhp, pkg);
+		if (!pkg_pkgdb)
+			vpkg_pkgdb = dulge_pkgdb_get_virtualpkg(xhp, pkg);
 	}
 
 	if (xhp->flags & DULGE_FLAG_DOWNLOAD_ONLY) {
@@ -81,22 +85,23 @@ trans_find_pkg(struct dulge_handle *xhp, const char *pkg, bool force)
 		ttype = DULGE_TRANS_DOWNLOAD;
 	}
 
-	/*
-	 * Find out if the pkg has been found in repository pool.
-	 */
-	if (pkg_pkgdb == NULL) {
-		/* pkg not installed, perform installation */
-		ttype = DULGE_TRANS_INSTALL;
-		if (((pkg_repod = dulge_rpool_get_pkg(xhp, pkg)) == NULL) &&
-		    ((pkg_repod = dulge_rpool_get_virtualpkg(xhp, pkg)) == NULL)) {
-			/* not found */
-			return ENOENT;
-		}
-	} else {
+	if (vpkg_pkgdb) {
+		// virtual package installed, if there is no real package in
+		// the rpool, we are keeping the virtual package.
+		pkg_repod = dulge_rpool_get_pkg(xhp, pkg);
+		if (!pkg_repod)
+			pkg_pkgdb = vpkg_pkgdb;
+	}
+	if (pkg_pkgdb) {
+		// package already installed
 		if (force) {
 			ttype = DULGE_TRANS_REINSTALL;
 		} else {
 			ttype = DULGE_TRANS_UPDATE;
+		}
+		if (!dulge_dictionary_get_cstring_nocopy(pkg_pkgdb, "pkgname", &pkgname)) {
+			dulge_error_printf("missing `pkgname` property\n");
+			return EINVAL;
 		}
 		if (dulge_dictionary_get(pkg_pkgdb, "repolock")) {
 			struct dulge_repo *repo;
@@ -107,15 +112,21 @@ trans_find_pkg(struct dulge_handle *xhp, const char *pkg, bool force)
 				/* not found */
 				return ENOENT;
 			}
-			pkg_repod = dulge_repo_get_pkg(repo, pkg);
+			pkg_repod = dulge_repo_get_pkg(repo, pkgname);
 		} else {
 			/* find update from rpool */
-			pkg_repod = dulge_rpool_get_pkg(xhp, pkg);
+			pkg_repod = dulge_rpool_get_pkg(xhp, pkgname);
 		}
-		if (pkg_repod == NULL) {
-			/* not found */
-			return ENOENT;
-		}
+	} else {
+		ttype = DULGE_TRANS_INSTALL;
+		pkg_repod = dulge_rpool_get_pkg(xhp, pkg);
+		if (!pkg_repod)
+			pkg_repod = dulge_rpool_get_virtualpkg(xhp, pkg);
+	}
+
+	if (!pkg_repod) {
+		/* not found */
+		return ENOENT;
 	}
 
 	dulge_dictionary_get_cstring_nocopy(pkg_repod, "pkgver", &repopkgver);
@@ -179,6 +190,7 @@ trans_find_pkg(struct dulge_handle *xhp, const char *pkg, bool force)
 	}
 
 	if (!dulge_dictionary_get_cstring_nocopy(pkg_repod, "pkgname", &pkgname)) {
+		dulge_error_printf("missing `pkgname` property\n");
 		return EINVAL;
 	}
 	/*
@@ -234,7 +246,7 @@ dulge_autoupdate(struct dulge_handle *xhp)
 	int rv;
 
 	/*
-	 * Check if there's a new update for dulge before starting
+	 * Check if there's a new update for DULGE before starting
 	 * another transaction.
 	 */
 	if (((pkgd = dulge_pkgdb_get_pkg(xhp, "dulge")) == NULL) &&
@@ -274,7 +286,7 @@ dulge_autoupdate(struct dulge_handle *xhp)
 				return -1;
 		}
 		/*
-		 * Set dulge_FLAG_FORCE_REMOVE_REVDEPS to ignore broken
+		 * Set DULGE_FLAG_FORCE_REMOVE_REVDEPS to ignore broken
 		 * reverse dependencies in dulge_transaction_prepare().
 		 *
 		 * This won't skip revdeps of the dulge pkg, rather other

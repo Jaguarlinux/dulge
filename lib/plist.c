@@ -45,6 +45,7 @@ struct thread_data {
 	unsigned int slicecount;
 	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, void *, bool *);
 	void *fn_arg;
+	int r;
 };
 
 /**
@@ -61,7 +62,7 @@ array_foreach_thread(void *arg)
 	dulge_object_t obj, pkgd;
 	struct thread_data *thd = arg;
 	const char *key;
-	int rv;
+	int r;
 	bool loop_done = false;
 	unsigned i = thd->start;
 	unsigned int end = i + thd->slicecount;
@@ -74,15 +75,17 @@ array_foreach_thread(void *arg)
 				pkgd = dulge_dictionary_get_keysym(thd->dict, obj);
 				key = dulge_dictionary_keysym_cstring_nocopy(obj);
 				/* ignore internal objs */
-				if (strncmp(key, "_dulge_", 6) == 0)
+				if (strncmp(key, "_DULGE_", 6) == 0)
 					continue;
 			} else {
 				pkgd = obj;
 				key = NULL;
 			}
-			rv = (*thd->fn)(thd->xhp, pkgd, key, thd->fn_arg, &loop_done);
-			if (rv != 0 || loop_done)
+			r = (*thd->fn)(thd->xhp, pkgd, key, thd->fn_arg, &loop_done);
+			if (r != 0 || loop_done) {
+				thd->r = r;
 				return NULL;
+			}
 		}
 		/* Reserve more elements to compute */
 		pthread_mutex_lock(thd->reserved_lock);
@@ -103,14 +106,14 @@ dulge_array_foreach_cb_multi(struct dulge_handle *xhp,
 {
 	struct thread_data *thd;
 	unsigned int arraycount, slicecount;
-	int rv = 0, error = 0, i, maxthreads;
+	int r, error = 0, i, maxthreads;
 	unsigned int reserved;
 	pthread_mutex_t reserved_lock = PTHREAD_MUTEX_INITIALIZER;
 
 	assert(fn != NULL);
 
 	if (dulge_object_type(array) != DULGE_TYPE_ARRAY)
-		return 0;
+		return -EINVAL;
 
 	arraycount = dulge_array_count(array);
 	if (arraycount == 0)
@@ -121,7 +124,8 @@ dulge_array_foreach_cb_multi(struct dulge_handle *xhp,
 		return dulge_array_foreach_cb(xhp, array, dict, fn, arg);
 
 	thd = calloc(maxthreads, sizeof(*thd));
-	assert(thd);
+	if (!thd)
+		return dulge_error_oom();
 
 	// maxthread is boundchecked to be > 1
 	if((unsigned int)maxthreads >= arraycount) {
@@ -148,22 +152,48 @@ dulge_array_foreach_cb_multi(struct dulge_handle *xhp,
 		thd[i].slicecount = slicecount;
 		thd[i].arraycount = arraycount;
 
-		if ((rv = pthread_create(&thd[i].thread, NULL, array_foreach_thread, &thd[i])) != 0) {
-			error = rv;
+		r = -pthread_create(&thd[i].thread, NULL, array_foreach_thread, &thd[i]);
+		if (r < 0) {
+			dulge_error_printf(
+			    "failed to create thread: %s\n", strerror(-r));
 			break;
 		}
-
 	}
+
+	// if we are unable to create any threads, just do single threaded.
+	if (i == 0) {
+		pthread_mutex_destroy(&reserved_lock);
+		free(thd);
+		return dulge_array_foreach_cb(xhp, array, dict, fn, arg);
+	}
+
 	/* wait for all threads that were created successfully */
 	for (int c = 0; c < i; c++) {
-		if ((rv = pthread_join(thd[c].thread, NULL)) != 0)
-			error = rv;
+		r = -pthread_join(thd[c].thread, NULL);
+		if (r < 0) {
+			dulge_error_printf(
+			    "failed to wait on thread: %s\n", strerror(-r));
+			error++;
+		}
+	}
+
+	pthread_mutex_destroy(&reserved_lock);
+
+	if (error != 0) {
+		free(thd);
+		return -EAGAIN;
+	}
+
+	r = 0;
+	for (int j = 0; j < i; j++) {
+		if (thd[j].r == 0)
+			continue;
+		r = thd[j].r;
+		break;
 	}
 
 	free(thd);
-	pthread_mutex_destroy(&reserved_lock);
-
-	return error ? error : rv;
+	return r;
 }
 
 int
@@ -176,7 +206,7 @@ dulge_array_foreach_cb(struct dulge_handle *xhp,
 	dulge_dictionary_t pkgd;
 	dulge_object_t obj;
 	const char *key;
-	int rv = 0;
+	int r = 0;
 	bool loop_done = false;
 
 	for (unsigned int i = 0; i < dulge_array_count(array); i++) {
@@ -185,17 +215,17 @@ dulge_array_foreach_cb(struct dulge_handle *xhp,
 			pkgd = dulge_dictionary_get_keysym(dict, obj);
 			key = dulge_dictionary_keysym_cstring_nocopy(obj);
 			/* ignore internal objs */
-			if (strncmp(key, "_dulge_", 6) == 0)
+			if (strncmp(key, "_DULGE_", 6) == 0)
 				continue;
 		} else {
 			pkgd = obj;
 			key = NULL;
 		}
-		rv = (*fn)(xhp, pkgd, key, arg, &loop_done);
-		if (rv != 0 || loop_done)
-			break;
+		r = (*fn)(xhp, pkgd, key, arg, &loop_done);
+		if (r != 0 || loop_done)
+			return r;
 	}
-	return rv;
+	return 0;
 }
 
 dulge_object_iterator_t

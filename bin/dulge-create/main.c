@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
+ * Copyright (c) 2012-2019 Juan Romero Pardines.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,7 +21,6 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *-
  */
 
 #include <sys/mman.h>
@@ -574,13 +573,16 @@ static int
 walk_dir(const char *path,
 		int (*fn) (const char *, const struct stat *sb, const struct dirent *dir))
 {
-	int rv, i;
-	struct dirent **list;
-	char tmp_path[PATH_MAX] = { 0 };
+	char tmp_path[PATH_MAX] = "";
 	struct stat sb;
+	struct dirent **list;
+	int rv = 0;
+	int n;
 
-	rv = scandir(path, &list, NULL, alphasort);
-	for (i = rv - 1; i >= 0; i--) {
+	n = scandir(path, &list, NULL, alphasort);
+	if (n == -1)
+		die("scandir");
+	for (int i = n - 1; i >= 0; i--) {
 		if (strcmp(list[i]->d_name, ".") == 0 || strcmp(list[i]->d_name, "..") == 0)
 			continue;
 		if (strlen(path) + strlen(list[i]->d_name) + 1 >= PATH_MAX - 1) {
@@ -591,23 +593,22 @@ walk_dir(const char *path,
 		strncpy(tmp_path, path, PATH_MAX - 1);
 		strncat(tmp_path, "/", PATH_MAX - 1 - strlen(tmp_path));
 		strncat(tmp_path, list[i]->d_name, PATH_MAX - 1 - strlen(tmp_path));
-		if (lstat(tmp_path, &sb) < 0) {
-			break;
-		}
+		if (lstat(tmp_path, &sb) < 0)
+			die("lstat: %s", tmp_path);
 
 		if (S_ISDIR(sb.st_mode)) {
-			if (walk_dir(tmp_path, fn) < 0) {
-				rv = -1;
+			rv = walk_dir(tmp_path, fn);
+			if (rv != 0)
 				break;
-			}
 		}
 
 		rv = fn(tmp_path, &sb, list[i]);
-		if (rv != 0) {
+		if (rv != 0)
 			break;
-		}
 
 	}
+	for (int i = n - 1; i >= 0; i--)
+		free(list[i]);
 	free(list);
 	return rv;
 }
@@ -817,6 +818,8 @@ process_archive(struct archive *ar,
 	dulge_archive_append_buf(ar, xml, strlen(xml), "./props.plist",
 	    0644, "root", "root");
 	free(xml);
+	dulge_object_release(pkg_propsd);
+	pkg_propsd = NULL;
 
 	/* Add files.plist metadata file */
 	xml = dulge_dictionary_externalize(pkg_filesd);
@@ -825,6 +828,9 @@ process_archive(struct archive *ar,
 	dulge_archive_append_buf(ar, xml, strlen(xml), "./files.plist",
 	    0644, "root", "root");
 	free(xml);
+
+	dulge_object_release(all_filesd);
+	all_filesd = NULL;
 
 	/* Add all package data files and release resources */
 	while ((xe = TAILQ_FIRST(&xentry_list)) != NULL) {
@@ -837,6 +843,9 @@ process_archive(struct archive *ar,
 			fflush(stdout);
 		}
 		process_entry_file(ar, resolver, xe, NULL);
+		free(xe->file);
+		free(xe->target);
+		free(xe);
 	}
 }
 
@@ -1019,7 +1028,7 @@ main(int argc, char **argv)
 	if (!S_ISDIR(st.st_mode))
 		diex("destdir `%s' is not a directory!", destdir);
 	/*
-	 * Process dulge_PKGPROPS metadata file.
+	 * Process DULGE_PKGPROPS metadata file.
 	 */
 	pkg_propsd = dulge_dictionary_create();
 	if (pkg_propsd == NULL)
@@ -1154,6 +1163,7 @@ main(int argc, char **argv)
 		die("archive_write_open_fd: %s", tname);
 
 	process_archive(ar, resolver, pkgver, quiet);
+
 	/* Process hardlinks */
 	entry = NULL;
 	archive_entry_linkify(resolver, &entry, &sparse_entry);
