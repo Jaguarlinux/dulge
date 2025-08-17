@@ -57,15 +57,15 @@ bool	yesno(const char *, ...);
 bool	noyes(const char *, ...);
 
 /* from fetch_cb.c */
-jaguar	fetch_file_progress_cb(const struct dulge_fetch_cb_data *, jaguar *);
+void	fetch_file_progress_cb(const struct dulge_fetch_cb_data *, void *);
 
 /* from state_cb.c */
-int	state_cb(const struct dulge_state_cb_data *, jaguar *);
+int	state_cb(const struct dulge_state_cb_data *, void *);
 
 /* From util.c */
-jaguar	print_package_line(const char *, unsigned int, bool);
+void	print_package_line(const char *, unsigned int, bool);
 bool	print_trans_colmode(struct transaction *, unsigned int);
-int	get_maxcols(jaguar);
+int	get_maxcols(void);
 const char	*ttype2str(dulge_dictionary_t);
 
 #endif /* !_DULGE_INSTALL_DEFS_H_ */

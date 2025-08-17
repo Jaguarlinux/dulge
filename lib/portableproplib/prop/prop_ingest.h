@@ -77,14 +77,14 @@ extern "C" {
 #endif
 
 prop_ingest_context_t
-		prop_ingest_context_alloc(jaguar *);
-jaguar		prop_ingest_context_free(prop_ingest_context_t);
+		prop_ingest_context_alloc(void *);
+void		prop_ingest_context_free(prop_ingest_context_t);
 
 prop_ingest_error_t
 		prop_ingest_context_error(prop_ingest_context_t);
 prop_type_t	prop_ingest_context_type(prop_ingest_context_t);
 const char *	prop_ingest_context_key(prop_ingest_context_t);
-jaguar *		prop_ingest_context_private(prop_ingest_context_t);
+void *		prop_ingest_context_private(prop_ingest_context_t);
 
 bool		prop_dictionary_ingest(prop_dictionary_t,
 				       const prop_ingest_table_entry[],

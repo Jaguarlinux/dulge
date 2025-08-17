@@ -35,8 +35,8 @@ int	show_pkg_deps(struct dulge_handle *, const char *, bool, bool);
 int	show_pkg_revdeps(struct dulge_handle *, const char *, bool);
 
 /* from show-info-files.c */
-jaguar	show_pkg_info(dulge_dictionary_t);
-jaguar	show_pkg_info_one(dulge_dictionary_t, const char *);
+void	show_pkg_info(dulge_dictionary_t);
+void	show_pkg_info_one(dulge_dictionary_t, const char *);
 int	show_pkg_info_from_metadir(struct dulge_handle *, const char *,
 		const char *);
 int	show_pkg_files(dulge_dictionary_t);
@@ -45,7 +45,7 @@ int	repo_show_pkg_files(struct dulge_handle *, const char *);
 int	cat_file(struct dulge_handle *, const char *, const char *);
 int	repo_cat_file(struct dulge_handle *, const char *, const char *);
 int	repo_show_pkg_info(struct dulge_handle *, const char *, const char *);
-int 	repo_show_pkg_namedesc(struct dulge_handle *, dulge_object_t, jaguar *,
+int 	repo_show_pkg_namedesc(struct dulge_handle *, dulge_object_t, void *,
 		bool *);
 
 /* from ownedby.c */
@@ -54,10 +54,10 @@ int	ownedby(struct dulge_handle *, const char *, bool, bool);
 /* From list.c */
 unsigned int	find_longest_pkgver(struct dulge_handle *, dulge_object_t);
 
-int	list_pkgs_in_dict(struct dulge_handle *, dulge_object_t, const char *, jaguar *, bool *);
-int	list_manual_pkgs(struct dulge_handle *, dulge_object_t, const char *, jaguar *, bool *);
-int	list_hold_pkgs(struct dulge_handle *, dulge_object_t, const char *, jaguar *, bool *);
-int	list_repolock_pkgs(struct dulge_handle *, dulge_object_t, const char *, jaguar *, bool *);
+int	list_pkgs_in_dict(struct dulge_handle *, dulge_object_t, const char *, void *, bool *);
+int	list_manual_pkgs(struct dulge_handle *, dulge_object_t, const char *, void *, bool *);
+int	list_hold_pkgs(struct dulge_handle *, dulge_object_t, const char *, void *, bool *);
+int	list_repolock_pkgs(struct dulge_handle *, dulge_object_t, const char *, void *, bool *);
 int	list_orphans(struct dulge_handle *);
 int	list_pkgs_pkgdb(struct dulge_handle *);
 

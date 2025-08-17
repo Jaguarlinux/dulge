@@ -100,9 +100,9 @@ struct url_list {
 extern "C" {
 #endif
 
-jaguar		fetchIO_close(fetchIO *);
-ssize_t		fetchIO_read(fetchIO *, jaguar *, size_t);
-ssize_t		fetchIO_write(fetchIO *, const jaguar *, size_t);
+void		fetchIO_close(fetchIO *);
+ssize_t		fetchIO_read(fetchIO *, void *, size_t);
+ssize_t		fetchIO_write(fetchIO *, const void *, size_t);
 
 /* fetchIO-specific functions */
 fetchIO		*fetchXGetFile(struct url *, struct url_stat *, const char *);
@@ -148,18 +148,18 @@ struct url	*fetchMakeURL(const char *, const char *, int,
 struct url	*fetchParseURL(const char *);
 struct url	*fetchCopyURL(const struct url *);
 char		*fetchStringifyURL(const struct url *);
-jaguar		 fetchFreeURL(struct url *);
+void		 fetchFreeURL(struct url *);
 
 /* URL listening */
-jaguar		 fetchInitURLList(struct url_list *);
+void		 fetchInitURLList(struct url_list *);
 int		 fetchAppendURLList(struct url_list *, const struct url_list *);
-jaguar		 fetchFreeURLList(struct url_list *);
+void		 fetchFreeURLList(struct url_list *);
 char		*fetchUnquotePath(struct url *);
 char		*fetchUnquoteFilename(struct url *);
 
 /* Connection caching */
-jaguar		 fetchConnectionCacheInit(int, int);
-jaguar		 fetchConnectionCacheClose(jaguar);
+void		 fetchConnectionCacheInit(int, int);
+void		 fetchConnectionCacheClose(void);
 
 /* Authentication */
 typedef int (*auth_t)(struct url *);

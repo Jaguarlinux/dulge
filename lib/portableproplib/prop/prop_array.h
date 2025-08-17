@@ -42,7 +42,7 @@ typedef struct _prop_array *prop_array_t;
 extern "C" {
 #endif
 
-prop_array_t	prop_array_create(jaguar);
+prop_array_t	prop_array_create(void);
 prop_array_t	prop_array_create_with_capacity(unsigned int);
 
 prop_array_t	prop_array_copy(prop_array_t);
@@ -52,7 +52,7 @@ unsigned int	prop_array_capacity(prop_array_t);
 unsigned int	prop_array_count(prop_array_t);
 bool		prop_array_ensure_capacity(prop_array_t, unsigned int);
 
-jaguar		prop_array_make_immutable(prop_array_t);
+void		prop_array_make_immutable(prop_array_t);
 bool		prop_array_mutable(prop_array_t);
 
 prop_object_iterator_t prop_array_iterator(prop_array_t);
@@ -61,7 +61,7 @@ prop_object_t	prop_array_get(prop_array_t, unsigned int);
 bool		prop_array_set(prop_array_t, unsigned int, prop_object_t);
 bool		prop_array_add(prop_array_t, prop_object_t);
 bool		prop_array_add_first(prop_array_t, prop_object_t);
-jaguar		prop_array_remove(prop_array_t, unsigned int);
+void		prop_array_remove(prop_array_t, unsigned int);
 
 bool		prop_array_equals(prop_array_t, prop_array_t);
 

@@ -42,7 +42,7 @@ typedef struct _prop_string *prop_string_t;
 extern "C" {
 #endif
 
-prop_string_t	prop_string_create(jaguar);
+prop_string_t	prop_string_create(void);
 prop_string_t	prop_string_create_cstring(const char *);
 prop_string_t	prop_string_create_cstring_nocopy(const char *);
 

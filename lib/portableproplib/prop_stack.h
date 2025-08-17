@@ -38,13 +38,13 @@
 
 struct _prop_stack_intern_elem {
 	prop_object_t object;
-	jaguar *object_data[3];
+	void *object_data[3];
 };
 
 struct _prop_stack_extern_elem {
 	SLIST_ENTRY(_prop_stack_extern_elem) stack_link;
 	prop_object_t object;
-	jaguar *object_data[3];
+	void *object_data[3];
 };
 
 #define	PROP_STACK_INTERN_ELEMS	16
@@ -57,8 +57,8 @@ struct _prop_stack {
 
 typedef struct _prop_stack *prop_stack_t;
 
-jaguar	_prop_stack_init(prop_stack_t);
-bool	_prop_stack_push(prop_stack_t, prop_object_t, jaguar *, jaguar *, jaguar *);
-bool	_prop_stack_pop(prop_stack_t, prop_object_t *, jaguar **, jaguar **, jaguar **);
+void	_prop_stack_init(prop_stack_t);
+bool	_prop_stack_push(prop_stack_t, prop_object_t, void *, void *, void *);
+bool	_prop_stack_pop(prop_stack_t, prop_object_t *, void **, void **, void **);
 
 #endif

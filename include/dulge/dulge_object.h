@@ -35,7 +35,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef jaguar *dulge_object_t;
+typedef void *dulge_object_t;
 
 typedef enum {
 	DULGE_TYPE_UNKNOWN	=	0x00000000,
@@ -52,8 +52,8 @@ typedef enum {
 extern "C" {
 #endif
 
-jaguar		dulge_object_retain(dulge_object_t);
-jaguar		dulge_object_release(dulge_object_t);
+void		dulge_object_retain(dulge_object_t);
+void		dulge_object_release(dulge_object_t);
 
 dulge_type_t	dulge_object_type(dulge_object_t);
 
@@ -63,8 +63,8 @@ bool		dulge_object_equals_with_error(dulge_object_t, dulge_object_t, bool *);
 typedef struct _prop_object_iterator *dulge_object_iterator_t;
 
 dulge_object_t	dulge_object_iterator_next(dulge_object_iterator_t);
-jaguar		dulge_object_iterator_reset(dulge_object_iterator_t);
-jaguar		dulge_object_iterator_release(dulge_object_iterator_t);
+void		dulge_object_iterator_reset(dulge_object_iterator_t);
+void		dulge_object_iterator_release(dulge_object_iterator_t);
 
 #ifdef __cplusplus
 }

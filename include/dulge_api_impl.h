@@ -45,7 +45,7 @@
 #include "compat.h"
 
 #ifndef __UNCONST
-#define __UNCONST(a)	((jaguar *)(uintptr_t)(const jaguar *)(a))
+#define __UNCONST(a)	((void *)(uintptr_t)(const void *)(a))
 #endif
 
 #ifndef __arraycount
@@ -60,7 +60,7 @@ struct archive_entry;
  */
 int HIDDEN dewey_match(const char *, const char *);
 int HIDDEN dulge_pkgdb_init(struct dulge_handle *);
-jaguar HIDDEN dulge_pkgdb_release(struct dulge_handle *);
+void HIDDEN dulge_pkgdb_release(struct dulge_handle *);
 int HIDDEN dulge_pkgdb_conversion(struct dulge_handle *);
 int HIDDEN dulge_array_replace_dict_by_name(dulge_array_t, dulge_dictionary_t,
 		const char *);
@@ -69,8 +69,8 @@ int HIDDEN dulge_array_replace_dict_by_pattern(dulge_array_t, dulge_dictionary_t
 bool HIDDEN dulge_remove_pkg_from_array_by_name(dulge_array_t, const char *);
 bool HIDDEN dulge_remove_pkg_from_array_by_pattern(dulge_array_t, const char *);
 bool HIDDEN dulge_remove_pkg_from_array_by_pkgver(dulge_array_t, const char *);
-jaguar HIDDEN dulge_fetch_set_cache_connection(int, int);
-jaguar HIDDEN dulge_fetch_unset_cache_connection(jaguar);
+void HIDDEN dulge_fetch_set_cache_connection(int, int);
+void HIDDEN dulge_fetch_unset_cache_connection(void);
 int HIDDEN dulge_entry_is_a_conf_file(dulge_dictionary_t, const char *);
 int HIDDEN dulge_entry_install_conf_file(struct dulge_handle *, dulge_dictionary_t,
 		dulge_dictionary_t, struct archive_entry *, const char *,
@@ -104,7 +104,7 @@ int HIDDEN dulge_repo_sync(struct dulge_handle *, const char *);
 int HIDDEN dulge_file_hash_check_dictionary(struct dulge_handle *,
 		dulge_dictionary_t, const char *, const char *);
 int HIDDEN dulge_file_exec(struct dulge_handle *, const char *, ...);
-jaguar HIDDEN dulge_set_cb_fetch(struct dulge_handle *, off_t, off_t, off_t,
+void HIDDEN dulge_set_cb_fetch(struct dulge_handle *, off_t, off_t, off_t,
 		const char *, bool, bool, bool);
 int HIDDEN dulge_set_cb_state(struct dulge_handle *, dulge_state_t, int,
 		const char *, const char *, ...);
@@ -117,7 +117,7 @@ dulge_dictionary_t HIDDEN dulge_archive_get_dictionary(struct archive *,
 		struct archive_entry *);
 const char HIDDEN *vpkg_user_conf(struct dulge_handle *, const char *);
 
-struct archive HIDDEN *dulge_archive_read_new(jaguar);
+struct archive HIDDEN *dulge_archive_read_new(void);
 int HIDDEN dulge_archive_read_open(struct archive *ar, const char *path);
 int HIDDEN dulge_archive_read_open_remote(struct archive *ar, const char *url);
 int HIDDEN dulge_archive_errno(struct archive *ar);

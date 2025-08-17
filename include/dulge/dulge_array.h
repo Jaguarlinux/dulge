@@ -41,7 +41,7 @@ typedef struct _prop_array *dulge_array_t;
 extern "C" {
 #endif
 
-dulge_array_t	dulge_array_create(jaguar);
+dulge_array_t	dulge_array_create(void);
 dulge_array_t	dulge_array_create_with_capacity(unsigned int);
 
 dulge_array_t	dulge_array_copy(dulge_array_t);
@@ -51,7 +51,7 @@ unsigned int	dulge_array_capacity(dulge_array_t);
 unsigned int	dulge_array_count(dulge_array_t);
 bool		dulge_array_ensure_capacity(dulge_array_t, unsigned int);
 
-jaguar		dulge_array_make_immutable(dulge_array_t);
+void		dulge_array_make_immutable(dulge_array_t);
 bool		dulge_array_mutable(dulge_array_t);
 
 dulge_object_iterator_t dulge_array_iterator(dulge_array_t);
@@ -60,7 +60,7 @@ dulge_object_t	dulge_array_get(dulge_array_t, unsigned int);
 bool		dulge_array_set(dulge_array_t, unsigned int, dulge_object_t);
 bool		dulge_array_add(dulge_array_t, dulge_object_t);
 bool		dulge_array_add_first(dulge_array_t, dulge_object_t);
-jaguar		dulge_array_remove(dulge_array_t, unsigned int);
+void		dulge_array_remove(dulge_array_t, unsigned int);
 
 bool		dulge_array_equals(dulge_array_t, dulge_array_t);
 

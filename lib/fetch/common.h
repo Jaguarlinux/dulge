@@ -115,14 +115,14 @@ struct fetcherr {
 	const char	*string;
 };
 
-jaguar		 fetch_seterr(struct fetcherr *, int);
-jaguar		 fetch_syserr(jaguar);
-jaguar		 fetch_info(const char *, ...)  LIBFETCH_PRINTFLIKE(1, 2);
+void		 fetch_seterr(struct fetcherr *, int);
+void		 fetch_syserr(void);
+void		 fetch_info(const char *, ...)  LIBFETCH_PRINTFLIKE(1, 2);
 int		 fetch_default_port(const char *);
 int		 fetch_default_proxy_port(const char *);
 int		 fetch_bind(int, int, const char *);
 conn_t		*fetch_cache_get(const struct url *, int);
-jaguar		 fetch_cache_put(conn_t *, int (*)(conn_t *));
+void		 fetch_cache_put(conn_t *, int (*)(conn_t *));
 int		 fetch_socks5(conn_t *, struct url *, struct url *, int);
 conn_t		*fetch_connect(struct url *, int, int);
 conn_t		*fetch_reopen(int);
@@ -132,7 +132,7 @@ int		fetch_ssl_cb_verify_crt(int, X509_STORE_CTX*);
 int		 fetch_ssl(conn_t *, const struct url *, int);
 ssize_t		 fetch_read(conn_t *, char *, size_t);
 int		 fetch_getln(conn_t *);
-ssize_t		 fetch_write(conn_t *, const jaguar *, size_t);
+ssize_t		 fetch_write(conn_t *, const void *, size_t);
 int		 fetch_close(conn_t *);
 int		 fetch_add_entry(struct url_list *, struct url *, const char *, int);
 int		 fetch_netrc_auth(struct url *url);
@@ -144,8 +144,8 @@ int		 fetch_urlpath_safe(char);
 #define netdb_seterr(n)	 fetch_seterr(netdb_errlist, n)
 #define url_seterr(n)	 fetch_seterr(url_errlist, n)
 
-fetchIO		*fetchIO_unopen(jaguar *, ssize_t (*)(jaguar *, jaguar *, size_t),
-    ssize_t (*)(jaguar *, const jaguar *, size_t), jaguar (*)(jaguar *));
+fetchIO		*fetchIO_unopen(void *, ssize_t (*)(void *, void *, size_t),
+    ssize_t (*)(void *, const void *, size_t), void (*)(void *));
 
 /*
  * I don't really like exporting http_request() and ftp_request(),
@@ -168,7 +168,7 @@ fetchIO		*ftp_request(struct url *, const char *, const char *,
 #define CHECK_FLAG(x)	(flags && strchr(flags, (x)))
 
 #ifndef __UNCONST
-#define __UNCONST(a)    ((jaguar *)(uintptr_t)(const jaguar *)(a))
+#define __UNCONST(a)    ((void *)(uintptr_t)(const void *)(a))
 #endif
 
 #endif

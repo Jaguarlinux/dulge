@@ -66,8 +66,8 @@ bool		_prop_object_externalize_footer(
 				struct _prop_object_externalize_context *);
 
 struct _prop_object_externalize_context *
-	_prop_object_externalize_context_alloc(jaguar);
-jaguar	_prop_object_externalize_context_free(
+	_prop_object_externalize_context_alloc(void);
+void	_prop_object_externalize_context_free(
 				struct _prop_object_externalize_context *);
 
 typedef enum {
@@ -138,7 +138,7 @@ prop_object_t	_prop_generic_internalize(const char *, const char *);
 
 struct _prop_object_internalize_context *
 		_prop_object_internalize_context_alloc(const char *);
-jaguar		_prop_object_internalize_context_free(
+void		_prop_object_internalize_context_free(
 				struct _prop_object_internalize_context *);
 
 bool		_prop_object_externalize_write_file(const char *,
@@ -151,7 +151,7 @@ struct _prop_object_internalize_mapped_file {
 
 struct _prop_object_internalize_mapped_file *
 		_prop_object_internalize_map_file(const char *);
-jaguar		_prop_object_internalize_unmap_file(
+void		_prop_object_internalize_unmap_file(
 				struct _prop_object_internalize_mapped_file *);
 
 typedef bool (*prop_object_internalizer_t)(prop_stack_t, prop_object_t *,
@@ -159,7 +159,7 @@ typedef bool (*prop_object_internalizer_t)(prop_stack_t, prop_object_t *,
 typedef bool (*prop_object_internalizer_continue_t)(prop_stack_t,
 				prop_object_t *,
 				struct _prop_object_internalize_context *,
-				jaguar *, prop_object_t);
+				void *, prop_object_t);
 
 	/* These are here because they're required by shared code. */
 bool		_prop_array_internalize(prop_stack_t, prop_object_t *,
@@ -187,14 +187,14 @@ struct _prop_object_type {
 	 * Must be implemented if pot_free can return anything other than
 	 * _PROP_OBJECT_FREE_DONE.
 	 */
-	jaguar	(*pot_emergency_free)(prop_object_t);
+	void	(*pot_emergency_free)(prop_object_t);
 	/* func to externalize object */
 	bool	(*pot_extern)(struct _prop_object_externalize_context *,
-			      jaguar *);
+			      void *);
 	/* func to test quality */
 	_prop_object_equals_rv_t
 		(*pot_equals)(prop_object_t, prop_object_t,
-			      jaguar **, jaguar **,
+			      void **, void **,
 			      prop_object_t *, prop_object_t *);
 	/*
 	 * func to finish equality iteration.
@@ -202,9 +202,9 @@ struct _prop_object_type {
 	 * Must be implemented if pot_equals can return
 	 * _PROP_OBJECT_EQUALS_RECURSE
 	 */
-	jaguar	(*pot_equals_finish)(prop_object_t, prop_object_t);
-	jaguar    (*pot_lock)(jaguar);
-	jaguar    (*pot_unlock)(jaguar);
+	void	(*pot_equals_finish)(prop_object_t, prop_object_t);
+	void    (*pot_lock)(void);
+	void    (*pot_unlock)(void);
 };
 
 struct _prop_object {
@@ -212,13 +212,13 @@ struct _prop_object {
 	uint32_t	po_refcnt;		/* reference count */
 };
 
-jaguar		_prop_object_init(struct _prop_object *,
+void		_prop_object_init(struct _prop_object *,
 				  const struct _prop_object_type *);
-jaguar		_prop_object_fini(struct _prop_object *);
+void		_prop_object_fini(struct _prop_object *);
 
 struct _prop_object_iterator {
-	prop_object_t	(*pi_next_object)(jaguar *);
-	jaguar		(*pi_reset)(jaguar *);
+	prop_object_t	(*pi_next_object)(void *);
+	void		(*pi_reset)(void *);
 	prop_object_t	pi_obj;
 	uint32_t	pi_version;
 };
@@ -274,7 +274,7 @@ struct _prop_object_iterator {
 
 #define _PROP_ONCE_DECL(x)						\
 	static pthread_once_t x = PTHREAD_ONCE_INIT;
-#define _PROP_ONCE_RUN(x,f)		pthread_once(&(x),(jaguar(*)(jaguar))f)
+#define _PROP_ONCE_RUN(x,f)		pthread_once(&(x),(void(*)(void))f)
 
 #ifndef HAVE_ATOMICS /* NO ATOMIC SUPPORT, USE A MUTEX */
 
@@ -308,12 +308,12 @@ struct _prop_object_iterator {
 
 #define _PROP_ATOMIC_INC32(x)						\
 do {									\
-	(jaguar)__sync_fetch_and_add(x, 1);				\
+	(void)__sync_fetch_and_add(x, 1);				\
 } while (/*CONSTCOND*/0)
 
 #define _PROP_ATOMIC_DEC32(x)						\
 do {									\
-	(jaguar)__sync_fetch_and_sub(x, 1);				\
+	(void)__sync_fetch_and_sub(x, 1);				\
 } while (/*CONSTCOND*/0)
 
 #define _PROP_ATOMIC_INC32_NV(x, v)					\

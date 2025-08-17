@@ -89,7 +89,7 @@ typedef struct rb_node {
 #define	RB_FATHER(rb) \
     ((struct rb_node *)((rb)->rb_info & ~RB_FLAG_MASK))
 #define	RB_SET_FATHER(rb, father) \
-    ((jaguar)((rb)->rb_info = (uintptr_t)(father)|((rb)->rb_info & RB_FLAG_MASK)))
+    ((void)((rb)->rb_info = (uintptr_t)(father)|((rb)->rb_info & RB_FLAG_MASK)))
 
 #define	RB_SENTINEL_P(rb)	((rb) == NULL)
 #define	RB_LEFT_SENTINEL_P(rb)	RB_SENTINEL_P((rb)->rb_left)
@@ -106,16 +106,16 @@ typedef struct rb_node {
 #define	RB_LEFT_P(rb)		(RB_POSITION(rb) == RB_DIR_LEFT)
 #define	RB_RED_P(rb) 		(!RB_SENTINEL_P(rb) && ((rb)->rb_info & RB_FLAG_RED) != 0)
 #define	RB_BLACK_P(rb) 		(RB_SENTINEL_P(rb) || ((rb)->rb_info & RB_FLAG_RED) == 0)
-#define	RB_MARK_RED(rb) 	((jaguar)((rb)->rb_info |= RB_FLAG_RED))
-#define	RB_MARK_BLACK(rb) 	((jaguar)((rb)->rb_info &= ~RB_FLAG_RED))
-#define	RB_INVERT_COLOR(rb) 	((jaguar)((rb)->rb_info ^= RB_FLAG_RED))
+#define	RB_MARK_RED(rb) 	((void)((rb)->rb_info |= RB_FLAG_RED))
+#define	RB_MARK_BLACK(rb) 	((void)((rb)->rb_info &= ~RB_FLAG_RED))
+#define	RB_INVERT_COLOR(rb) 	((void)((rb)->rb_info ^= RB_FLAG_RED))
 #define	RB_ROOT_P(rbt, rb)	((rbt)->rbt_root == (rb))
 #define	RB_SET_POSITION(rb, position) \
-    ((jaguar)((position) ? ((rb)->rb_info |= RB_FLAG_POSITION) : \
+    ((void)((position) ? ((rb)->rb_info |= RB_FLAG_POSITION) : \
     ((rb)->rb_info &= ~RB_FLAG_POSITION)))
-#define	RB_ZERO_PROPERTIES(rb)	((jaguar)((rb)->rb_info &= ~RB_FLAG_MASK))
+#define	RB_ZERO_PROPERTIES(rb)	((void)((rb)->rb_info &= ~RB_FLAG_MASK))
 #define	RB_COPY_PROPERTIES(dst, src) \
-    ((jaguar)((dst)->rb_info ^= ((dst)->rb_info ^ (src)->rb_info) & RB_FLAG_MASK))
+    ((void)((dst)->rb_info ^= ((dst)->rb_info ^ (src)->rb_info) & RB_FLAG_MASK))
 #define RB_SWAP_PROPERTIES(a, b) do { \
     uintptr_t xorinfo = ((a)->rb_info ^ (b)->rb_info) & RB_FLAG_MASK; \
     (a)->rb_info ^= xorinfo; \
@@ -163,16 +163,16 @@ TAILQ_HEAD(rb_node_qh, rb_node);
  *	return 0 if they are considered same.
  */
 
-typedef signed int (*const rbto_compare_nodes_fn)(jaguar *,
-    const jaguar *, const jaguar *);
-typedef signed int (*const rbto_compare_key_fn)(jaguar *,
-    const jaguar *, const jaguar *);
+typedef signed int (*const rbto_compare_nodes_fn)(void *,
+    const void *, const void *);
+typedef signed int (*const rbto_compare_key_fn)(void *,
+    const void *, const void *);
 
 typedef struct {
 	rbto_compare_nodes_fn rbto_compare_nodes;
 	rbto_compare_key_fn rbto_compare_key;
 	size_t rbto_node_offset;
-	jaguar *rbto_context;
+	void *rbto_context;
 } rb_tree_ops_t;
 
 typedef struct rb_tree {
@@ -194,25 +194,25 @@ typedef struct rb_tree {
 } rb_tree_t;
 
 #ifdef RBSTATS
-#define	RBSTAT_INC(v)	((jaguar)((v)++))
-#define	RBSTAT_DEC(v)	((jaguar)((v)--))
+#define	RBSTAT_INC(v)	((void)((v)++))
+#define	RBSTAT_DEC(v)	((void)((v)--))
 #else
 #define	RBSTAT_INC(v)	do { } while (/*CONSTCOND*/0)
 #define	RBSTAT_DEC(v)	do { } while (/*CONSTCOND*/0)
 #endif
 
-jaguar	rb_tree_init(rb_tree_t *, const rb_tree_ops_t *);
-jaguar *	rb_tree_insert_node(rb_tree_t *, jaguar *);
-jaguar *	rb_tree_find_node(rb_tree_t *, const jaguar *);
-jaguar *	rb_tree_find_node_geq(rb_tree_t *, const jaguar *);
-jaguar *	rb_tree_find_node_leq(rb_tree_t *, const jaguar *);
-jaguar	rb_tree_remove_node(rb_tree_t *, jaguar *);
-jaguar *	rb_tree_iterate(rb_tree_t *, jaguar *, const unsigned int);
+void	rb_tree_init(rb_tree_t *, const rb_tree_ops_t *);
+void *	rb_tree_insert_node(rb_tree_t *, void *);
+void *	rb_tree_find_node(rb_tree_t *, const void *);
+void *	rb_tree_find_node_geq(rb_tree_t *, const void *);
+void *	rb_tree_find_node_leq(rb_tree_t *, const void *);
+void	rb_tree_remove_node(rb_tree_t *, void *);
+void *	rb_tree_iterate(rb_tree_t *, void *, const unsigned int);
 #ifdef RBDEBUG
-jaguar	rb_tree_check(const rb_tree_t *, bool);
+void	rb_tree_check(const rb_tree_t *, bool);
 #endif
 #ifdef RBSTATS
-jaguar	rb_tree_depths(const rb_tree_t *, size_t *);
+void	rb_tree_depths(const rb_tree_t *, size_t *);
 #endif
 
 #ifdef __cplusplus
