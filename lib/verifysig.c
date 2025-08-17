@@ -108,7 +108,7 @@ dulge_verify_signature(struct dulge_repo *repo, const char *sigfile,
 	if (dulge_object_type(pubkey) != DULGE_TYPE_DATA)
 		goto out;
 
-	if (!dulge_mmap_file(sigfile, (void *)&sig_buf, &sigbuflen, &sigfilelen)) {
+	if (!dulge_mmap_file(sigfile, (jaguar *)&sig_buf, &sigbuflen, &sigfilelen)) {
 		dulge_dbg_printf("can't open signature file %s: %s\n",
 		    sigfile, strerror(errno));
 		goto out;
@@ -125,7 +125,7 @@ out:
 	if (rkeyfile)
 		free(rkeyfile);
 	if (sig_buf)
-		(void)munmap(sig_buf, sigbuflen);
+		(jaguar)munmap(sig_buf, sigbuflen);
 	if (repokeyd)
 		dulge_object_release(repokeyd);
 

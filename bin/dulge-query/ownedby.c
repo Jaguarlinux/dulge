@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2010-2015 Juan Romero Pardines.
+ * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ struct ffdata {
 	dulge_dictionary_t filesd;
 };
 
-static void
+static jaguar
 match_files_by_pattern(dulge_dictionary_t pkg_filesd,
 		       dulge_dictionary_keysym_t key,
 		       struct ffdata *ffd,
@@ -99,7 +99,7 @@ static int
 ownedby_pkgdb_cb(struct dulge_handle *xhp,
 		dulge_object_t obj,
 		const char *obj_key UNUSED,
-		void *arg,
+		jaguar *arg,
 		bool *done UNUSED)
 {
 	dulge_dictionary_t pkgmetad;
@@ -107,8 +107,8 @@ ownedby_pkgdb_cb(struct dulge_handle *xhp,
 	struct ffdata *ffd = arg;
 	const char *pkgver = NULL;
 
-	(void)obj_key;
-	(void)done;
+	(jaguar)obj_key;
+	(jaguar)done;
 
 	dulge_dictionary_get_cstring_nocopy(obj, "pkgver", &pkgver);
 	pkgmetad = dulge_pkgdb_get_pkg_files(xhp, pkgver);
@@ -131,7 +131,7 @@ static int
 repo_match_cb(struct dulge_handle *xhp,
 		dulge_object_t obj,
 		const char *key UNUSED,
-		void *arg,
+		jaguar *arg,
 		bool *done UNUSED)
 {
 	char bfile[PATH_MAX];
@@ -167,7 +167,7 @@ repo_match_cb(struct dulge_handle *xhp,
 }
 
 static int
-repo_ownedby_cb(struct dulge_repo *repo, void *arg, bool *done UNUSED)
+repo_ownedby_cb(struct dulge_repo *repo, jaguar *arg, bool *done UNUSED)
 {
 	dulge_array_t allkeys;
 	struct ffdata *ffd = arg;

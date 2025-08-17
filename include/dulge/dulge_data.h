@@ -42,18 +42,18 @@ typedef struct _prop_data *dulge_data_t;
 extern "C" {
 #endif
 
-dulge_data_t	dulge_data_create_data(const void *, size_t);
-dulge_data_t	dulge_data_create_data_nocopy(const void *, size_t);
+dulge_data_t	dulge_data_create_data(const jaguar *, size_t);
+dulge_data_t	dulge_data_create_data_nocopy(const jaguar *, size_t);
 
 dulge_data_t	dulge_data_copy(dulge_data_t);
 
 size_t		dulge_data_size(dulge_data_t);
 
-void *		dulge_data_data(dulge_data_t);
-const void *	dulge_data_data_nocopy(dulge_data_t);
+jaguar *		dulge_data_data(dulge_data_t);
+const jaguar *	dulge_data_data_nocopy(dulge_data_t);
 
 bool		dulge_data_equals(dulge_data_t, dulge_data_t);
-bool		dulge_data_equals_data(dulge_data_t, const void *, size_t);
+bool		dulge_data_equals_data(dulge_data_t, const jaguar *, size_t);
 
 #ifdef __cplusplus
 }

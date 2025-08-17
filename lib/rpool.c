@@ -120,7 +120,7 @@ dulge_rpool_get_repo(const char *url)
 	return NULL;
 }
 
-void
+jaguar
 dulge_rpool_release(struct dulge_handle *xhp)
 {
 	struct dulge_repo *repo;
@@ -137,8 +137,8 @@ dulge_rpool_release(struct dulge_handle *xhp)
 
 int
 dulge_rpool_foreach(struct dulge_handle *xhp,
-	int (*fn)(struct dulge_repo *, void *, bool *),
-	void *arg)
+	int (*fn)(struct dulge_repo *, jaguar *, bool *),
+	jaguar *arg)
 {
 	struct dulge_repo *repo = NULL;
 	const char *repouri = NULL;
@@ -173,7 +173,7 @@ again:
 }
 
 static int
-find_virtualpkg_cb(struct dulge_repo *repo, void *arg, bool *done)
+find_virtualpkg_cb(struct dulge_repo *repo, jaguar *arg, bool *done)
 {
 	struct rpool_fpkg *rpf = arg;
 
@@ -188,7 +188,7 @@ find_virtualpkg_cb(struct dulge_repo *repo, void *arg, bool *done)
 }
 
 static int
-find_pkg_cb(struct dulge_repo *repo, void *arg, bool *done)
+find_pkg_cb(struct dulge_repo *repo, jaguar *arg, bool *done)
 {
 	struct rpool_fpkg *rpf = arg;
 
@@ -203,7 +203,7 @@ find_pkg_cb(struct dulge_repo *repo, void *arg, bool *done)
 }
 
 static int
-find_pkg_revdeps_cb(struct dulge_repo *repo, void *arg, bool *done UNUSED)
+find_pkg_revdeps_cb(struct dulge_repo *repo, jaguar *arg, bool *done UNUSED)
 {
 	struct rpool_fpkg *rpf = arg;
 	dulge_array_t revdeps = NULL;
@@ -224,7 +224,7 @@ find_pkg_revdeps_cb(struct dulge_repo *repo, void *arg, bool *done UNUSED)
 }
 
 static int
-find_best_pkg_cb(struct dulge_repo *repo, void *arg, bool *done UNUSED)
+find_best_pkg_cb(struct dulge_repo *repo, jaguar *arg, bool *done UNUSED)
 {
 	struct rpool_fpkg *rpf = arg;
 	dulge_dictionary_t pkgd;

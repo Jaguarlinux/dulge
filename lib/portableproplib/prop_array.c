@@ -51,20 +51,20 @@ _PROP_POOL_INIT(_prop_array_pool, sizeof(struct _prop_array), "proparay")
 
 static _prop_object_free_rv_t
 		_prop_array_free(prop_stack_t, prop_object_t *);
-static void	_prop_array_emergency_free(prop_object_t);
+static jaguar	_prop_array_emergency_free(prop_object_t);
 static bool	_prop_array_externalize(
 				struct _prop_object_externalize_context *,
-				void *);
+				jaguar *);
 static _prop_object_equals_rv_t
 		_prop_array_equals(prop_object_t, prop_object_t,
-				   void **, void **,
+				   jaguar **, jaguar **,
 				   prop_object_t *, prop_object_t *);
-static void	_prop_array_equals_finish(prop_object_t, prop_object_t);
+static jaguar	_prop_array_equals_finish(prop_object_t, prop_object_t);
 static prop_object_iterator_t
 		_prop_array_iterator_locked(prop_array_t);
 static prop_object_t
-		_prop_array_iterator_next_object_locked(void *);
-static void	_prop_array_iterator_reset_locked(void *);
+		_prop_array_iterator_next_object_locked(jaguar *);
+static jaguar	_prop_array_iterator_reset_locked(jaguar *);
 
 static const struct _prop_object_type _prop_object_type_array = {
 	.pot_type		=	PROP_TYPE_ARRAY,
@@ -132,7 +132,7 @@ _prop_array_free(prop_stack_t stack, prop_object_t *obj)
 	return (_PROP_OBJECT_FREE_RECURSE);
 }
 
-static void
+static jaguar
 _prop_array_emergency_free(prop_object_t obj)
 {
 	prop_array_t pa = obj;
@@ -143,7 +143,7 @@ _prop_array_emergency_free(prop_object_t obj)
 
 static bool
 _prop_array_externalize(struct _prop_object_externalize_context *ctx,
-			void *v)
+			jaguar *v)
 {
 	prop_array_t pa = v;
 	struct _prop_object *po;
@@ -197,7 +197,7 @@ _prop_array_externalize(struct _prop_object_externalize_context *ctx,
 /* ARGSUSED */
 static _prop_object_equals_rv_t
 _prop_array_equals(prop_object_t v1, prop_object_t v2,
-    void **stored_pointer1, void **stored_pointer2,
+    jaguar **stored_pointer1, jaguar **stored_pointer2,
     prop_object_t *next_obj1, prop_object_t *next_obj2)
 {
 	prop_array_t array1 = v1;
@@ -230,8 +230,8 @@ _prop_array_equals(prop_object_t v1, prop_object_t v2,
 	}
 	_PROP_ASSERT(idx < array1->pa_count);
 
-	*stored_pointer1 = (void *)(idx + 1);
-	*stored_pointer2 = (void *)(idx + 1);
+	*stored_pointer1 = (jaguar *)(idx + 1);
+	*stored_pointer2 = (jaguar *)(idx + 1);
 
 	*next_obj1 = array1->pa_array[idx];
 	*next_obj2 = array2->pa_array[idx];
@@ -244,7 +244,7 @@ _prop_array_equals(prop_object_t v1, prop_object_t v2,
 	return (rv);
 }
 
-static void
+static jaguar
 _prop_array_equals_finish(prop_object_t v1, prop_object_t v2)
 {
 	_PROP_RWLOCK_UNLOCK(((prop_array_t)v1)->pa_rwlock);
@@ -309,7 +309,7 @@ _prop_array_expand(prop_array_t pa, unsigned int capacity)
 }
 
 static prop_object_t
-_prop_array_iterator_next_object_locked(void *v)
+_prop_array_iterator_next_object_locked(jaguar *v)
 {
 	struct _prop_array_iterator *pai = v;
 	prop_array_t pa = pai->pai_base.pi_obj;
@@ -333,7 +333,7 @@ _prop_array_iterator_next_object_locked(void *v)
 }
 
 static prop_object_t
-_prop_array_iterator_next_object(void *v)
+_prop_array_iterator_next_object(jaguar *v)
 {
 	struct _prop_array_iterator *pai = v;
 	prop_array_t pa _PROP_ARG_UNUSED = pai->pai_base.pi_obj;
@@ -347,8 +347,8 @@ _prop_array_iterator_next_object(void *v)
 	return (po);
 }
 
-static void
-_prop_array_iterator_reset_locked(void *v)
+static jaguar
+_prop_array_iterator_reset_locked(jaguar *v)
 {
 	struct _prop_array_iterator *pai = v;
 	prop_array_t pa = pai->pai_base.pi_obj;
@@ -359,8 +359,8 @@ _prop_array_iterator_reset_locked(void *v)
 	pai->pai_base.pi_version = pa->pa_version;
 }
 
-static void
-_prop_array_iterator_reset(void *v)
+static jaguar
+_prop_array_iterator_reset(jaguar *v)
 {
 	struct _prop_array_iterator *pai = v;
 	prop_array_t pa _PROP_ARG_UNUSED = pai->pai_base.pi_obj;
@@ -377,7 +377,7 @@ _prop_array_iterator_reset(void *v)
  *	Create an empty array.
  */
 prop_array_t
-prop_array_create(void)
+prop_array_create(jaguar)
 {
 
 	return (_prop_array_alloc(0));
@@ -545,7 +545,7 @@ prop_array_iterator(prop_array_t pa)
  * prop_array_make_immutable --
  *	Make the array immutable.
  */
-void
+jaguar
 prop_array_make_immutable(prop_array_t pa)
 {
 
@@ -741,7 +741,7 @@ prop_array_add_first(prop_array_t pa, prop_object_t po)
  *	Remove the reference to an object from an array at the specified
  *	index.	The array will be compacted following the removal.
  */
-void
+jaguar
 prop_array_remove(prop_array_t pa, unsigned int idx)
 {
 	prop_object_t po;
@@ -850,7 +850,7 @@ static bool
 _prop_array_internalize_continue(prop_stack_t stack,
     prop_object_t *obj,
     struct _prop_object_internalize_context *ctx,
-    void *data, prop_object_t child)
+    jaguar *data, prop_object_t child)
 {
 	prop_array_t array;
 

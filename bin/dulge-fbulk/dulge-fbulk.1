@@ -3,17 +3,17 @@
 .Os
 .Sh NAME
 .Nm dulge-fbulk
-.Nd DULGE utility to perform a fast bulk build of void-packages
+.Nd DULGE utility to perform a fast bulk build of jaguar-packages
 .Sh SYNOPSIS
 .Nm
 .Op OPTIONS
-.Ar /path/to/void-packages
+.Ar /path/to/jaguar-packages
 .Op pkgN pkg+N ...
 .Sh DESCRIPTION
 The
 .Nm
 utility iterates all srcpkg directories in the
-.Xr void-packages
+.Xr jaguar-packages
 repository or processes the
 .Xr pkgN
 arguments, and then runs
@@ -73,7 +73,7 @@ A descriptive error message will be printed to stderr.
 The
 .Ar masterdir
 in the
-.Ar void-packages
+.Ar jaguar-packages
 repository must be fully populated for chroot operations, and some options
 need to be set in
 .Ar etc/conf
@@ -127,4 +127,4 @@ Probably, but I try to make this not happen. Use it under your own
 responsibility and enjoy your life.
 .Pp
 Report bugs at
-.Lk https://github.com/void-linux/dulge/issues
+.Lk https://github.com/jaguar-linux/dulge/issues

@@ -113,7 +113,7 @@ prop ## type ## _internalize_from_zfile(const char *fname)				\
 											\
 	/* we are done */								\
 out2:											\
-	(void)inflateEnd(&strm);							\
+	(jaguar)inflateEnd(&strm);							\
 out1:											\
 	obj = prop ## type ## _internalize(uncomp_xml);					\
 	_PROP_FREE(uncomp_xml, M_TEMP);							\

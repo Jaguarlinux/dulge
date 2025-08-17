@@ -46,7 +46,7 @@ incorrect_dep_vpkg_body() {
 atf_test_case incorrect_dep_issue45
 
 incorrect_dep_issue45_head() {
-	atf_set "descr" "Test for package deps: pkg depends on itself (issue #45: https://github.com/voidlinux/dulge/issues/45)"
+	atf_set "descr" "Test for package deps: pkg depends on itself (issue #45: https://github.com/jaguarlinux/dulge/issues/45)"
 }
 
 incorrect_dep_issue45_body() {

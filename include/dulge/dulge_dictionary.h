@@ -43,7 +43,7 @@ typedef struct _prop_dictionary_keysym *dulge_dictionary_keysym_t;
 extern "C" {
 #endif
 
-dulge_dictionary_t dulge_dictionary_create(void);
+dulge_dictionary_t dulge_dictionary_create(jaguar);
 dulge_dictionary_t dulge_dictionary_create_with_capacity(unsigned int);
 
 dulge_dictionary_t dulge_dictionary_copy(dulge_dictionary_t);
@@ -53,7 +53,7 @@ unsigned int	dulge_dictionary_count(dulge_dictionary_t);
 bool		dulge_dictionary_ensure_capacity(dulge_dictionary_t,
 						unsigned int);
 
-void		dulge_dictionary_make_immutable(dulge_dictionary_t);
+jaguar		dulge_dictionary_make_immutable(dulge_dictionary_t);
 
 dulge_object_iterator_t dulge_dictionary_iterator(dulge_dictionary_t);
 dulge_array_t	dulge_dictionary_all_keys(dulge_dictionary_t);
@@ -61,14 +61,14 @@ dulge_array_t	dulge_dictionary_all_keys(dulge_dictionary_t);
 dulge_object_t	dulge_dictionary_get(dulge_dictionary_t, const char *);
 bool		dulge_dictionary_set(dulge_dictionary_t, const char *,
 				    dulge_object_t);
-void		dulge_dictionary_remove(dulge_dictionary_t, const char *);
+jaguar		dulge_dictionary_remove(dulge_dictionary_t, const char *);
 
 dulge_object_t	dulge_dictionary_get_keysym(dulge_dictionary_t,
 					   dulge_dictionary_keysym_t);
 bool		dulge_dictionary_set_keysym(dulge_dictionary_t,
 					   dulge_dictionary_keysym_t,
 					   dulge_object_t);
-void		dulge_dictionary_remove_keysym(dulge_dictionary_t,
+jaguar		dulge_dictionary_remove_keysym(dulge_dictionary_t,
 					      dulge_dictionary_keysym_t);
 
 bool		dulge_dictionary_equals(dulge_dictionary_t, dulge_dictionary_t);

@@ -1,5 +1,5 @@
 libdulge:
- - transaction: avoid fetching the whole pkg when updating and only fetch
+ - transaction: ajaguar fetching the whole pkg when updating and only fetch
    modified files from target pkg.
  - transaction: check for free space in all affected top-level dirs.
  - transaction: check all pkg top-level dirs to see if they are writable.
@@ -21,4 +21,4 @@ dulge-fetch:
 dulge-digest:
  - blake2b support
 
-Issues listed at https://github.com/void-linux/dulge/issues
+Issues listed at https://github.com/jaguar-linux/dulge/issues

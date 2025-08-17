@@ -3,7 +3,7 @@
 atf_test_case tc1
 
 tc1_head() {
-	atf_set "descr" "Tests for pkg orphans: https://github.com/void-linux/dulge/issues/234"
+	atf_set "descr" "Tests for pkg orphans: https://github.com/jaguar-linux/dulge/issues/234"
 }
 
 tc1_body() {

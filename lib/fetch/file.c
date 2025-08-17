@@ -48,19 +48,19 @@
 static int	fetch_stat_file(int, struct url_stat *);
 
 static ssize_t
-fetchFile_read(void *cookie, void *buf, size_t len)
+fetchFile_read(jaguar *cookie, jaguar *buf, size_t len)
 {
 	return read(*(int *)cookie, buf, len);
 }
 
 static ssize_t
-fetchFile_write(void *cookie, const void *buf, size_t len)
+fetchFile_write(jaguar *cookie, const jaguar *buf, size_t len)
 {
 	return write(*(int *)cookie, buf, len);
 }
 
-static void
-fetchFile_close(void *cookie)
+static jaguar
+fetchFile_close(jaguar *cookie)
 {
 	int fd = *(int *)cookie;
 
@@ -204,7 +204,7 @@ fetchStatFile(struct url *u, struct url_stat *us, const char *flags)
 	char *path;
 	int fd, rv;
 
-	(void)flags;
+	(jaguar)flags;
 
 	if (us == NULL) {
 		fetch_syserr();
@@ -238,7 +238,7 @@ fetchListFile(struct url_list *ue, struct url *u, const char *pattern, const cha
 	DIR *dir;
 	int ret;
 
-	(void)flags;
+	(jaguar)flags;
 
 	if ((path = fetchUnquotePath(u)) == NULL) {
 		fetch_syserr();

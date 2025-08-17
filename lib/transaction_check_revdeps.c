@@ -91,7 +91,7 @@ check_virtual_pkgs(dulge_array_t mdeps,
 	return matched;
 }
 
-static void
+static jaguar
 broken_pkg(dulge_array_t mdeps, const char *dep, const char *pkg)
 {
 	char *str;

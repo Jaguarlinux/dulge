@@ -36,7 +36,7 @@
 
 #include <dulge.h>
 
-static void __attribute__((noreturn))
+static jaguar __attribute__((noreturn))
 usage(bool fail)
 {
 	fprintf(stdout,
@@ -62,7 +62,7 @@ usage(bool fail)
 }
 
 static int
-state_cb(const struct dulge_state_cb_data *xscd, void *cbd UNUSED)
+state_cb(const struct dulge_state_cb_data *xscd, jaguar *cbd UNUSED)
 {
 	bool slog = false;
 
@@ -78,7 +78,7 @@ state_cb(const struct dulge_state_cb_data *xscd, void *cbd UNUSED)
 	return 0;
 }
 
-static void
+static jaguar
 list_pkg_alternatives(dulge_dictionary_t pkgd, const char *group, bool print_key)
 {
 	dulge_dictionary_t pkg_alternatives;
@@ -114,7 +114,7 @@ list_pkg_alternatives(dulge_dictionary_t pkgd, const char *group, bool print_key
 	dulge_object_release(allkeys);
 }
 
-static void
+static jaguar
 print_alternatives(struct dulge_handle *xhp, dulge_dictionary_t alternatives, const char *grp, bool repo_mode)
 {
 	dulge_array_t allkeys;
@@ -163,7 +163,7 @@ list_alternatives(struct dulge_handle *xhp, const char *pkgname, const char *grp
 		return 0;
 	} else {
 		// XXX: initializing the pkgdb.
-		(void)dulge_pkgdb_get_pkg(xhp, "foo");
+		(jaguar)dulge_pkgdb_get_pkg(xhp, "foo");
 	}
 	assert(xhp->pkgdb);
 
@@ -184,7 +184,7 @@ static int
 search_array_cb(struct dulge_handle *xhp UNUSED,
 		dulge_object_t obj,
 		const char *key UNUSED,
-		void *arg,
+		jaguar *arg,
 		bool *done UNUSED)
 {
 	dulge_object_iterator_t iter;
@@ -241,7 +241,7 @@ search_array_cb(struct dulge_handle *xhp UNUSED,
 }
 
 static int
-search_repo_cb(struct dulge_repo *repo, void *arg, bool *done UNUSED)
+search_repo_cb(struct dulge_repo *repo, jaguar *arg, bool *done UNUSED)
 {
 	dulge_array_t allkeys;
 	int rv;
@@ -347,7 +347,7 @@ main(int argc, char **argv)
 	}
 	if (set_mode) {
 		// XXX: dulge_pkgdb_init
-		(void)dulge_pkgdb_get_pkg(&xh, "foo");
+		(jaguar)dulge_pkgdb_get_pkg(&xh, "foo");
 
 		/* in set mode pkgdb must be locked and flushed on success */
 		if (dulge_pkgdb_lock(&xh) < 0) {

@@ -1,6 +1,6 @@
 /*-
  * Copyright (c) 2008-2020 Juan Romero Pardines <xtraeme@gmail.com>
- * Copyright (c) 2014-2019 Enno Boland <gottox@voidlinux.org>
+ * Copyright (c) 2014-2019 Enno Boland <gottox@jaguarlinux.org>
  * Copyright (c) 2016-2019 Duncan Overbruck <mail@duncano.de>
  * All rights reserved.
  *
@@ -599,38 +599,38 @@ struct dulge_handle {
 	 * Pointer to the supplifed function callback to be used
 	 * in the DULGE possible states.
 	 */
-	int (*state_cb)(const struct dulge_state_cb_data *, void *);
+	int (*state_cb)(const struct dulge_state_cb_data *, jaguar *);
 	/**
 	 * @var state_cb_data
 	 *
 	 * Pointer to user supplied data to be passed as argument to
 	 * the \a dulge_state_cb function callback.
 	 */
-	void *state_cb_data;
+	jaguar *state_cb_data;
 	/**
 	 * Pointer to the supplied function callback to be used in
 	 * dulge_unpack_binary_pkg().
 	 */
-	void (*unpack_cb)(const struct dulge_unpack_cb_data *, void *);
+	jaguar (*unpack_cb)(const struct dulge_unpack_cb_data *, jaguar *);
 	/**
 	 * @var unpack_cb_data
 	 *
 	 * Pointer to user supplied data to be passed as argument to
 	 * the \a dulge_unpack_cb function callback.
 	 */
-	void *unpack_cb_data;
+	jaguar *unpack_cb_data;
 	/**
 	 * Pointer to the supplied function callback to be used in
 	 * dulge_fetch_file().
 	 */
-	void (*fetch_cb)(const struct dulge_fetch_cb_data *, void *);
+	jaguar (*fetch_cb)(const struct dulge_fetch_cb_data *, jaguar *);
 	/**
 	 * @var fetch_cb_data
 	 *
 	 * Pointer to user supplied data to be passed as argument to
 	 * the \a dulge_fetch_cb function callback.
 	 */
-	void *fetch_cb_data;
+	jaguar *fetch_cb_data;
 	/**
 	 * @var pkgdb_plist;
 	 *
@@ -712,7 +712,7 @@ int dulge_init(struct dulge_handle *xhp);
  *
  * @param[in] xhp Pointer to an dulge_handle struct.
  */
-void dulge_end(struct dulge_handle *xhp);
+jaguar dulge_end(struct dulge_handle *xhp);
 
 /**@}*/
 
@@ -735,31 +735,31 @@ extern int dulge_verbose_level;
  * @brief Prints debug messages to stderr.
  * @param[in] fmt format specifier for the message.
  */
-void dulge_dbg_printf(const char *fmt, ...) PRINTF_LIKE(1, 2);
+jaguar dulge_dbg_printf(const char *fmt, ...) PRINTF_LIKE(1, 2);
 
 /**
  * @brief Prints debug messages to stderr.
  * @param[in] fmt format specifier for the message.
  */
-void dulge_dbg_printf_append(const char *fmt, ...) PRINTF_LIKE(1, 2);
+jaguar dulge_dbg_printf_append(const char *fmt, ...) PRINTF_LIKE(1, 2);
 
 /**
  * @brief Prints messages to stderr if verbosity is enabled.
  * @param[in] fmt format specifier for the message.
  */
-void dulge_verbose_printf(const char *, ...) PRINTF_LIKE(1, 2);
+jaguar dulge_verbose_printf(const char *, ...) PRINTF_LIKE(1, 2);
 
 /**
  * @brief Prints error messages to stderr.
  * @param[in] fmt format specifier for the message.
  */
-void dulge_error_printf(const char *fmt, ...) PRINTF_LIKE(1, 2);
+jaguar dulge_error_printf(const char *fmt, ...) PRINTF_LIKE(1, 2);
 
 /**
  * @brief Prints warning messages to stderr.
  * @param[in] fmt format specifier for the message.
  */
-void dulge_warn_printf(const char *fmt, ...) PRINTF_LIKE(1, 2);
+jaguar dulge_warn_printf(const char *fmt, ...) PRINTF_LIKE(1, 2);
 
 /**
  * @brief Prints formatted log message to stderr and returns error.
@@ -880,7 +880,7 @@ int dulge_fetch_file_dest_sha256(struct dulge_handle *xhp, const char *uri,
  *
  * @return A string with the appropiate error message.
  */
-const char *dulge_fetch_error_string(void);
+const char *dulge_fetch_error_string(jaguar);
 
 /**@}*/
 
@@ -917,7 +917,7 @@ int dulge_pkgdb_lock(struct dulge_handle *xhp);
  *
  * @param[in] xhp The pointer to the dulge_handle struct.
  */
-void dulge_pkgdb_unlock(struct dulge_handle *xhp);
+jaguar dulge_pkgdb_unlock(struct dulge_handle *xhp);
 
 /**
  * Executes a function callback per a package dictionary registered
@@ -931,8 +931,8 @@ void dulge_pkgdb_unlock(struct dulge_handle *xhp);
  * the value returned by the function callback.
  */
 int dulge_pkgdb_foreach_cb(struct dulge_handle *xhp,
-	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, void *, bool *),
-	void *arg);
+	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, jaguar *, bool *),
+	jaguar *arg);
 
 /**
  * Executes a function callback per a package dictionary registered
@@ -949,8 +949,8 @@ int dulge_pkgdb_foreach_cb(struct dulge_handle *xhp,
  * the value returned by the function callback.
  */
 int dulge_pkgdb_foreach_cb_multi(struct dulge_handle *xhp,
-	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, void *, bool *),
-	void *arg);
+	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, jaguar *, bool *),
+	jaguar *arg);
 
 /**
  * Returns a package dictionary from the package database (pkgdb),
@@ -1041,7 +1041,7 @@ int dulge_pkgdb_update(struct dulge_handle *xhp, bool flush, bool update);
  * @return 0 on success, or an errno value otherwise.
  */
 int dulge_pkg_exec_buffer(struct dulge_handle *xhp,
-			 const void *blob,
+			 const jaguar *blob,
 			 const size_t blobsiz,
 			 const char *pkgver,
 			 const char *action,
@@ -1121,8 +1121,8 @@ int dulge_alternatives_unregister(struct dulge_handle *xhp, dulge_dictionary_t p
 int dulge_array_foreach_cb(struct dulge_handle *xhp,
 		dulge_array_t array,
 		dulge_dictionary_t dict,
-		int (*fn)(struct dulge_handle *, dulge_object_t obj, const char *, void *arg, bool *done),
-		void *arg);
+		int (*fn)(struct dulge_handle *, dulge_object_t obj, const char *, jaguar *arg, bool *done),
+		jaguar *arg);
 
 /**
  * Executes a function callback (\a fn) per object in the proplib array \a array.
@@ -1141,8 +1141,8 @@ int dulge_array_foreach_cb(struct dulge_handle *xhp,
 int dulge_array_foreach_cb_multi(struct dulge_handle *xhp,
 		dulge_array_t array,
 		dulge_dictionary_t dict,
-		int (*fn)(struct dulge_handle *, dulge_object_t obj, const char *, void *arg, bool *done),
-		void *arg);
+		int (*fn)(struct dulge_handle *, dulge_object_t obj, const char *, jaguar *arg, bool *done),
+		jaguar *arg);
 
 /**
  * Match a virtual package name or pattern by looking at proplib array
@@ -1539,7 +1539,7 @@ struct dulge_repo {
 	bool is_signed;
 };
 
-void dulge_rpool_release(struct dulge_handle *xhp);
+jaguar dulge_rpool_release(struct dulge_handle *xhp);
 
 /**
  * Synchronizes repository data for all remote repositories
@@ -1556,7 +1556,7 @@ int dulge_rpool_sync(struct dulge_handle *xhp, const char *uri);
 
 /**
  * Iterates over the repository pool and executes the \a fn function
- * callback passing in the void * \a arg argument to it. The bool pointer
+ * callback passing in the jaguar * \a arg argument to it. The bool pointer
  * argument can be used in the callbacks to stop immediately the loop if
  * set to true, otherwise it will only be stopped if it returns a
  * non-zero value.
@@ -1572,8 +1572,8 @@ int dulge_rpool_sync(struct dulge_handle *xhp, const char *uri);
  * @return 0 on success, otherwise an errno value.
  */
 int dulge_rpool_foreach(struct dulge_handle *xhp,
-	       int (*fn)(struct dulge_repo *, void *, bool *),
-	       void *arg);
+	       int (*fn)(struct dulge_repo *, jaguar *, bool *),
+	       jaguar *arg);
 
 /**
  * Returns a pointer to a struct dulge_repo matching \a url.
@@ -1678,7 +1678,7 @@ int dulge_repo_lock(const char *repodir, const char *arch);
  * @param[in] lockfd Lock file descriptor.
  * @param[in] lockfname Lock filename.
  */
-void dulge_repo_unlock(const char *repodir, const char *arch, int fd);
+jaguar dulge_repo_unlock(const char *repodir, const char *arch, int fd);
 
 /**
  * Opens a repository and returns a dulge_repo object.
@@ -1706,7 +1706,7 @@ struct dulge_repo *dulge_repo_public_open(struct dulge_handle *xhp, const char *
  *
  * @param[in] repo The repository object to close.
  */
-void dulge_repo_close(struct dulge_repo *repo);
+jaguar dulge_repo_close(struct dulge_repo *repo);
 
 /**
  * This calls dulge_repo_close() and releases all resources
@@ -1714,7 +1714,7 @@ void dulge_repo_close(struct dulge_repo *repo);
  *
  * @param[in] repo The repository object to release.
  */
-void dulge_repo_release(struct dulge_repo *repo);
+jaguar dulge_repo_release(struct dulge_repo *repo);
 
 /**
  *
@@ -1793,7 +1793,7 @@ struct archive;
  *
  * @return 0 on success, or any negative or errno value otherwise.
  */
-int dulge_archive_append_buf(struct archive *ar, const void *buf,
+int dulge_archive_append_buf(struct archive *ar, const jaguar *buf,
 		const size_t buflen, const char *fname, const mode_t mode,
 		const char *uname, const char *gname);
 
@@ -1933,7 +1933,7 @@ char *dulge_xasprintf(const char *fmt, ...)__attribute__ ((format (printf, 1, 2)
  * is set appropiately. The mmaped object should be munmap()ed when it's
  * not longer needed.
  */
-bool dulge_mmap_file(const char *file, void **mmf, size_t *mmflen, size_t *filelen);
+bool dulge_mmap_file(const char *file, jaguar **mmf, size_t *mmflen, size_t *filelen);
 
 /**
  * Computes a sha256 hex digest into \a dst of size \a len

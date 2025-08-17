@@ -51,7 +51,7 @@ static pthread_mutex_t _prop_refcnt_mtx = PTHREAD_MUTEX_INITIALIZER;
  *	Initialize an object.  Called when sub-classes create
  *	an instance.
  */
-void
+jaguar
 _prop_object_init(struct _prop_object *po, const struct _prop_object_type *pot)
 {
 
@@ -65,7 +65,7 @@ _prop_object_init(struct _prop_object *po, const struct _prop_object_type *pot)
  *	an instance.
  */
 /*ARGSUSED*/
-void
+jaguar
 _prop_object_fini(struct _prop_object *po _PROP_ARG_UNUSED)
 {
 	/* Nothing to do, currently. */
@@ -266,7 +266,7 @@ _prop_object_externalize_footer(struct _prop_object_externalize_context *ctx)
  *	Allocate an externalize context.
  */
 struct _prop_object_externalize_context *
-_prop_object_externalize_context_alloc(void)
+_prop_object_externalize_context_alloc(jaguar)
 {
 	struct _prop_object_externalize_context *ctx;
 
@@ -288,7 +288,7 @@ _prop_object_externalize_context_alloc(void)
  * _prop_object_externalize_context_free --
  *	Free an externalize context.
  */
-void
+jaguar
 _prop_object_externalize_context_free(
 		struct _prop_object_externalize_context *ctx)
 {
@@ -591,7 +591,7 @@ _prop_object_internalize_by_tag(struct _prop_object_internalize_context *ctx)
 {
 	const struct _prop_object_internalizer *poi;
 	prop_object_t obj, parent_obj;
-	void *data, *iter;
+	jaguar *data, *iter;
 	prop_object_internalizer_continue_t iter_func;
 	struct _prop_stack stack;
 
@@ -757,7 +757,7 @@ _prop_object_internalize_context_alloc(const char *xml)
  * _prop_object_internalize_context_free --
  *	Free an internalize context.
  */
-void
+jaguar
 _prop_object_internalize_context_free(
 		struct _prop_object_internalize_context *ctx)
 {
@@ -770,7 +770,7 @@ _prop_object_internalize_context_free(
  *	dirname(3), basically.  We have to roll our own because the
  *	system dirname(3) isn't reentrant.
  */
-static void
+static jaguar
 _prop_object_externalize_file_dirname(const char *path, char *result)
 {
 	const char *lastp;
@@ -877,15 +877,15 @@ _prop_object_externalize_write_file(const char *fname, const char *xml,
 		goto bad;
 
 	myumask = umask(0);
-	(void)umask(myumask);
+	(jaguar)umask(myumask);
 	if (fchmod(fd, 0666 & ~myumask) == -1)
 		goto bad;
 
 	if (do_compress) {
-		(void)gzclose(gzf);
+		(jaguar)gzclose(gzf);
 		gzf = NULL;
 	} else {
-		(void)close(fd);
+		(jaguar)close(fd);
 	}
 	fd = -1;
 
@@ -897,10 +897,10 @@ _prop_object_externalize_write_file(const char *fname, const char *xml,
  bad:
 	save_errno = errno;
 	if (do_compress && gzf != NULL)
-		(void)gzclose(gzf);
+		(jaguar)gzclose(gzf);
 	else if (fd != -1)
-		(void)close(fd);
-	(void) unlink(tname);
+		(jaguar)close(fd);
+	(jaguar) unlink(tname);
 	errno = save_errno;
 	return (false);
 }
@@ -936,13 +936,13 @@ _prop_object_internalize_map_file(const char *fname)
 	}
 
 	if (fstat(fd, &sb) == -1) {
-		(void) close(fd);
+		(jaguar) close(fd);
 		_PROP_FREE(mf, M_TEMP);
 		return (NULL);
 	}
 	mf->poimf_mapsize = ((size_t)sb.st_size + pgmask) & ~pgmask;
 	if (mf->poimf_mapsize < (size_t)sb.st_size) {
-		(void) close(fd);
+		(jaguar) close(fd);
 		_PROP_FREE(mf, M_TEMP);
 		return (NULL);
 	}
@@ -958,19 +958,19 @@ _prop_object_internalize_map_file(const char *fname)
 	mf->poimf_xml = mmap(NULL, need_guard ? mf->poimf_mapsize + pgsize
 			    		      : mf->poimf_mapsize,
 			    PROT_READ, MAP_SHARED, fd, (off_t)0);
-	(void) close(fd);
+	(jaguar) close(fd);
 	if (mf->poimf_xml == MAP_FAILED) {
 		_PROP_FREE(mf, M_TEMP);
 		return (NULL);
 	}
-	(void)posix_madvise(mf->poimf_xml, mf->poimf_mapsize, POSIX_MADV_SEQUENTIAL);
+	(jaguar)posix_madvise(mf->poimf_xml, mf->poimf_mapsize, POSIX_MADV_SEQUENTIAL);
 
 	if (need_guard) {
 		if (mmap(mf->poimf_xml + mf->poimf_mapsize,
 			 pgsize, PROT_READ,
 			 MAP_ANON|MAP_PRIVATE|MAP_FIXED, -1,
 			 (off_t)0) == MAP_FAILED) {
-			(void) munmap(mf->poimf_xml, mf->poimf_mapsize);
+			(jaguar) munmap(mf->poimf_xml, mf->poimf_mapsize);
 			_PROP_FREE(mf, M_TEMP);
 			return (NULL);
 		}
@@ -984,13 +984,13 @@ _prop_object_internalize_map_file(const char *fname)
  * _prop_object_internalize_unmap_file --
  *	Unmap a file previously mapped for internalizing.
  */
-void
+jaguar
 _prop_object_internalize_unmap_file(
     struct _prop_object_internalize_mapped_file *mf)
 {
 
-	(void)posix_madvise(mf->poimf_xml, mf->poimf_mapsize, POSIX_MADV_DONTNEED);
-	(void)munmap(mf->poimf_xml, mf->poimf_mapsize);
+	(jaguar)posix_madvise(mf->poimf_xml, mf->poimf_mapsize, POSIX_MADV_DONTNEED);
+	(jaguar)munmap(mf->poimf_xml, mf->poimf_mapsize);
 	_PROP_FREE(mf, M_TEMP);
 }
 
@@ -998,7 +998,7 @@ _prop_object_internalize_unmap_file(
  * prop_object_retain --
  *	Increment the reference count on an object.
  */
-void
+jaguar
 prop_object_retain(prop_object_t obj)
 {
 	struct _prop_object *po = obj;
@@ -1012,16 +1012,16 @@ prop_object_retain(prop_object_t obj)
  * prop_object_release_emergency
  *	A direct free with prop_object_release failed.
  *	Walk down the tree until a leaf is found and
- *	free that. Do not recurse to avoid stack overflows.
+ *	free that. Do not recurse to ajaguar stack overflows.
  *
  *	This is a slow edge condition, but necessary to
  *	guarantee that an object can always be freed.
  */
-static void
+static jaguar
 prop_object_release_emergency(prop_object_t obj)
 {
 	struct _prop_object *po;
-	void (*unlock)(void);
+	jaguar (*unlock)(jaguar);
 	prop_object_t parent = NULL;
 	uint32_t ocnt;
 
@@ -1073,12 +1073,12 @@ prop_object_release_emergency(prop_object_t obj)
  *	Free the object if we are releasing the final
  *	reference.
  */
-void
+jaguar
 prop_object_release(prop_object_t obj)
 {
 	struct _prop_object *po;
 	struct _prop_stack stack;
-	void (*unlock)(void); 
+	jaguar (*unlock)(jaguar); 
 	int ret;
 	uint32_t ocnt;
 
@@ -1152,7 +1152,7 @@ prop_object_equals_with_error(prop_object_t obj1, prop_object_t obj2,
 {
 	struct _prop_object *po1;
 	struct _prop_object *po2;
-	void *stored_pointer1, *stored_pointer2;
+	jaguar *stored_pointer1, *stored_pointer2;
 	prop_object_t next_obj1, next_obj2;
 	struct _prop_stack stack;
 	_prop_object_equals_rv_t ret;
@@ -1220,7 +1220,7 @@ prop_object_iterator_next(prop_object_iterator_t pi)
  *	Reset the iterator to the first object so as to restart
  *	iteration.
  */
-void
+jaguar
 prop_object_iterator_reset(prop_object_iterator_t pi)
 {
 
@@ -1231,7 +1231,7 @@ prop_object_iterator_reset(prop_object_iterator_t pi)
  * prop_object_iterator_release --
  *	Release the object iterator.
  */
-void
+jaguar
 prop_object_iterator_release(prop_object_iterator_t pi)
 {
 

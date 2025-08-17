@@ -244,7 +244,7 @@ check_compiler_flag()
 	printf "Checking if $CC supports -${mode}${flag} ... "
 	cat <<EOF >_ccflag.c
 #include <stdio.h>
-int main(void) { return 0; }
+int main(jaguar) { return 0; }
 EOF
 	if $XCC -${mode}${flag} _ccflag.c -o _ccflag 2>_ccflag.err; then
 		if ! test -s _ccflag.err; then
@@ -418,7 +418,7 @@ else
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdarg.h>
-int main(void) {
+int main(jaguar) {
 	va_list ap;
 	vasprintf(NULL, NULL, ap);
 	return 0;
@@ -447,7 +447,7 @@ printf "Checking for $func() ... "
 cat <<EOF >_$func.c
 #define _GNU_SOURCE
 #include <string.h>
-int main(void) {
+int main(jaguar) {
 	const char *h = "NEEDCOFEE";
 	const char *n = "IneedCoffee";
 	strcasestr(n, h);
@@ -470,7 +470,7 @@ func=strlcpy
 printf "Checking for $func() ... "
 cat <<EOF >_$func.c
 #include <string.h>
-int main(void) {
+int main(jaguar) {
 	const char s1[] = "foo";
 	char s2[10];
 	strlcpy(s2, s1, sizeof(s2));
@@ -492,7 +492,7 @@ func=strlcat
 printf "Checking for $func() ... "
 cat <<EOF > _$func.c
 #include <string.h>
-int main(void) {
+int main(jaguar) {
 	const char src[] = "foo";
 	char dst[10];
 	strlcat(dst, src, sizeof(dst));
@@ -514,7 +514,7 @@ func=strnstr
 printf "Checking for $func() ... "
 cat <<EOF > _$func.c
 #include <string.h>
-int main(void) {
+int main(jaguar) {
 	const char big[] = "foo";
 	const char little[] = "f";
 	strnstr(big, little, 3);
@@ -537,7 +537,7 @@ cat <<EOF > _$func.c
 #include <stdio.h>
 #include <util.h>
 
-int main(void) {
+int main(jaguar) {
 	humanize_number(NULL, 0, 0, NULL, 0, 0);
 	return 0;
 }
@@ -558,7 +558,7 @@ func=rb_tree_init
 printf "Checking for $func() ... "
 cat <<EOF > _$func.c
 #include <sys/rbtree.h>
-int main(void) {
+int main(jaguar) {
 	rb_tree_init(NULL, NULL);
 	return 0;
 }
@@ -579,7 +579,7 @@ func=fdatasync
 printf "Checking for $func() ... "
 cat <<EOF > _$func.c
 #include <unistd.h>
-int main(void) {
+int main(jaguar) {
 	fdatasync(0);
 	return 0;
 }
@@ -599,7 +599,7 @@ func=clock_gettime
 printf "Checking for $func() ... "
 cat <<EOF > _$func.c
 #include <time.h>
-int main(void) {
+int main(jaguar) {
 	struct timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return 0;
@@ -705,7 +705,7 @@ else
 	printf "Checking for $func() ... "
 	cat <<-EOF > _$func.c
 	#include <zlib.h>
-	int main(void) {
+	int main(jaguar) {
 		z_stream strm;
 		strm.zalloc = Z_NULL;
 		strm.zfree = Z_NULL;

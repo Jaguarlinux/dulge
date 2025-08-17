@@ -40,7 +40,7 @@
 #define _BOLD	"\033[1m"
 #define _RESET	"\033[m"
 
-static void
+static jaguar
 print_value_obj(const char *keyname, dulge_object_t obj,
 		const char *indent, const char *bold,
 		const char *reset, bool raw)
@@ -117,7 +117,7 @@ print_value_obj(const char *keyname, dulge_object_t obj,
 	}
 }
 
-void
+jaguar
 show_pkg_info_one(dulge_dictionary_t d, const char *keys)
 {
 	dulge_object_t obj;
@@ -160,7 +160,7 @@ show_pkg_info_one(dulge_dictionary_t d, const char *keys)
 	free(key);
 }
 
-void
+jaguar
 show_pkg_info(dulge_dictionary_t dict)
 {
 	dulge_array_t all_keys;

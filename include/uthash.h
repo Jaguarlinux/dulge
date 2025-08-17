@@ -131,9 +131,9 @@ do {                                                                            
 #define HASH_BKT_CAPACITY_THRESH 10U     /* expand when bucket count reaches */
 
 /* calculate the element whose hash handle address is hhp */
-#define ELMT_FROM_HH(tbl,hhp) ((void*)(((char*)(hhp)) - ((tbl)->hho)))
+#define ELMT_FROM_HH(tbl,hhp) ((jaguar*)(((char*)(hhp)) - ((tbl)->hho)))
 /* calculate the hash handle from element address elp */
-#define HH_FROM_ELMT(tbl,elp) ((UT_hash_handle*)(void*)(((char*)(elp)) + ((tbl)->hho)))
+#define HH_FROM_ELMT(tbl,elp) ((UT_hash_handle*)(jaguar*)(((char*)(elp)) + ((tbl)->hho)))
 
 #define HASH_ROLLBACK_BKT(hh, head, itemptrhh)                                   \
 do {                                                                             \
@@ -361,7 +361,7 @@ do {                                                                            
       (head) = (add);                                                            \
     IF_HASH_NONFATAL_OOM( } )                                                    \
   } else {                                                                       \
-    void *_hs_iter = (head);                                                     \
+    jaguar *_hs_iter = (head);                                                     \
     (add)->hh.tbl = (head)->hh.tbl;                                              \
     HASH_AKBI_INNER_LOOP(hh, head, add, cmpfcn);                                 \
     if (_hs_iter) {                                                              \
@@ -397,7 +397,7 @@ do {                                                                            
 do {                                                                             \
   IF_HASH_NONFATAL_OOM( int _ha_oomed = 0; )                                     \
   (add)->hh.hashv = (hashval);                                                   \
-  (add)->hh.key = (const void*) (keyptr);                                        \
+  (add)->hh.key = (const jaguar*) (keyptr);                                        \
   (add)->hh.keylen = (unsigned) (keylen_in);                                     \
   if (!(head)) {                                                                 \
     (add)->hh.next = NULL;                                                       \
@@ -499,11 +499,11 @@ do {                                                                            
 #define HASH_REPLACE_INT(head,intfield,add,replaced)                             \
     HASH_REPLACE(hh,head,intfield,sizeof(int),add,replaced)
 #define HASH_FIND_PTR(head,findptr,out)                                          \
-    HASH_FIND(hh,head,findptr,sizeof(void *),out)
+    HASH_FIND(hh,head,findptr,sizeof(jaguar *),out)
 #define HASH_ADD_PTR(head,ptrfield,add)                                          \
-    HASH_ADD(hh,head,ptrfield,sizeof(void *),add)
+    HASH_ADD(hh,head,ptrfield,sizeof(jaguar *),add)
 #define HASH_REPLACE_PTR(head,ptrfield,add,replaced)                             \
-    HASH_REPLACE(hh,head,ptrfield,sizeof(void *),add,replaced)
+    HASH_REPLACE(hh,head,ptrfield,sizeof(jaguar *),add,replaced)
 #define HASH_DEL(head,delptr)                                                    \
     HASH_DELETE(hh,head,delptr)
 
@@ -527,7 +527,7 @@ do {                                                                            
       while (_thh) {                                                             \
         if (_prev != (char*)(_thh->hh_prev)) {                                   \
           HASH_OOPS("%s: invalid hh_prev %p, actual %p\n",                       \
-              (where), (void*)_thh->hh_prev, (void*)_prev);                      \
+              (where), (jaguar*)_thh->hh_prev, (jaguar*)_prev);                      \
         }                                                                        \
         _bkt_count++;                                                            \
         _prev = (char*)(_thh);                                                   \
@@ -550,7 +550,7 @@ do {                                                                            
       _count++;                                                                  \
       if (_prev != (char*)_thh->prev) {                                          \
         HASH_OOPS("%s: invalid prev %p, actual %p\n",                            \
-            (where), (void*)_thh->prev, (void*)_prev);                           \
+            (where), (jaguar*)_thh->prev, (jaguar*)_prev);                           \
       }                                                                          \
       _prev = (char*)ELMT_FROM_HH((head)->hh.tbl, _thh);                         \
       _thh = (_thh->next ? HH_FROM_ELMT((head)->hh.tbl, _thh->next) : NULL);     \
@@ -979,7 +979,7 @@ do {                                                                            
 #define HASH_SELECT(hh_dst, dst, hh_src, src, cond)                              \
 do {                                                                             \
   unsigned _src_bkt, _dst_bkt;                                                   \
-  void *_last_elt = NULL, *_elt;                                                 \
+  jaguar *_last_elt = NULL, *_elt;                                                 \
   UT_hash_handle *_src_hh, *_dst_hh, *_last_elt_hh=NULL;                         \
   ptrdiff_t _dst_hho = ((char*)(&(dst)->hh_dst) - (char*)(dst));                 \
   if ((src) != NULL) {                                                           \
@@ -990,7 +990,7 @@ do {                                                                            
         _elt = ELMT_FROM_HH((src)->hh_src.tbl, _src_hh);                         \
         if (cond(_elt)) {                                                        \
           IF_HASH_NONFATAL_OOM( int _hs_oomed = 0; )                             \
-          _dst_hh = (UT_hash_handle*)(void*)(((char*)_elt) + _dst_hho);          \
+          _dst_hh = (UT_hash_handle*)(jaguar*)(((char*)_elt) + _dst_hho);          \
           _dst_hh->key = _src_hh->key;                                           \
           _dst_hh->keylen = _src_hh->keylen;                                     \
           _dst_hh->hashv = _src_hh->hashv;                                       \
@@ -1125,11 +1125,11 @@ typedef struct UT_hash_table {
 
 typedef struct UT_hash_handle {
    struct UT_hash_table *tbl;
-   void *prev;                       /* prev element in app order      */
-   void *next;                       /* next element in app order      */
+   jaguar *prev;                       /* prev element in app order      */
+   jaguar *next;                       /* next element in app order      */
    struct UT_hash_handle *hh_prev;   /* previous hh in bucket order    */
    struct UT_hash_handle *hh_next;   /* next hh in bucket order        */
-   const void *key;                  /* ptr to enclosing struct's key  */
+   const jaguar *key;                  /* ptr to enclosing struct's key  */
    unsigned keylen;                  /* enclosing struct's key len     */
    unsigned hashv;                   /* result of hash-fcn(key)        */
 } UT_hash_handle;

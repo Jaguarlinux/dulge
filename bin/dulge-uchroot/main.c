@@ -84,7 +84,7 @@ static bool overlayfs_on_tmpfs;
 static SIMPLEQ_HEAD(bindmnt_head, bindmnt) bindmnt_queue =
     SIMPLEQ_HEAD_INITIALIZER(bindmnt_queue);
 
-static void __attribute__((noreturn))
+static jaguar __attribute__((noreturn))
 usage(const char *p, bool fail)
 {
 	printf("Usage: %s [OPTIONS] [--] <dir> <cmd> [<cmdargs>]\n\n"
@@ -98,7 +98,7 @@ usage(const char *p, bool fail)
 	exit(fail ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
-static void __attribute__((noreturn))
+static jaguar __attribute__((noreturn))
 die(const char *fmt, ...)
 {
 	va_list ap;
@@ -176,8 +176,8 @@ out:
 	return rv;
 }
 
-static void
-cleanup_overlayfs(void)
+static jaguar
+cleanup_overlayfs(jaguar)
 {
 	if (tmpdir == NULL)
 		return;
@@ -195,7 +195,7 @@ out:
 	rmdir(tmpdir);
 }
 
-static void __attribute__((noreturn))
+static jaguar __attribute__((noreturn))
 sighandler_cleanup(int signum)
 {
 	switch (signum) {
@@ -208,7 +208,7 @@ sighandler_cleanup(int signum)
 	_exit(signum);
 }
 
-static void
+static jaguar
 add_bindmount(const char *bm, bool ro)
 {
 	struct bindmnt *bmnt;
@@ -236,7 +236,7 @@ add_bindmount(const char *bm, bool ro)
 	SIMPLEQ_INSERT_TAIL(&bindmnt_queue, bmnt, entries);
 }
 
-static void
+static jaguar
 bindmount(const char *chrootdir, const char *dir, const char *dest)
 {
 	char mountdir[PATH_MAX-1];
@@ -250,7 +250,7 @@ bindmount(const char *chrootdir, const char *dir, const char *dest)
 		die("Failed to bind mount %s at %s", dir, mountdir);
 }
 
-static void
+static jaguar
 remount_rdonly(const char *chrootdir, const char *dir, const char *dest, bool ro)
 {
 	char mountdir[PATH_MAX-1];
@@ -271,7 +271,7 @@ static char *
 setup_overlayfs(const char *chrootdir, uid_t ruid, gid_t rgid, bool tmpfs, const char *tmpfs_opts)
 {
 	char *upperdir, *workdir, *newchrootdir, *mopts;
-	const void *opts = NULL;
+	const jaguar *opts = NULL;
 
 	if (tmpfs) {
 		/*

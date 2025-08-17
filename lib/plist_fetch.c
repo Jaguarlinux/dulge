@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2009-2014 Juan Romero Pardines.
+ * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
  * Copyright (c) 2008, 2009 Joerg Sonnenberger <joerg (at) NetBSD.org>
  * All rights reserved.
  *

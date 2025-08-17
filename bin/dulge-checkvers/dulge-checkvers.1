@@ -14,10 +14,10 @@ The
 utility checks for outdated packages in a target root directory or in
 all registered repositories by comparing the package versions against
 the source package versions available in a
-.Nm void-packages
+.Nm jaguar-packages
 tree.
 By default it will use the tree located in
-.Nm ~/void-packages ,
+.Nm ~/jaguar-packages ,
 but this location can be changed with the
 .Fl D, Fl -distdir
 option.
@@ -25,7 +25,7 @@ By default and unless the
 .Fl I, Fl -installed
 option is set, it will use package versions from repositories to compare against
 the
-.Nm void-packages
+.Nm jaguar-packages
 tree.
 The
 .Ar FILES
@@ -37,8 +37,8 @@ Specifies a path to the DULGE configuration directory.
 If the first character is not '/', then it's a path relative to
 .Ar rootdir .
 .It Fl D, Fl -distdir Ar dir
-Specifies the path to the void-packages tree (usually a git repository). By default set to
-.Nm ~/void-packages .
+Specifies the path to the jaguar-packages tree (usually a git repository). By default set to
+.Nm ~/jaguar-packages .
 .It Fl e, Fl -removed
 List packages present in repos, but not in distdir.
 The source package version will be question mark for them, see documentation for
@@ -93,7 +93,7 @@ Repository to be added to the top of the list. This option can be specified mult
 Specifies a full path for the target root directory.
 .It Fl s, Fl -show-all
 List all packages found in the
-.Nm void-packages
+.Nm jaguar-packages
 tree and prints version available in repository and srcpkgs with the following format:
 .Ar pkgname repover srcver .
 If any version can't be resolved,
@@ -109,7 +109,7 @@ Show the version information.
 A descriptive error message will be printed to stderr.
 .Sh EXAMPLES
 Show all packages in
-.Pa ~/void-packages ,
+.Pa ~/jaguar-packages ,
 listing the repository version and the
 .Pa srcpkgs
 version:
@@ -117,15 +117,15 @@ version:
 .Dl $ dulge-checkvers -s
 .Pp
 Show packages in
-.Pa ~/src/void-packages
+.Pa ~/src/jaguar-packages
 which have a newer version than the installed version:
 .Pp
-.Dl $ dulge-checkvers -D ~/src/void-packages -I
+.Dl $ dulge-checkvers -D ~/src/jaguar-packages -I
 .Pp
 Check whether installed package
 .Sq foo
 has a newer version in the
-.Nm void-packages
+.Nm jaguar-packages
 tree:
 .Pp
 .Dl $ dulge-checkvers -I -m foo
@@ -153,4 +153,4 @@ Probably, but I try to make this not happen. Use it under your own
 responsibility and enjoy your life.
 .Pp
 Report bugs at
-.Lk https://github.com/void-linux/dulge/issues
+.Lk https://github.com/jaguar-linux/dulge/issues

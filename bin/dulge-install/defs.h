@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2009-2014 Juan Romero Pardines.
+ * Copyright (c) 2025 TigerClips1 <spongebob1966@proton.me>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -57,15 +57,15 @@ bool	yesno(const char *, ...);
 bool	noyes(const char *, ...);
 
 /* from fetch_cb.c */
-void	fetch_file_progress_cb(const struct dulge_fetch_cb_data *, void *);
+jaguar	fetch_file_progress_cb(const struct dulge_fetch_cb_data *, jaguar *);
 
 /* from state_cb.c */
-int	state_cb(const struct dulge_state_cb_data *, void *);
+int	state_cb(const struct dulge_state_cb_data *, jaguar *);
 
 /* From util.c */
-void	print_package_line(const char *, unsigned int, bool);
+jaguar	print_package_line(const char *, unsigned int, bool);
 bool	print_trans_colmode(struct transaction *, unsigned int);
-int	get_maxcols(void);
+int	get_maxcols(jaguar);
 const char	*ttype2str(dulge_dictionary_t);
 
 #endif /* !_DULGE_INSTALL_DEFS_H_ */

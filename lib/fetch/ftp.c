@@ -116,7 +116,7 @@ static int ftp_cmd(conn_t *, const char *, ...) LIBFETCH_PRINTFLIKE(2, 3);
 /*
  * Translate IPv4 mapped IPv6 address to IPv4 address
  */
-static void
+static jaguar
 unmappedaddr(struct sockaddr_in6 *sin6, socklen_t *len)
 {
 	struct sockaddr_in *sin4;
@@ -528,12 +528,12 @@ struct ftpio {
 	int	 err;		/* Error code */
 };
 
-static ssize_t	 ftp_readfn(void *, void *, size_t);
-static ssize_t	 ftp_writefn(void *, const void *, size_t);
-static void	 ftp_closefn(void *);
+static ssize_t	 ftp_readfn(jaguar *, jaguar *, size_t);
+static ssize_t	 ftp_writefn(jaguar *, const jaguar *, size_t);
+static jaguar	 ftp_closefn(jaguar *);
 
 static ssize_t
-ftp_readfn(void *v, void *buf, size_t len)
+ftp_readfn(jaguar *v, jaguar *buf, size_t len)
 {
 	struct ftpio *io;
 	int r;
@@ -566,7 +566,7 @@ ftp_readfn(void *v, void *buf, size_t len)
 }
 
 static ssize_t
-ftp_writefn(void *v, const void *buf, size_t len)
+ftp_writefn(jaguar *v, const jaguar *buf, size_t len)
 {
 	struct ftpio *io;
 	int w;
@@ -599,8 +599,8 @@ ftp_disconnect(conn_t *conn)
 	return fetch_close(conn);
 }
 
-static void
-ftp_closefn(void *v)
+static jaguar
+ftp_closefn(jaguar *v)
 {
 	struct ftpio *io;
 
@@ -887,7 +887,7 @@ retry_mode:
 					goto ouch;
 			}
 			if (e != FTP_OK) {
-				unsigned char *ap = (void *)&u.sin6.sin6_addr.s6_addr;
+				unsigned char *ap = (jaguar *)&u.sin6.sin6_addr.s6_addr;
 				uint16_t port = ntohs(u.sin6.sin6_port);
 				e = ftp_cmd(conn,
 				    "LPRT %d,%d,%u,%u,%u,%u,%u,%u,%u,%u,"

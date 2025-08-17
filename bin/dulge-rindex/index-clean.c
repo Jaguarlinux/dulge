@@ -51,7 +51,7 @@ static int
 idx_cleaner_cb(struct dulge_handle *xhp UNUSED,
 		dulge_object_t obj,
 		const char *key UNUSED,
-		void *arg,
+		jaguar *arg,
 		bool *done UNUSED)
 {
 	char path[PATH_MAX];
@@ -119,12 +119,12 @@ cleanup_repo(struct dulge_handle *xhp, const char *repodir, struct dulge_repo *r
 
 	allkeys = dulge_dictionary_all_keys(index);
 	ctx.dict = index;
-	(void)dulge_array_foreach_cb_multi(xhp, allkeys, repo->idx, idx_cleaner_cb, &ctx);
+	(jaguar)dulge_array_foreach_cb_multi(xhp, allkeys, repo->idx, idx_cleaner_cb, &ctx);
 	dulge_object_release(allkeys);
 
 	allkeys = dulge_dictionary_all_keys(stage);
 	ctx.dict = stage;
-	(void)dulge_array_foreach_cb_multi(xhp, allkeys, repo->idx, idx_cleaner_cb, &ctx);
+	(jaguar)dulge_array_foreach_cb_multi(xhp, allkeys, repo->idx, idx_cleaner_cb, &ctx);
 	dulge_object_release(allkeys);
 
 	if (dulge_dictionary_equals(index, repo->index) &&

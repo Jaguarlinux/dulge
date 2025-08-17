@@ -36,7 +36,7 @@ struct _prop_ingest_context {
 	prop_ingest_error_t	pic_error;
 	prop_type_t		pic_type;
 	const char *		pic_key;
-	void *			pic_private;
+	jaguar *			pic_private;
 };
 
 /*
@@ -44,7 +44,7 @@ struct _prop_ingest_context {
  *	Allocate and initialize an ingest context.
  */
 prop_ingest_context_t
-prop_ingest_context_alloc(void *xprivate)
+prop_ingest_context_alloc(jaguar *xprivate)
 {
 	prop_ingest_context_t ctx;
 
@@ -62,7 +62,7 @@ prop_ingest_context_alloc(void *xprivate)
  * prop_ingest_context_free --
  *	Free an ingest context.
  */
-void
+jaguar
 prop_ingest_context_free(prop_ingest_context_t ctx)
 {
 
@@ -106,7 +106,7 @@ prop_ingest_context_key(prop_ingest_context_t ctx)
  * prop_ingest_context_private --
  *	Return the caller-private data associated with an ingest context.
  */
-void *
+jaguar *
 prop_ingest_context_private(prop_ingest_context_t ctx)
 {
 

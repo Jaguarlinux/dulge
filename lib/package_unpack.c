@@ -308,7 +308,7 @@ unpack_archive(struct dulge_handle *xhp,
 		 */
 		if (file_exists && !keep_conf_file &&
 		    ((entry_statp->st_mode & S_IFMT) != (st.st_mode & S_IFMT)))
-			(void)remove(entry_pname);
+			(jaguar)remove(entry_pname);
 
 		if (!force && (entry_type == AE_IFREG)) {
 			if (file_exists && (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode))) {

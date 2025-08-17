@@ -528,7 +528,7 @@ more_entries_update_body() {
 atf_test_case useless_switch
 
 useless_switch_head() {
-	atf_set "descr" "dulge-alternatives: avoid useless switches on package removal"
+	atf_set "descr" "dulge-alternatives: ajaguar useless switches on package removal"
 }
 useless_switch_body() {
 	mkdir -p repo pkg_A/usr/bin pkg_B/usr/bin
@@ -847,7 +847,7 @@ replace_file_with_alternative_head() {
 	atf_set "descr" "dulge-alternatives: replace file with an alternative"
 }
 replace_file_with_alternative_body() {
-	atf_expect_fail "https://github.com/void-linux/dulge/pull/185"
+	atf_expect_fail "https://github.com/jaguar-linux/dulge/pull/185"
 
 	mkdir -p repo pkg_A_old/usr/bin pkg_A_new/usr/bin pkg_B_old/usr/bin \
 	pkg_B_new/usr/bin
@@ -905,7 +905,7 @@ cc_alternatives_removal_head() {
 	atf_set "descr" "dulge-alternatives: removal of the cc alternatives group"
 }
 cc_alternatives_removal_body() {
-	atf_expect_fail "https://github.com/void-linux/dulge/pull/253"
+	atf_expect_fail "https://github.com/jaguar-linux/dulge/pull/253"
 
 	mkdir -p repo pkg_A/usr/bin
 	mkdir -p repo pkg_B/usr/bin

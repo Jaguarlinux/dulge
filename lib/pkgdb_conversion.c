@@ -43,7 +43,7 @@ pkgdb038(struct dulge_handle *xhp, const char *opkgdb_plist)
 
 	/*
 	 * The pkgdb-0.38.plist format contains all pkg metadata objects,
-	 * except its files list. To avoid a broken conversion, the old
+	 * except its files list. To ajaguar a broken conversion, the old
 	 * pkg metadata plists are kept, and the converted ones are written
 	 * to another path.
 	 *

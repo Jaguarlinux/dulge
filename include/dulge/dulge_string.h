@@ -42,7 +42,7 @@ typedef struct _prop_string *dulge_string_t;
 extern "C" {
 #endif
 
-dulge_string_t	dulge_string_create(void);
+dulge_string_t	dulge_string_create(jaguar);
 dulge_string_t	dulge_string_create_cstring(const char *);
 dulge_string_t	dulge_string_create_cstring_nocopy(const char *);
 

@@ -6,9 +6,9 @@ srcpkg_older_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg contains an older version"
 }
 srcpkg_older_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/A/template <<EOF
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 pkgname=A
 version=1.0
 revision=1
@@ -22,7 +22,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" ""
 }
@@ -33,9 +33,9 @@ srcpkg_older_with_refs_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg contains an older version with refs"
 }
 srcpkg_older_with_refs_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/A/template <<EOF
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 _mypkgname=A
 _myversion=1
 pkgname=\${_mypkgname}
@@ -51,7 +51,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" ""
 }
@@ -62,9 +62,9 @@ srcpkg_newer_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg contains a newer version"
 }
 srcpkg_newer_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/A/template <<EOF
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 pkgname=A
 version=1.1
 revision=1
@@ -78,7 +78,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A 1.0_1 1.1_1 A $PWD/some_repo"
 }
@@ -89,9 +89,9 @@ srcpkg_newer_with_refs_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg contains a newer version with refs"
 }
 srcpkg_newer_with_refs_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/A/template <<EOF
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 _mypkgname="A"
 _myversion="1"
 pkgname=\${_mypkgname}
@@ -107,7 +107,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A 1.0_1 1.1_1 A $PWD/some_repo"
 }
@@ -118,9 +118,9 @@ srcpkg_newer_with_refs_and_source_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg contains a newer version with refs and file sourcing"
 }
 srcpkg_newer_with_refs_and_source_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/A/template <<EOF
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 . ./source/a/file
 _mypkgname="A"
 _myversion="1"
@@ -137,7 +137,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A 1.0_1 1.1_1 A $PWD/some_repo"
 }
@@ -148,8 +148,8 @@ srcpkg_missing_pkgname_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg does not set pkgname"
 }
 srcpkg_missing_pkgname_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
-	cat > void-packages/srcpkgs/A/template <<EOF
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 #pkgname=A
 version=1.1
 revision=1
@@ -163,7 +163,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages 2>out
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages 2>out
 	atf_check_equal $? 1
 	atf_check_equal "$(cat out)" "ERROR: 'A/template': missing required variable (pkgname, version or revision)!"
 }
@@ -174,8 +174,8 @@ srcpkg_missing_version_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg does not set version"
 }
 srcpkg_missing_version_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
-	cat > void-packages/srcpkgs/A/template <<EOF
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 pkgname=A
 #version=1.1
 revision=1
@@ -189,7 +189,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages 2>out
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages 2>out
 	atf_check_equal $? 1
 	atf_check_equal "$(cat out)" "ERROR: 'A/template': missing required variable (pkgname, version or revision)!"
 }
@@ -200,8 +200,8 @@ srcpkg_missing_revision_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg does not set revision"
 }
 srcpkg_missing_revision_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
-	cat > void-packages/srcpkgs/A/template <<EOF
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 pkgname=A
 version=1.1
 #revision=1
@@ -215,7 +215,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages 2>out
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages 2>out
 	atf_check_equal $? 1
 	atf_check_equal "$(cat out)" "ERROR: 'A/template': missing required variable (pkgname, version or revision)!"
 }
@@ -226,8 +226,8 @@ srcpkg_missing_pkgver_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg does not set pkgname/version"
 }
 srcpkg_missing_pkgver_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
-	cat > void-packages/srcpkgs/A/template <<EOF
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 #pkgname=A
 #version=1.1
 revision=1
@@ -241,7 +241,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages 2>out
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages 2>out
 	atf_check_equal $? 1
 	atf_check_equal "$(cat out)" "ERROR: 'A/template': missing required variable (pkgname, version or revision)!"
 }
@@ -252,8 +252,8 @@ srcpkg_missing_pkgverrev_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg does not set pkgname/version/revision"
 }
 srcpkg_missing_pkgverrev_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
-	cat > void-packages/srcpkgs/A/template <<EOF
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 #pkgname=A
 #version=1.1
 revision=1
@@ -267,7 +267,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages 2>out
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages 2>out
 	atf_check_equal $? 1
 	atf_check_equal "$(cat out)" "ERROR: 'A/template': missing required variable (pkgname, version or revision)!"
 }
@@ -278,8 +278,8 @@ srcpkg_with_a_ref_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg does set a ref in pkgname/version/revision"
 }
 srcpkg_with_a_ref_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/foo
-	cat > void-packages/srcpkgs/foo/template <<EOF
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/foo
+	cat > jaguar-packages/srcpkgs/foo/template <<EOF
 _var=foo
 pkgname=\${_var}
 version=1.1
@@ -294,7 +294,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages >out
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages >out
 	atf_check_equal $? 0
 	atf_check_equal "$(cat out)" "foo 1.0_1 1.1_1 foo $PWD/some_repo"
 }
@@ -305,8 +305,8 @@ srcpkg_with_a_ref_and_comment_head() {
 	atf_set "descr" "dulge-checkvers(1): test when srcpkg does set a ref in pkgname/version/revision with a comment"
 }
 srcpkg_with_a_ref_and_comment_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/foo
-	cat > void-packages/srcpkgs/foo/template <<EOF
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/foo
+	cat > jaguar-packages/srcpkgs/foo/template <<EOF
 pkgname=foo #kajskajskajskajskajskjaksjaksjaks
 version=1.1
 revision=1
@@ -320,7 +320,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages >out
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages >out
 	atf_check_equal $? 0
 	atf_check_equal "$(cat out)" "foo 1.0_1 1.1_1 foo $PWD/some_repo"
 }
@@ -332,9 +332,9 @@ reverts_head() {
 }
 
 reverts_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/A/template <<EOF
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 pkgname=A
 reverts="1.1_1"
 version=1.0
@@ -349,7 +349,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A 1.1_1 1.0_1 A $PWD/some_repo"
 }
@@ -361,9 +361,9 @@ reverts_alpha_head() {
 }
 
 reverts_alpha_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/fs-utils
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/fs-utils
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/fs-utils/template <<EOF
+	cat > jaguar-packages/srcpkgs/fs-utils/template <<EOF
 pkgname=fs-utils
 reverts=v1.10_1
 version=1.10
@@ -378,8 +378,8 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" ""
 }
@@ -391,9 +391,9 @@ reverts_many_head() {
 }
 
 reverts_many_body() {
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/A
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/A
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/A/template <<EOF
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 pkgname=A
 reverts="1.1_1 1.2_1 1.3_1 1.3_2 1.3_3 1.3_4"
 version=1.0
@@ -408,7 +408,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A 1.2_1 1.0_1 A $PWD/some_repo"
 
@@ -421,7 +421,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A 1.1_1 1.0_1 A $PWD/some_repo"
 
@@ -434,7 +434,7 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A 1.3_4 1.0_1 A $PWD/some_repo"
 }
@@ -446,18 +446,18 @@ manual_mode_head() {
 }
 
 manual_mode_body() {
-	mkdir -p void-packages/srcpkgs/do-not-process void-packages/srcpkgs/process
-	cat > void-packages/srcpkgs/do-not-process/template <<EOF
+	mkdir -p jaguar-packages/srcpkgs/do-not-process jaguar-packages/srcpkgs/process
+	cat > jaguar-packages/srcpkgs/do-not-process/template <<EOF
 pkgname=do-not-process
 #version=1
 revision=1
 EOF
-	cat > void-packages/srcpkgs/process/template <<EOF
+	cat > jaguar-packages/srcpkgs/process/template <<EOF
 pkgname=process
 version=1
 revision=1
 EOF
-	out=$(dulge-checkvers -D $PWD/void-packages -ms srcpkgs/process/template)
+	out=$(dulge-checkvers -D $PWD/jaguar-packages -ms srcpkgs/process/template)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "process ? 1_1 process ?"
 }
@@ -468,31 +468,31 @@ subpkg_head() {
 	atf_set "descr" "dulge-checkvers(1): test subpkgs"
 }
 subpkg_body() {
-	mkdir -p repo pkg_A void-packages/srcpkgs/A
+	mkdir -p repo pkg_A jaguar-packages/srcpkgs/A
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/A/template <<EOF
+	cat > jaguar-packages/srcpkgs/A/template <<EOF
 pkgname=A
 version=1.0
 revision=1
 }
 EOF
-	ln -s A void-packages/srcpkgs/B
-	ln -s A void-packages/srcpkgs/C
+	ln -s A jaguar-packages/srcpkgs/B
+	ln -s A jaguar-packages/srcpkgs/C
 	cd repo
 	dulge-create -A noarch -n B-1.1_1 -s "B pkg" ../pkg_A
 	atf_check_equal $? 0
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	out=$(dulge-checkvers -i -R $PWD/repo -D $PWD/void-packages -sm B)
+	out=$(dulge-checkvers -i -R $PWD/repo -D $PWD/jaguar-packages -sm B)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A 1.1_1 1.0_1 B $PWD/repo"
 
-	out=$(dulge-checkvers -i -R repo -D $PWD/void-packages -sm C)
+	out=$(dulge-checkvers -i -R repo -D $PWD/jaguar-packages -sm C)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A ? 1.0_1 C ?"
 
-	out=$(dulge-checkvers -i -R repo -D $PWD/void-packages -sm A)
+	out=$(dulge-checkvers -i -R repo -D $PWD/jaguar-packages -sm A)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "A ? 1.0_1 A ?"
 }
@@ -507,8 +507,8 @@ removed_body() {
 	mkdir -p some_repo
 	for pkg in same updated removed
 	do
-		mkdir -p void-packages/srcpkgs/$pkg
-		cat > void-packages/srcpkgs/$pkg/template <<EOF
+		mkdir -p jaguar-packages/srcpkgs/$pkg
+		cat > jaguar-packages/srcpkgs/$pkg/template <<EOF
 pkgname=$pkg
 version=1
 revision=1
@@ -519,17 +519,17 @@ EOF
 		cd ..
 	done
 
-	sed -e s/version=1/version=2/ -i void-packages/srcpkgs/updated/template
-	rm -r void-packages/srcpkgs/removed
+	sed -e s/version=1/version=2/ -i jaguar-packages/srcpkgs/updated/template
+	rm -r jaguar-packages/srcpkgs/removed
 	cd some_repo
 	dulge-rindex -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
 
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages -i)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages -i)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "updated 1_1 2_1 updated $PWD/some_repo"
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages -ei)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages -ei)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "removed 1_1 ? removed $PWD/some_repo"
 }
@@ -544,9 +544,9 @@ removed_subpkgs_body() {
 	mkdir -p some_repo
 	for pkg in same updated removed onlybase onlydevel
 	do
-		mkdir -p void-packages/srcpkgs/$pkg
-		ln -sr void-packages/srcpkgs/$pkg void-packages/srcpkgs/$pkg-devel
-		cat > void-packages/srcpkgs/$pkg/template <<EOF
+		mkdir -p jaguar-packages/srcpkgs/$pkg
+		ln -sr jaguar-packages/srcpkgs/$pkg jaguar-packages/srcpkgs/$pkg-devel
+		cat > jaguar-packages/srcpkgs/$pkg/template <<EOF
 pkgname=$pkg
 version=1
 revision=1
@@ -565,18 +565,18 @@ EOF
 		cd ..
 	done
 
-	sed -e s/version=1/version=2/ -i void-packages/srcpkgs/updated/template
-	rm -r void-packages/srcpkgs/onlydevel-devel
-	mv void-packages/srcpkgs/onlydevel void-packages/srcpkgs/onlydevel-devel
-	rm -r void-packages/srcpkgs/onlybase-devel
-	rm -r void-packages/srcpkgs/removed
-	rm -r void-packages/srcpkgs/removed-devel
+	sed -e s/version=1/version=2/ -i jaguar-packages/srcpkgs/updated/template
+	rm -r jaguar-packages/srcpkgs/onlydevel-devel
+	mv jaguar-packages/srcpkgs/onlydevel jaguar-packages/srcpkgs/onlydevel-devel
+	rm -r jaguar-packages/srcpkgs/onlybase-devel
+	rm -r jaguar-packages/srcpkgs/removed
+	rm -r jaguar-packages/srcpkgs/removed-devel
 	cd some_repo
 	dulge-rindex -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
 
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages -i)
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages -i)
 	atf_check_equal $? 0
 	atf_check_equal "$out" "updated 1_1 2_1 updated $PWD/some_repo"
 	cat > expected <<EOF
@@ -585,7 +585,7 @@ onlydevel 1_1 ? onlydevel $PWD/some_repo
 removed 1_1 ? removed $PWD/some_repo
 removed-devel 1_1 ? removed-devel $PWD/some_repo
 EOF
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages -ei > out
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages -ei > out
 	atf_check_equal $? 0
 	sort < out > out.sorted
 	atf_check_equal $? 0
@@ -600,9 +600,9 @@ multiline_reverts_head() {
 
 multiline_reverts_body() {
 	atf_expect_fail "multiline variables are not supported"
-	mkdir -p some_repo pkg_A void-packages/srcpkgs/libdwarf
+	mkdir -p some_repo pkg_A jaguar-packages/srcpkgs/libdwarf
 	touch pkg_A/file00
-	cat > void-packages/srcpkgs/libdwarf/template <<EOF
+	cat > jaguar-packages/srcpkgs/libdwarf/template <<EOF
 pkgname=libdwarf
 reverts="20201020_1 20200825_1 20200719_1 20200114_1 20191104_2 20191104_1
  20191002_1 20190529_1 20190110_1 20180809_1 20180527_1 20180129_1 20170709_2
@@ -620,8 +620,8 @@ EOF
 	dulge-rindex -d -a $PWD/*.dulge
 	atf_check_equal $? 0
 	cd ..
-	dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages
-	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/void-packages)
+	dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages
+	out=$(dulge-checkvers -R $PWD/some_repo -D $PWD/jaguar-packages)
 	atf_check_equal $? 0
 	atf_check_equal "$out" ""
 }

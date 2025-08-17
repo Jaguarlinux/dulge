@@ -43,7 +43,7 @@ typedef struct _prop_dictionary_keysym *prop_dictionary_keysym_t;
 extern "C" {
 #endif
 
-prop_dictionary_t prop_dictionary_create(void);
+prop_dictionary_t prop_dictionary_create(jaguar);
 prop_dictionary_t prop_dictionary_create_with_capacity(unsigned int);
 
 prop_dictionary_t prop_dictionary_copy(prop_dictionary_t);
@@ -53,7 +53,7 @@ unsigned int	prop_dictionary_count(prop_dictionary_t);
 bool		prop_dictionary_ensure_capacity(prop_dictionary_t,
 						unsigned int);
 
-void		prop_dictionary_make_immutable(prop_dictionary_t);
+jaguar		prop_dictionary_make_immutable(prop_dictionary_t);
 bool		prop_dictionary_mutable(prop_dictionary_t);
 
 prop_object_iterator_t prop_dictionary_iterator(prop_dictionary_t);
@@ -62,14 +62,14 @@ prop_array_t	prop_dictionary_all_keys(prop_dictionary_t);
 prop_object_t	prop_dictionary_get(prop_dictionary_t, const char *);
 bool		prop_dictionary_set(prop_dictionary_t, const char *,
 				    prop_object_t);
-void		prop_dictionary_remove(prop_dictionary_t, const char *);
+jaguar		prop_dictionary_remove(prop_dictionary_t, const char *);
 
 prop_object_t	prop_dictionary_get_keysym(prop_dictionary_t,
 					   prop_dictionary_keysym_t);
 bool		prop_dictionary_set_keysym(prop_dictionary_t,
 					   prop_dictionary_keysym_t,
 					   prop_object_t);
-void		prop_dictionary_remove_keysym(prop_dictionary_t,
+jaguar		prop_dictionary_remove_keysym(prop_dictionary_t,
 					      prop_dictionary_keysym_t);
 
 bool		prop_dictionary_equals(prop_dictionary_t, prop_dictionary_t);

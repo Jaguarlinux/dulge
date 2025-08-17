@@ -44,7 +44,7 @@
  * @brief Utility routines
  * @defgroup util Utility functions
  */
-static void
+static jaguar
 digest2string(const uint8_t *digest, char *string, size_t len)
 {
 	while (len--) {
@@ -62,7 +62,7 @@ digest2string(const uint8_t *digest, char *string, size_t len)
 }
 
 bool
-dulge_mmap_file(const char *file, void **mmf, size_t *mmflen, size_t *filelen)
+dulge_mmap_file(const char *file, jaguar **mmf, size_t *mmflen, size_t *filelen)
 {
 	struct stat st;
 	size_t pgsize = (size_t)sysconf(_SC_PAGESIZE);
@@ -77,16 +77,16 @@ dulge_mmap_file(const char *file, void **mmf, size_t *mmflen, size_t *filelen)
 		return false;
 
 	if (fstat(fd, &st) == -1) {
-		(void)close(fd);
+		(jaguar)close(fd);
 		return false;
 	}
 	if (st.st_size > SSIZE_MAX - 1) {
-		(void)close(fd);
+		(jaguar)close(fd);
 		return false;
 	}
 	mapsize = ((size_t)st.st_size + pgmask) & ~pgmask;
 	if (mapsize < (size_t)st.st_size) {
-		(void)close(fd);
+		(jaguar)close(fd);
 		return false;
 	}
 	/*
@@ -99,9 +99,9 @@ dulge_mmap_file(const char *file, void **mmf, size_t *mmflen, size_t *filelen)
 
 	mf = mmap(NULL, need_guard ? mapsize + pgsize : mapsize,
 	    PROT_READ, MAP_PRIVATE, fd, 0);
-	(void)close(fd);
+	(jaguar)close(fd);
 	if (mf == MAP_FAILED) {
-		(void)munmap(mf, mapsize);
+		(jaguar)munmap(mf, mapsize);
 		return false;
 	}
 
@@ -134,7 +134,7 @@ dulge_file_sha256_raw(unsigned char *dst, size_t dstlen, const char *file)
 	while ((len = read(fd, buf, sizeof(buf))) > 0)
 		SHA256_Update(&sha256, buf, len);
 
-	(void)close(fd);
+	(jaguar)close(fd);
 
 	if(len == -1)
 		return false;

@@ -69,7 +69,7 @@ dulge_pubkey2fp(dulge_data_t pubkey)
 	EVP_PKEY *pPubKey = NULL;
 	RSA *pRsa = NULL;
 	BIO *bio = NULL;
-	const void *pubkeydata;
+	const jaguar *pubkeydata;
 	unsigned char md_value[EVP_MAX_MD_SIZE];
 	const BIGNUM *n, *e;
 	unsigned char *nBytes = NULL, *eBytes = NULL, *pEncoding = NULL;
@@ -134,7 +134,7 @@ dulge_pubkey2fp(dulge_data_t pubkey)
 	memcpy(pEncoding, pSshHeader, 11);
 
 	index = SshEncodeBuffer(&pEncoding[11], eLen, eBytes);
-	(void)SshEncodeBuffer(&pEncoding[11 + index], nLen, nBytes);
+	(jaguar)SshEncodeBuffer(&pEncoding[11 + index], nLen, nBytes);
 
 	/*
 	 * Compute the RSA fingerprint (MD5).

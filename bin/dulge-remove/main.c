@@ -38,7 +38,7 @@
 #include "../dulge-install/defs.h"
 #include "defs.h"
 
-static void __attribute__((noreturn))
+static jaguar __attribute__((noreturn))
 usage(bool fail)
 {
 	fprintf(stdout,
@@ -64,7 +64,7 @@ usage(bool fail)
 }
 
 static int
-state_cb_rm(const struct dulge_state_cb_data *xscd, void *cbdata UNUSED)
+state_cb_rm(const struct dulge_state_cb_data *xscd, jaguar *cbdata UNUSED)
 {
 	bool slog = false;
 

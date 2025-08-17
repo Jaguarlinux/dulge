@@ -42,18 +42,18 @@ typedef struct _prop_data *prop_data_t;
 extern "C" {
 #endif
 
-prop_data_t	prop_data_create_data(const void *, size_t);
-prop_data_t	prop_data_create_data_nocopy(const void *, size_t);
+prop_data_t	prop_data_create_data(const jaguar *, size_t);
+prop_data_t	prop_data_create_data_nocopy(const jaguar *, size_t);
 
 prop_data_t	prop_data_copy(prop_data_t);
 
 size_t		prop_data_size(prop_data_t);
 
-void *		prop_data_data(prop_data_t);
-const void *	prop_data_data_nocopy(prop_data_t);
+jaguar *		prop_data_data(prop_data_t);
+const jaguar *	prop_data_data_nocopy(prop_data_t);
 
 bool		prop_data_equals(prop_data_t, prop_data_t);
-bool		prop_data_equals_data(prop_data_t, const void *, size_t);
+bool		prop_data_equals_data(prop_data_t, const jaguar *, size_t);
 
 #ifdef __cplusplus
 }

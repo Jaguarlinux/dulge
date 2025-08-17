@@ -113,8 +113,8 @@ struct {								\
 	if (*(elm)->field.le_prev != (elm))				\
 		panic("LIST_* back %p %s:%d", (elm), __FILE__, __LINE__);
 #define	QUEUEDEBUG_LIST_POSTREMOVE(elm, field)				\
-	(elm)->field.le_next = (void *)1L;				\
-	(elm)->field.le_prev = (void *)1L;
+	(elm)->field.le_next = (jaguar *)1L;				\
+	(elm)->field.le_prev = (jaguar *)1L;
 #else
 #define	QUEUEDEBUG_LIST_INSERT_HEAD(head, elm, field)
 #define	QUEUEDEBUG_LIST_OP(elm, field)
@@ -325,7 +325,7 @@ struct {								\
 #define	STAILQ_LAST(head, type, field)					\
 	(STAILQ_EMPTY((head)) ?						\
 		NULL :							\
-	        ((struct type *)(void *)				\
+	        ((struct type *)(jaguar *)				\
 		((char *)((head)->stqh_last) - offsetof(struct type, field))))
 
 /*
@@ -418,7 +418,7 @@ struct {								\
 #define	SIMPLEQ_LAST(head, type, field)					\
 	(SIMPLEQ_EMPTY((head)) ?						\
 		NULL :							\
-	        ((struct type *)(void *)				\
+	        ((struct type *)(jaguar *)				\
 		((char *)((head)->sqh_last) - offsetof(struct type, field))))
 
 /*
@@ -473,8 +473,8 @@ struct {								\
 		panic("TAILQ_PREREMOVE head %p elm %p %s:%d",		\
 		      (head), (elm), __FILE__, __LINE__);
 #define	QUEUEDEBUG_TAILQ_POSTREMOVE(elm, field)				\
-	(elm)->field.tqe_next = (void *)1L;				\
-	(elm)->field.tqe_prev = (void *)1L;
+	(elm)->field.tqe_next = (jaguar *)1L;				\
+	(elm)->field.tqe_prev = (jaguar *)1L;
 #else
 #define	QUEUEDEBUG_TAILQ_INSERT_HEAD(head, elm, field)
 #define	QUEUEDEBUG_TAILQ_INSERT_TAIL(head, elm, field)
@@ -585,16 +585,16 @@ struct {								\
  */
 #if defined(_KERNEL) && defined(QUEUEDEBUG)
 #define QUEUEDEBUG_CIRCLEQ_HEAD(head, field)				\
-	if ((head)->cqh_first != (void *)(head) &&			\
-	    (head)->cqh_first->field.cqe_prev != (void *)(head))	\
+	if ((head)->cqh_first != (jaguar *)(head) &&			\
+	    (head)->cqh_first->field.cqe_prev != (jaguar *)(head))	\
 		panic("CIRCLEQ head forw %p %s:%d", (head),		\
 		      __FILE__, __LINE__);				\
-	if ((head)->cqh_last != (void *)(head) &&			\
-	    (head)->cqh_last->field.cqe_next != (void *)(head))		\
+	if ((head)->cqh_last != (jaguar *)(head) &&			\
+	    (head)->cqh_last->field.cqe_next != (jaguar *)(head))		\
 		panic("CIRCLEQ head back %p %s:%d", (head),		\
 		      __FILE__, __LINE__);
 #define QUEUEDEBUG_CIRCLEQ_ELM(head, elm, field)			\
-	if ((elm)->field.cqe_next == (void *)(head)) {			\
+	if ((elm)->field.cqe_next == (jaguar *)(head)) {			\
 		if ((head)->cqh_last != (elm))				\
 			panic("CIRCLEQ elm last %p %s:%d", (elm),	\
 			      __FILE__, __LINE__);			\
@@ -603,7 +603,7 @@ struct {								\
 			panic("CIRCLEQ elm forw %p %s:%d", (elm),	\
 			      __FILE__, __LINE__);			\
 	}								\
-	if ((elm)->field.cqe_prev == (void *)(head)) {			\
+	if ((elm)->field.cqe_prev == (jaguar *)(head)) {			\
 		if ((head)->cqh_first != (elm))				\
 			panic("CIRCLEQ elm first %p %s:%d", (elm),	\
 			      __FILE__, __LINE__);			\
@@ -613,8 +613,8 @@ struct {								\
 			      __FILE__, __LINE__);			\
 	}
 #define QUEUEDEBUG_CIRCLEQ_POSTREMOVE(elm, field)			\
-	(elm)->field.cqe_next = (void *)1L;				\
-	(elm)->field.cqe_prev = (void *)1L;
+	(elm)->field.cqe_next = (jaguar *)1L;				\
+	(elm)->field.cqe_prev = (jaguar *)1L;
 #else
 #define QUEUEDEBUG_CIRCLEQ_HEAD(head, field)
 #define QUEUEDEBUG_CIRCLEQ_ELM(head, elm, field)
@@ -628,7 +628,7 @@ struct name {								\
 }
 
 #define	CIRCLEQ_HEAD_INITIALIZER(head)					\
-	{ (void *)&head, (void *)&head }
+	{ (jaguar *)&head, (jaguar *)&head }
 
 #define	CIRCLEQ_ENTRY(type)						\
 struct {								\
@@ -640,8 +640,8 @@ struct {								\
  * Circular queue functions.
  */
 #define	CIRCLEQ_INIT(head) do {						\
-	(head)->cqh_first = (void *)(head);				\
-	(head)->cqh_last = (void *)(head);				\
+	(head)->cqh_first = (jaguar *)(head);				\
+	(head)->cqh_last = (jaguar *)(head);				\
 } while (/*CONSTCOND*/0)
 
 #define	CIRCLEQ_INSERT_AFTER(head, listelm, elm, field) do {		\
@@ -649,7 +649,7 @@ struct {								\
 	QUEUEDEBUG_CIRCLEQ_ELM((head), (listelm), field)		\
 	(elm)->field.cqe_next = (listelm)->field.cqe_next;		\
 	(elm)->field.cqe_prev = (listelm);				\
-	if ((listelm)->field.cqe_next == (void *)(head))		\
+	if ((listelm)->field.cqe_next == (jaguar *)(head))		\
 		(head)->cqh_last = (elm);				\
 	else								\
 		(listelm)->field.cqe_next->field.cqe_prev = (elm);	\
@@ -661,7 +661,7 @@ struct {								\
 	QUEUEDEBUG_CIRCLEQ_ELM((head), (listelm), field)		\
 	(elm)->field.cqe_next = (listelm);				\
 	(elm)->field.cqe_prev = (listelm)->field.cqe_prev;		\
-	if ((listelm)->field.cqe_prev == (void *)(head))		\
+	if ((listelm)->field.cqe_prev == (jaguar *)(head))		\
 		(head)->cqh_first = (elm);				\
 	else								\
 		(listelm)->field.cqe_prev->field.cqe_next = (elm);	\
@@ -671,8 +671,8 @@ struct {								\
 #define	CIRCLEQ_INSERT_HEAD(head, elm, field) do {			\
 	QUEUEDEBUG_CIRCLEQ_HEAD((head), field)				\
 	(elm)->field.cqe_next = (head)->cqh_first;			\
-	(elm)->field.cqe_prev = (void *)(head);				\
-	if ((head)->cqh_last == (void *)(head))				\
+	(elm)->field.cqe_prev = (jaguar *)(head);				\
+	if ((head)->cqh_last == (jaguar *)(head))				\
 		(head)->cqh_last = (elm);				\
 	else								\
 		(head)->cqh_first->field.cqe_prev = (elm);		\
@@ -681,9 +681,9 @@ struct {								\
 
 #define	CIRCLEQ_INSERT_TAIL(head, elm, field) do {			\
 	QUEUEDEBUG_CIRCLEQ_HEAD((head), field)				\
-	(elm)->field.cqe_next = (void *)(head);				\
+	(elm)->field.cqe_next = (jaguar *)(head);				\
 	(elm)->field.cqe_prev = (head)->cqh_last;			\
-	if ((head)->cqh_first == (void *)(head))			\
+	if ((head)->cqh_first == (jaguar *)(head))			\
 		(head)->cqh_first = (elm);				\
 	else								\
 		(head)->cqh_last->field.cqe_next = (elm);		\
@@ -693,12 +693,12 @@ struct {								\
 #define	CIRCLEQ_REMOVE(head, elm, field) do {				\
 	QUEUEDEBUG_CIRCLEQ_HEAD((head), field)				\
 	QUEUEDEBUG_CIRCLEQ_ELM((head), (elm), field)			\
-	if ((elm)->field.cqe_next == (void *)(head))			\
+	if ((elm)->field.cqe_next == (jaguar *)(head))			\
 		(head)->cqh_last = (elm)->field.cqe_prev;		\
 	else								\
 		(elm)->field.cqe_next->field.cqe_prev =			\
 		    (elm)->field.cqe_prev;				\
-	if ((elm)->field.cqe_prev == (void *)(head))			\
+	if ((elm)->field.cqe_prev == (jaguar *)(head))			\
 		(head)->cqh_first = (elm)->field.cqe_next;		\
 	else								\
 		(elm)->field.cqe_prev->field.cqe_next =			\
@@ -708,29 +708,29 @@ struct {								\
 
 #define	CIRCLEQ_FOREACH(var, head, field)				\
 	for ((var) = ((head)->cqh_first);				\
-		(var) != (const void *)(head);				\
+		(var) != (const jaguar *)(head);				\
 		(var) = ((var)->field.cqe_next))
 
 #define	CIRCLEQ_FOREACH_REVERSE(var, head, field)			\
 	for ((var) = ((head)->cqh_last);				\
-		(var) != (const void *)(head);				\
+		(var) != (const jaguar *)(head);				\
 		(var) = ((var)->field.cqe_prev))
 
 /*
  * Circular queue access methods.
  */
-#define	CIRCLEQ_EMPTY(head)		((head)->cqh_first == (void *)(head))
+#define	CIRCLEQ_EMPTY(head)		((head)->cqh_first == (jaguar *)(head))
 #define	CIRCLEQ_FIRST(head)		((head)->cqh_first)
 #define	CIRCLEQ_LAST(head)		((head)->cqh_last)
 #define	CIRCLEQ_NEXT(elm, field)	((elm)->field.cqe_next)
 #define	CIRCLEQ_PREV(elm, field)	((elm)->field.cqe_prev)
 
 #define CIRCLEQ_LOOP_NEXT(head, elm, field)				\
-	(((elm)->field.cqe_next == (void *)(head))			\
+	(((elm)->field.cqe_next == (jaguar *)(head))			\
 	    ? ((head)->cqh_first)					\
 	    : (elm->field.cqe_next))
 #define CIRCLEQ_LOOP_PREV(head, elm, field)				\
-	(((elm)->field.cqe_prev == (void *)(head))			\
+	(((elm)->field.cqe_prev == (jaguar *)(head))			\
 	    ? ((head)->cqh_last)					\
 	    : (elm->field.cqe_prev))
 

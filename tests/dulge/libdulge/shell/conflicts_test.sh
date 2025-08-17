@@ -284,7 +284,7 @@ conflicts_trans_installed_multi_body() {
 atf_test_case conflicts_trans_provrep
 
 conflicts_trans_provrep_head() {
-	atf_set "descr" "Tests for pkg conflicts: https://github.com/void-linux/dulge/issues/186"
+	atf_set "descr" "Tests for pkg conflicts: https://github.com/jaguar-linux/dulge/issues/186"
 }
 
 conflicts_trans_provrep_body() {

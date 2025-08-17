@@ -54,6 +54,6 @@ int check_pkg_alternatives(
 int get_checks_to_run(unsigned *, char *);
 
 /* from convert.c */
-void	convert_pkgdb_format(struct dulge_handle *);
+jaguar	convert_pkgdb_format(struct dulge_handle *);
 
 #endif /* !_DULGE_PKGDB_DEFS_H_ */

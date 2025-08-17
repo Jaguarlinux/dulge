@@ -82,7 +82,7 @@ dulge_repo_lock(const char *repodir, const char *arch)
 	return fd;
 }
 
-void
+jaguar
 dulge_repo_unlock(const char *repodir, const char *arch, int fd)
 {
 	char path[PATH_MAX];
@@ -535,7 +535,7 @@ dulge_repo_open(struct dulge_handle *xhp, const char *url)
 }
 
 
-void
+jaguar
 dulge_repo_release(struct dulge_repo *repo)
 {
 	if (!repo)

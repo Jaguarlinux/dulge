@@ -718,7 +718,7 @@ update_and_install_body() {
 atf_test_case update_issue_218
 
 update_issue_218_head() {
-	atf_set "descr" "Tests for pkg update: issue https://github.com/void-linux/dulge/issues/218"
+	atf_set "descr" "Tests for pkg update: issue https://github.com/jaguar-linux/dulge/issues/218"
 }
 
 update_issue_218_body() {

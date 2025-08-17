@@ -44,7 +44,7 @@ static int
 check_cb(struct dulge_handle *xhp UNUSED,
 		dulge_object_t obj,
 		const char *key UNUSED,
-		void *arg,
+		jaguar *arg,
 		bool *done UNUSED)
 {
 	const char *pkgver = NULL;

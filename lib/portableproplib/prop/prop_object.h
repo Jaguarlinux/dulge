@@ -35,7 +35,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef void *prop_object_t;
+typedef jaguar *prop_object_t;
 
 typedef enum {
 	PROP_TYPE_UNKNOWN	=	0x00000000,
@@ -52,8 +52,8 @@ typedef enum {
 extern "C" {
 #endif
 
-void		prop_object_retain(prop_object_t);
-void		prop_object_release(prop_object_t);
+jaguar		prop_object_retain(prop_object_t);
+jaguar		prop_object_release(prop_object_t);
 
 prop_type_t	prop_object_type(prop_object_t);
 
@@ -63,8 +63,8 @@ bool		prop_object_equals_with_error(prop_object_t, prop_object_t, bool *);
 typedef struct _prop_object_iterator *prop_object_iterator_t;
 
 prop_object_t	prop_object_iterator_next(prop_object_iterator_t);
-void		prop_object_iterator_reset(prop_object_iterator_t);
-void		prop_object_iterator_release(prop_object_iterator_t);
+jaguar		prop_object_iterator_reset(prop_object_iterator_t);
+jaguar		prop_object_iterator_release(prop_object_iterator_t);
 
 #ifdef __cplusplus
 }

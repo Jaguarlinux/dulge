@@ -101,7 +101,7 @@ index_match_pkgver(dulge_dictionary_t index, const char *pkgname, const char *pk
 }
 
 static int
-cleaner_cb(struct dulge_handle *xhp UNUSED, dulge_object_t obj, const char *key UNUSED, void *arg, bool *done UNUSED)
+cleaner_cb(struct dulge_handle *xhp UNUSED, dulge_object_t obj, const char *key UNUSED, jaguar *arg, bool *done UNUSED)
 {
 	char pkgname[DULGE_NAME_SIZE];
 	struct dulge_repo *repo = arg;

@@ -31,7 +31,7 @@
 
 #include "dulge_api_impl.h"
 
-void HIDDEN
+jaguar HIDDEN
 dulge_set_cb_fetch(struct dulge_handle *xhp,
 		  off_t file_size,
 		  off_t file_offset,

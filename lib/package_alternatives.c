@@ -410,7 +410,7 @@ dulge_alternatives_unregister(struct dulge_handle *xhp, dulge_dictionary_t pkgd)
  * that what is happening is an upgrade, because it's only invoked when
  * the repo and installed alternatives sets differ for a specific package.
  */
-static void
+static jaguar
 prune_altgroup(struct dulge_handle *xhp, dulge_dictionary_t repod,
 		const char *pkgname, const char *pkgver, const char *keyname)
 {
@@ -474,7 +474,7 @@ prune_altgroup(struct dulge_handle *xhp, dulge_dictionary_t repod,
 }
 
 
-static void
+static jaguar
 remove_obsoletes(struct dulge_handle *xhp, const char *pkgname, const char *pkgver,
 		dulge_dictionary_t pkgdb_alts, dulge_dictionary_t repod)
 {

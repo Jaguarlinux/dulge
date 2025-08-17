@@ -43,8 +43,8 @@ struct thread_data {
 	unsigned int *reserved;
 	pthread_mutex_t *reserved_lock;
 	unsigned int slicecount;
-	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, void *, bool *);
-	void *fn_arg;
+	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, jaguar *, bool *);
+	jaguar *fn_arg;
 	int r;
 };
 
@@ -56,8 +56,8 @@ struct thread_data {
  * These functions manipulate plist files and objects shared by almost
  * all library functions.
  */
-static void *
-array_foreach_thread(void *arg)
+static jaguar *
+array_foreach_thread(jaguar *arg)
 {
 	dulge_object_t obj, pkgd;
 	struct thread_data *thd = arg;
@@ -101,8 +101,8 @@ int
 dulge_array_foreach_cb_multi(struct dulge_handle *xhp,
 	dulge_array_t array,
 	dulge_dictionary_t dict,
-	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, void *, bool *),
-	void *arg)
+	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, jaguar *, bool *),
+	jaguar *arg)
 {
 	struct thread_data *thd;
 	unsigned int arraycount, slicecount;
@@ -200,8 +200,8 @@ int
 dulge_array_foreach_cb(struct dulge_handle *xhp,
 	dulge_array_t array,
 	dulge_dictionary_t dict,
-	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, void *, bool *),
-	void *arg)
+	int (*fn)(struct dulge_handle *, dulge_object_t, const char *, jaguar *, bool *),
+	jaguar *arg)
 {
 	dulge_dictionary_t pkgd;
 	dulge_object_t obj;

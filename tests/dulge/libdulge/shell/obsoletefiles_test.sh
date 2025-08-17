@@ -286,7 +286,7 @@ files_move_to_dependency2_body() {
 atf_test_case update_to_meta_depends_replaces
 
 update_to_meta_depends_replaces_head() {
-	# https://github.com/void-linux/dulge/issues/12
+	# https://github.com/jaguar-linux/dulge/issues/12
 	atf_set "descr" "Update package to meta moving files to dependency and replaces"
 }
 
