@@ -132,7 +132,7 @@ addItem(const char *pkgn)
 static void __attribute__((noreturn))
 usage(const char *progname, bool fail)
 {
-	fprintf(stderr, "Usage: %s [OPTIONS] /path/to/void-packages [pkg pkg+N]\n\n"
+	fprintf(stderr, "Usage: %s [OPTIONS] /path/to/jaguar-packages [pkg pkg+N]\n\n"
 			"OPTIONS\n"
 			" -j, --jobs <N>       Number of parallel builds\n"
 			" -l, --logdir <path>  Path to store logs\n"

@@ -82,8 +82,8 @@ show_usage(const char *prog, bool fail)
 "OPTIONS:\n"
 " -h, --help              Show usage\n"
 " -C, --config <dir>      Set path to dulge.d\n"
-" -D, --distdir <dir>     Set (or override) the path to void-packages\n"
-"                         (defaults to ~/void-packages)\n"
+" -D, --distdir <dir>     Set (or override) the path to jaguar-packages\n"
+"                         (defaults to ~/jaguar-packages)\n"
 " -d, --debug             Enable debug output to stderr\n"
 " -e, --removed           List packages present in repos, but not in distdir\n"
 " -f, --format <fmt>      Output format\n"
@@ -776,10 +776,10 @@ main(int argc, char **argv)
 		}
 	}
 	/*
-	 * If --distdir not set default to ~/void-packages.
+	 * If --distdir not set default to ~/jaguar-packages.
 	 */
 	if (rcv.distdir == NULL)
-		rcv.distdir = dulge_xasprintf("%s/void-packages", getenv("HOME"));
+		rcv.distdir = dulge_xasprintf("%s/jaguar-packages", getenv("HOME"));
 
 	{
 		char *tmp = rcv.distdir;
