@@ -1,0 +1,20 @@
+testpkg(8)
+==========
+
+Name
+----
+testpkg - test a dulge package for validity
+
+Synopsis
+--------
+'testpkg' <package file>
+
+Description
+-----------
+'testpkg' is a script used to make sure that a dulge package is valid.
+
+See Also
+--------
+linkman:dulge[8]
+
+include::footer.asciidoc[]

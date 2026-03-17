@@ -1,0 +1,13 @@
+dulge 1.0 - March 2026
+=======================
+
+This is the first release of dulge, a fork of the dulge package manager.
+
+Major changes from upstream dulge:
+- Rebranded from "dulge" to "dulge".
+- Helper tools renamed: makepkg → dulge-build, repo-add → dulge-repo-add, etc.
+- Build recipe filename changed from PKGBUILD to DULGEBUILD.
+- Metadata files updated to credit the original Arch Linux team and the fork maintainer.
+- All translations removed; users are directed to the upstream dulge project.
+
+For a complete list of changes, see the git history.

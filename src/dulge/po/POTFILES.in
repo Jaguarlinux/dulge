@@ -1,0 +1,26 @@
+# List of source files with translatable strings
+# If a file is commented out, it is because it shouldn't have any
+# translatable strings
+
+# Dulge frontend source files
+src/dulge/callback.c
+src/dulge/check.c
+src/dulge/conf.c
+src/dulge/database.c
+src/dulge/deptest.c
+src/dulge/files.c
+#src/dulge/ini.c
+src/dulge/package.c
+src/dulge/dulge.c
+src/dulge/query.c
+src/dulge/remove.c
+src/dulge/sighandler.c
+src/dulge/sync.c
+src/dulge/upgrade.c
+src/dulge/util.c
+#src/dulge/util-common.c
+
+# utility files
+src/dulge/dulge-conf.c
+src/util/testpkg.c
+src/util/vercmp.c

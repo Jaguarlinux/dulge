@@ -1,0 +1,18 @@
+[main]
+host = https://www.transifex.com
+
+[o:toofishes:p:jaguarlinux-dulge:r:libalpm-pot]
+file_filter = lib/libalpm/po/<lang>.po
+source_file = lib/libalpm/po/libalpm.pot
+source_lang = en
+
+[o:toofishes:p:jaguarlinux-dulge:r:dulge-pot]
+file_filter = src/dulge/po/<lang>.po
+source_file = src/dulge/po/dulge.pot
+source_lang = en
+
+[o:toofishes:p:jaguarlinux-dulge:r:dulge-scripts-pot]
+file_filter = scripts/po/<lang>.po
+source_file = scripts/po/dulge-scripts.pot
+source_lang = en
+

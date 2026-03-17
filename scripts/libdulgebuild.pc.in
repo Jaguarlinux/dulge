@@ -1,0 +1,7 @@
+# Copyright (C) 2026 Arch Linux team and TigerClips1 <TigerClips1@ps4jaguarlinux.com>
+libdulgebuilddir=@libdulgebuilddir@
+
+Name: libdulgebuild
+Description: Arch Linux package build utility
+URL: https://archlinux.org/dulge/
+Version: @PACKAGE_VERSION@

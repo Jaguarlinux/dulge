@@ -1,0 +1,36 @@
+dulge-db-upgrade(8)
+====================
+
+Name
+----
+dulge-db-upgrade - upgrade the local dulge database to a newer format
+
+Synopsis
+--------
+'dulge-db-upgrade' [options]
+
+Description
+-----------
+'dulge-db-upgrade' is a script that upgrades the local database used
+by linkman:dulge[8] to a newer format.
+
+Options
+--------------
+*-h, \--help*::
+Show the built-in help message and exit.
+*-V, \--version*::
+Show version information and exit.
+*-d, \--dbpath* <path>::
+Set an alternate database location.
+*-r, \--root* <path>::
+Set an alternate installation root.
+*\--config* <path>::
+Set an alternate configuration file.
+*\--nocolor*::
+Remove color from output.
+
+See Also
+--------
+linkman:dulge[8]
+
+include::footer.asciidoc[]

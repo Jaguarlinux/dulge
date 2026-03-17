@@ -1,0 +1,83 @@
+#!/bin/bash
+# Copyright (C) 2002-2025 Arch Linux team and TigerClips1 <TigerClips1@ps4jaguarlinux.com>
+#
+#   config.sh - functions for handling dulge-build config files
+#
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+[[ -n "$LIBMAKEPKG_UTIL_CONFIG_SH" ]] && return
+LIBMAKEPKG_UTIL_CONFIG_SH=1
+
+MAKEPKG_LIBRARY=${MAKEPKG_LIBRARY:-'@libdulgebuilddir@'}
+
+source "$MAKEPKG_LIBRARY/util/error.sh"
+source "$MAKEPKG_LIBRARY/util/message.sh"
+source "$MAKEPKG_LIBRARY/util/util.sh"
+
+# correctly source dulge-build.conf, respecting user precedence and the system conf
+source_makepkg_config() {
+	# $1: override system config file
+
+	local DULGEBUILD_CONF=${1:-${DULGEBUILD_CONF:-@sysconfdir@/dulge-build.conf}}
+
+	# Source the config file; fail if it is not found
+	if [[ -r $DULGEBUILD_CONF ]]; then
+		source_safe "$DULGEBUILD_CONF"
+		if [[ -d "$DULGEBUILD_CONF.d" ]] && compgen -G "$DULGEBUILD_CONF.d"/'*.conf' > /dev/null; then
+			for c in "$DULGEBUILD_CONF.d"/*.conf; do
+				source_safe $c
+			done
+		fi
+	else
+		error "$(gettext "%s not found.")" "$DULGEBUILD_CONF"
+		plainerr "$(gettext "Aborting...")"
+		exit $E_CONFIG_ERROR
+	fi
+
+	# Source user-specific dulge-build.conf overrides, but only if no override config
+	# file was specified
+	XDG_DULGE_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/dulge"
+	if [[ $DULGEBUILD_CONF = "@sysconfdir@/dulge-build.conf" ]]; then
+		if [[ -r $XDG_DULGE_DIR/dulge-build.conf ]]; then
+			source_safe "$XDG_DULGE_DIR/dulge-build.conf"
+		elif [[ -r $HOME/.dulge-build.conf ]]; then
+			source_safe "$HOME/.dulge-build.conf"
+		fi
+	fi
+}
+
+# load dulge-build.conf by sourcing the configuration files, and preserving
+# existing environment settings
+load_makepkg_config() {
+	# $1: override system config file
+
+	local DULGEBUILD_CONF=${1:-${DULGEBUILD_CONF:-@sysconfdir@/dulge-build.conf}}
+
+	# preserve environment variables to override dulge-build.conf
+	local restore_envvars=$(
+		for var in PKGDEST SRCDEST SRCPKGDEST LOGDEST BUILDDIR PKGEXT SRCEXT GPGKEY PACKAGER CARCH; do
+			# the output of 'declare -p' results in locally scoped values when used within a function
+			[[ -v $var ]] && printf '%s=%s\n' "$var" "${!var@Q}"
+		done
+	)
+
+	source_makepkg_config "$DULGEBUILD_CONF"
+
+	# prevent altering these directly
+	readonly -a BUILDENV OPTIONS
+
+	eval "$restore_envvars"
+}
